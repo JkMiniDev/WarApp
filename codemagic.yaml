@@ -1,16 +1,15 @@
-# codemagic.yaml - Valid Android Build Configuration
+# codemagic.yaml - Working Configuration
 workflows:
   android-build:
-    name: ClashBerry Android
+    name: ClashBerry Android Build
     environment:
       groups:
         - android_sdk_license
-        #- keystore_credentials  # Uncomment for release signing
       vars:
         ANDROID_SDK_ROOT: "/usr/local/lib/android/sdk"
+        PATH: "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$PATH"
         GRADLE_OPTS: "-Dorg.gradle.daemon=false -Xmx2048m"
 
-    # Corrected triggering syntax
     triggering:
       events:
         - push
@@ -19,12 +18,19 @@ workflows:
           include: true
 
     scripts:
-      - name: Setup Android SDK
+      - name: Verify Android Tools
         script: |
-          export PATH="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$PATH"
-          sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+          echo "Android SDK Path: $ANDROID_SDK_ROOT"
+          ls -la $ANDROID_SDK_ROOT/cmdline-tools
+          which sdkmanager || echo "sdkmanager not found"
 
-      - name: Build Debug APK
+      - name: Accept Licenses (Alternative Method)
+        script: |
+          mkdir -p "$ANDROID_SDK_ROOT/licenses"
+          echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" > "$ANDROID_SDK_ROOT/licenses/android-sdk-license"
+          echo "84831b9409646a918e30573bab4c9c91346d8abd" > "$ANDROID_SDK_ROOT/licenses/android-sdk-preview-license"
+
+      - name: Build APK
         script: |
           cd ./ClashBerry
           ./gradlew assembleDebug --stacktrace
