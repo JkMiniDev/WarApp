@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- Exclude all files in the cache directories -->
+    <exclude domain="cache" />
+    <!-- Include/exclude any specific files or directories as needed -->
+</full-backup-content>
