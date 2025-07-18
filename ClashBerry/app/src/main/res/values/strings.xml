@@ -33,4 +33,35 @@
     <string name="cwl_round">CWL Round %d</string>
     <string name="time_remaining">%s remaining</string>
     <string name="refresh">Refresh</string>
+    
+    <!-- New strings for redesigned app -->
+    <string name="home">Home</string>
+    <string name="bookmarks">Bookmarks</string>
+    <string name="theme">Theme</string>
+    <string name="update">Update</string>
+    <string name="notifications">Always on Notification</string>
+    <string name="social_links">Social Links</string>
+    <string name="github">GitHub</string>
+    <string name="discord">Discord</string>
+    <string name="patreon">Patreon</string>
+    <string name="dark_theme">Dark</string>
+    <string name="light_theme">Light</string>
+    <string name="system_default">System Default</string>
+    <string name="no_clans_in_war">No clans in war</string>
+    <string name="bookmark_clan">Bookmark Clan</string>
+    <string name="remove_bookmark">Remove Bookmark</string>
+    <string name="clan_bookmarked">Clan bookmarked successfully</string>
+    <string name="clan_removed">Clan removed from bookmarks</string>
+    <string name="notification_enabled">Notifications enabled</string>
+    <string name="notification_disabled">Notifications disabled</string>
+    <string name="members_count">Members: %d/50</string>
+    <string name="clan_points">Clan Points: %d</string>
+    <string name="developed_by">Developed by Jk</string>
+    <string name="loading_data">Loading data…</string>
+    <string name="switch_clan">Switch Clan</string>
+    <string name="update_available">Update Available</string>
+    <string name="no_update_available">No updates available</string>
+    <string name="search_clans">Search Clans</string>
+    <string name="clan_search_results">Clan Search Results</string>
+    <string name="no_bookmarked_clans">Here you will see ongoing clan wars of all your bookmarked clans and players that have a public war log.</string>
 </resources>
