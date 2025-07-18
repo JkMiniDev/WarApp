@@ -71,7 +71,10 @@
             android:id="@+id/homeContent"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fillViewport="true">
+            android:fillViewport="true"
+            android:scrollbars="none"
+            android:smoothScrollingEnabled="true"
+            android:overScrollMode="never">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -189,7 +192,10 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fillViewport="true"
-            android:visibility="gone">
+            android:visibility="gone"
+            android:scrollbars="none"
+            android:smoothScrollingEnabled="true"
+            android:overScrollMode="never">
 
             <LinearLayout
                 android:layout_width="match_parent"

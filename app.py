@@ -18,13 +18,11 @@ HEADERS = {
     'Accept': 'application/json'
 }
 
-def get_th_emoji(level):
-    """Get emoji for townhall level"""
-    th_emojis = {
-        1: "🏠", 2: "🏡", 3: "🏘️", 4: "🏢", 5: "🏥", 6: "🏰", 7: "🕌", 8: "🏯",
-        9: "🛕", 10: "🏛️", 11: "🗼", 12: "🏟️", 13: "🗽", 14: "🗿", 15: "🏺", 16: "🔧", 17: "🔨"
-    }
-    return th_emojis.get(level, "🏠")
+def get_th_image_url(level):
+    """Get PNG image URL for townhall level"""
+    # Base URL for townhall images - you can host these images or use existing ones
+    base_url = "https://cdn.clashofstats.com/images/townhalls"
+    return f"{base_url}/th{level}.png"
 
 def format_clan_tag(tag):
     """Format clan tag to ensure it starts with #"""
@@ -206,7 +204,7 @@ def process_clan_data(clan_raw):
             'tag': member.get('tag'),
             'name': member.get('name'),
             'townhallLevel': member.get('townhallLevel'),
-            'thEmoji': get_th_emoji(member.get('townhallLevel')),
+            'thImageUrl': get_th_image_url(member.get('townhallLevel')),
             'mapPosition': member.get('mapPosition'),
             'attacks': attacks,
             'attacksUsed': attacks_used,
