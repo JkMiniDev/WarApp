@@ -1,0 +1,22 @@
+# codemagic.yaml
+workflows:
+  android-clashberry:
+    name: ClashBerry Android Build
+    environment:
+      groups:
+        - android_sdk_license # Add SDK license group if needed
+    scripts:
+      - name: Set up Android SDK
+        script: |
+          yes | sdkmanager --licenses
+          sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.0"
+      - name: Build APK
+        script: |
+          cd ./ClashBerry
+          ./gradlew assembleDebug
+    artifacts:
+      - ./ClashBerry/app/build/outputs/**/*.apk
+    publishing:
+      email:
+        recipients:
+          - jktipra@gmail.com
