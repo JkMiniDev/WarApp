@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ClashBerry</string>
+    <string name="app_subtitle">War Search</string>
+    <string name="search_hint">Enter clan tag (e.g., #2Q82LRL)</string>
+    <string name="search_war">Search War</string>
+    <string name="loading">Loading war data…</string>
+    <string name="error_title">Error</string>
+    <string name="private_war_log">Private War Log</string>
+    <string name="private_war_log_message">This clan has a private war log. War information is not publicly available.</string>
+    <string name="not_in_war">Not in War</string>
+    <string name="not_in_war_message">This clan is not currently in a war.</string>
+    <string name="clan_not_found">Clan not found. Please check the clan tag.</string>
+    <string name="network_error">Failed to fetch war data. Please try again.</string>
+    <string name="preparation">Preparation</string>
+    <string name="battle_day">Battle Day</string>
+    <string name="war_ended">War Ended</string>
+    <string name="unknown">Unknown</string>
+    <string name="overview">Overview</string>
+    <string name="attacks">Attacks</string>
+    <string name="defenses">Defenses</string>
+    <string name="roster">Roster</string>
+    <string name="stars">Stars</string>
+    <string name="destruction">Destruction</string>
+    <string name="attacks_used">Attacks</string>
+    <string name="war_overview">War Overview</string>
+    <string name="team_composition">Team Composition</string>
+    <string name="remaining_attacks">Remaining Attacks</string>
+    <string name="no_attacks_yet">No attacks yet</string>
+    <string name="no_defenses_yet">No defenses recorded yet</string>
+    <string name="defended_by">Defended by:</string>
+    <string name="retry">Retry</string>
+    <string name="cwl_round">CWL Round %d</string>
+    <string name="time_remaining">%s remaining</string>
+    <string name="refresh">Refresh</string>
+</resources>

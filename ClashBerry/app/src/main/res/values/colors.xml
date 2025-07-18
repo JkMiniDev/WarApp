@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="accent_color">#FF00FF88</color>
+    <color name="accent_color_dark">#FF00CC66</color>
+    <color name="error_color">#FFFF4757</color>
+    <color name="warning_color">#FFEB5406</color>
+    <color name="text_color">#FFFFFFFF</color>
+    <color name="text_color_secondary">#CCFFFFFF</color>
+    <color name="background_primary">#FF000000</color>
+    <color name="background_secondary">#0DFFFFFF</color>
+    <color name="background_tertiary">#08FFFFFF</color>
+    <color name="border_color">#1AFFFFFF</color>
+    <color name="star_color">#FFFFD700</color>
+    <color name="preparation_color">#FFFFA500</color>
+    <color name="in_war_color">#FF00FF88</color>
+    <color name="war_ended_color">#FFFF4757</color>
+    <color name="ripple_color">#33FFFFFF</color>
+</resources>
