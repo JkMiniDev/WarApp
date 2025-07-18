@@ -1,53 +1,38 @@
-# codemagic.yaml - Android Build Configuration
+# codemagic.yaml - Valid Android Build Configuration
 workflows:
   android-build:
     name: ClashBerry Android
     environment:
-      # Codemagic's default Android environment
       groups:
-        - android_sdk_license  # Pre-accepted licenses
-        #- keystore_credentials  # Uncomment if signing releases
+        - android_sdk_license
+        #- keystore_credentials  # Uncomment for release signing
       vars:
-        ANDROID_SDK_ROOT: "/usr/local/lib/android/sdk"  # Standard Codemagic path
-        GRADLE_OPTS: "-Dorg.gradle.daemon=false -Xmx2048m"  # Memory settings
+        ANDROID_SDK_ROOT: "/usr/local/lib/android/sdk"
+        GRADLE_OPTS: "-Dorg.gradle.daemon=false -Xmx2048m"
 
-    # Build triggers (adjust as needed)
+    # Corrected triggering syntax
     triggering:
       events:
         - push
       branch_patterns:
         - pattern: main
           include: true
-          build_on: commit
 
     scripts:
-      # Android environment setup (Codemagic handles most automatically)
       - name: Setup Android SDK
         script: |
           export PATH="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$PATH"
-          sdkmanager --update
           sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
-      # Main build
       - name: Build Debug APK
         script: |
           cd ./ClashBerry
-          ./gradlew assembleDebug --stacktrace --info
-
-      # Uncomment for release builds
-      #- name: Build Release APK
-      #  script: |
-      #    cd ./ClashBerry
-      #    ./gradlew assembleRelease
+          ./gradlew assembleDebug --stacktrace
 
     artifacts:
       - ./ClashBerry/app/build/outputs/apk/debug/*.apk
-      #- ./ClashBerry/app/build/outputs/apk/release/*.apk  # For release builds
 
     publishing:
       email:
         recipients:
           - jktipra@gmail.com
-      # slack:  # Uncomment to add Slack notifications
-      #   channel: '#build-notifications'
-      #   notify_on_build_start: true
