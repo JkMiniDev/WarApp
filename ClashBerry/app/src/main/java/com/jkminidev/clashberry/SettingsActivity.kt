@@ -119,8 +119,7 @@ class SettingsActivity : AppCompatActivity() {
     private fun loadAppVersion() {
         try {
             val packageInfo = packageManager.getPackageInfo(packageName, 0)
-            val version = "${packageInfo.versionName} (${packageInfo.versionCode})"
-            binding.appVersion.text = "Version $version"
+            binding.appVersion.text = "Version ${packageInfo.versionName}"
         } catch (e: Exception) {
             binding.appVersion.text = "Version 1.0"
         }
