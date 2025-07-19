@@ -31,6 +31,32 @@
     <string name="discord">Discord</string>
     <string name="patreon">Patreon</string>
     
+    <!-- All missing strings from compilation errors -->
+    <string name="clan_bookmarked">Clan bookmarked successfully</string>
+    <string name="no_update_available">No update available</string>
+    <string name="notification_enabled">Notifications enabled</string>
+    <string name="notification_disabled">Notifications disabled</string>
+    <string name="preparation">Preparation</string>
+    <string name="battle_day">Battle Day</string>
+    <string name="war_ended">War Ended</string>
+    <string name="members_count">Members</string>
+    <string name="clan_points">Clan Points</string>
+    <string name="clan_removed">Clan removed from bookmarks</string>
+    <string name="no_attacks_yet">No attacks yet</string>
+    <string name="unknown">Unknown</string>
+    <string name="cwl_round">CWL Round</string>
+    <string name="overview">Overview</string>
+    <string name="attacks">Attacks</string>
+    <string name="defenses">Defenses</string>
+    <string name="roster">Roster</string>
+    <string name="war_overview">War Overview</string>
+    <string name="private_war_log">Private War Log</string>
+    <string name="private_war_log_message">This clan\'s war log is private</string>
+    <string name="not_in_war">Not in War</string>
+    <string name="not_in_war_message">This clan is not currently in war</string>
+    <string name="error_title">Error</string>
+    <string name="network_error">Network error occurred</string>
+    
     <!-- Additional useful strings -->
     <string name="search">Search</string>
     <string name="back">Back</string>

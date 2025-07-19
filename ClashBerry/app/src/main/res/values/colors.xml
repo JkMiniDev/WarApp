@@ -24,13 +24,12 @@
     <color name="error_color">#F44336</color>
     
     <!-- Light Theme Colors -->
-    <color name="light_background_primary">#FFFFFF</color>
-    <color name="light_background_secondary">#F5F5F5</color>
-    <color name="light_text_color">#212121</color>
-    <color name="light_text_color_secondary">#757575</color>
-    <color name="light_accent_color">#4CAF50</color>
-    <color name="light_border_color">#E0E0E0</color>
-    <color name="light_error_color">#F44336</color>
+    <color name="background_primary_light">#FFFFFF</color>
+    <color name="background_secondary_light">#F5F5F5</color>
+    <color name="background_tertiary_light">#EEEEEE</color>
+    <color name="text_color_light">#000000</color>
+    <color name="text_color_secondary_light">#666666</color>
+    <color name="border_color_light">#CCCCCC</color>
     
     <!-- Status Colors -->
     <color name="war_active">#FF9800</color>
@@ -38,4 +37,14 @@
     <color name="war_ended">#9E9E9E</color>
     <color name="no_war">#607D8B</color>
     <color name="star_color">#FFD700</color>
+    
+    <!-- War Status Colors (missing from compilation errors) -->
+    <color name="preparation_color">#2196F3</color>
+    <color name="in_war_color">#FF9800</color>
+    <color name="war_ended_color">#9E9E9E</color>
+    
+    <!-- Additional Colors -->
+    <color name="success_color">#4CAF50</color>
+    <color name="warning_color">#FF9800</color>
+    <color name="info_color">#2196F3</color>
 </resources>

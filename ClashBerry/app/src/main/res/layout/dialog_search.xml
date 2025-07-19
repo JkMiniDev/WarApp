@@ -43,7 +43,6 @@
         android:layout_height="wrap_content"
         android:maxHeight="300dp"
         android:scrollbars="none"
-        android:smoothScrollingEnabled="true"
         android:overScrollMode="never" />
 
     <!-- Loading Indicator -->
