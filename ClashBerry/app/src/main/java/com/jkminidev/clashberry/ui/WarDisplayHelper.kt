@@ -79,6 +79,8 @@ class WarDisplayHelper(private val context: Context) {
         var statusDisplay = statusText
         if (warData.timeRemaining != null && warData.timeLabel != null) {
             statusDisplay += " • ${warData.timeRemaining} ${warData.timeLabel}"
+        } else if (warData.state == "warEnded") {
+            statusDisplay += " • 00:00"
         }
         if (warData.warType == "cwl" && warData.cwlRound != null) {
             statusDisplay += " • ${context.getString(R.string.cwl_round, warData.cwlRound)}"
