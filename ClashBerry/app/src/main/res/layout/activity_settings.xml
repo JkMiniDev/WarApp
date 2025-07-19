@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/background_primary">
+    android:background="?android:attr/colorBackground">
 
     <!-- Toolbar -->
     <androidx.appcompat.widget.Toolbar
@@ -51,7 +51,7 @@
                     android:layout_marginStart="16dp"
                     android:text="@string/theme"
                     android:textSize="16sp"
-                    android:textColor="@color/text_color" />
+                    android:textColor="?android:attr/textColorPrimary" />
 
             </LinearLayout>
 
@@ -78,7 +78,7 @@
                     android:layout_marginStart="16dp"
                     android:text="@string/update"
                     android:textSize="16sp"
-                    android:textColor="@color/text_color" />
+                    android:textColor="?android:attr/textColorPrimary" />
 
             </LinearLayout>
 
@@ -105,7 +105,7 @@
                     android:layout_marginStart="16dp"
                     android:text="@string/notifications"
                     android:textSize="16sp"
-                    android:textColor="@color/text_color" />
+                    android:textColor="?android:attr/textColorPrimary" />
 
             </LinearLayout>
 
@@ -167,7 +167,7 @@
              android:layout_height="wrap_content"
              android:text="Version 1.0"
              android:textSize="12sp"
-             android:textColor="@color/text_color_secondary"
+                           android:textColor="?android:attr/textColorSecondary"
              android:gravity="center" />
 
      </LinearLayout>

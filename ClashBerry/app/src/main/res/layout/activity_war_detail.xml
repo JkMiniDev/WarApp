@@ -4,18 +4,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/background_primary">
+    android:background="?android:attr/colorBackground">
 
     <!-- Top App Bar -->
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/background_secondary"
+        android:background="@color/transparent"
         app:title="War Details"
-        app:titleTextColor="@color/text_color"
+        app:titleTextColor="?android:attr/textColorPrimary"
         app:navigationIcon="@drawable/ic_back"
-        app:navigationIconTint="@color/text_color" />
+        app:navigationIconTint="?android:attr/textColorPrimary" />
 
     <!-- War Content Container -->
     <ScrollView
