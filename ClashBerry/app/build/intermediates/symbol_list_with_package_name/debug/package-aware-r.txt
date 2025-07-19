@@ -3405,6 +3405,8 @@ id end
 id endToStart
 id enterAlways
 id enterAlwaysCollapsed
+id errorLayout
+id errorText
 id etSearchTag
 id exitUntilCollapsed
 id expand_activities_button
@@ -3487,6 +3489,7 @@ id line3
 id linear
 id listMode
 id list_item
+id loadingLayout
 id locale
 id ltr
 id m3_side_sheet
@@ -3615,7 +3618,6 @@ id preferences_detail
 id preferences_header
 id preferences_sliding_pane_layout
 id pressed
-id progressBar
 id progress_circular
 id progress_horizontal
 id radio
@@ -3623,6 +3625,7 @@ id ratio
 id rectangles
 id recycler_view
 id report_drawn
+id retryButton
 id reverseSawtooth
 id right
 id rightToLeft
@@ -3641,6 +3644,9 @@ id scrollIndicatorDown
 id scrollIndicatorUp
 id scrollView
 id scrollable
+id searchButton
+id searchEditText
+id searchInputLayout
 id searchLoadingLayout
 id searchResultsRecyclerView
 id search_badge
@@ -3700,6 +3706,7 @@ id stretch
 id submenuarrow
 id submit_area
 id supportScrollUp
+id swipeRefreshLayout
 id switchWidget
 id tabLayout
 id tabMode
@@ -3924,6 +3931,7 @@ layout abc_search_view
 layout abc_select_dialog_material
 layout abc_tooltip
 layout activity_main
+layout activity_search
 layout activity_splash
 layout activity_war_detail
 layout custom_dialog
@@ -4092,6 +4100,7 @@ string clan_removed
 string clan_search_results
 string clear_text_end_icon_content_description
 string copy
+string current_war
 string cwl_round
 string defended_by
 string defenses

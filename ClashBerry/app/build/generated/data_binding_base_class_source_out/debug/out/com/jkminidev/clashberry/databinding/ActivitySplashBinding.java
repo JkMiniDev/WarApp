@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,21 +24,12 @@ public final class ActivitySplashBinding implements ViewBinding {
   public final ImageView ivAppIcon;
 
   @NonNull
-  public final ProgressBar progressBar;
-
-  @NonNull
-  public final TextView tvAppName;
-
-  @NonNull
   public final TextView tvDeveloperCredit;
 
   private ActivitySplashBinding(@NonNull ConstraintLayout rootView, @NonNull ImageView ivAppIcon,
-      @NonNull ProgressBar progressBar, @NonNull TextView tvAppName,
       @NonNull TextView tvDeveloperCredit) {
     this.rootView = rootView;
     this.ivAppIcon = ivAppIcon;
-    this.progressBar = progressBar;
-    this.tvAppName = tvAppName;
     this.tvDeveloperCredit = tvDeveloperCredit;
   }
 
@@ -76,26 +66,13 @@ public final class ActivitySplashBinding implements ViewBinding {
         break missingId;
       }
 
-      id = R.id.progressBar;
-      ProgressBar progressBar = ViewBindings.findChildViewById(rootView, id);
-      if (progressBar == null) {
-        break missingId;
-      }
-
-      id = R.id.tvAppName;
-      TextView tvAppName = ViewBindings.findChildViewById(rootView, id);
-      if (tvAppName == null) {
-        break missingId;
-      }
-
       id = R.id.tvDeveloperCredit;
       TextView tvDeveloperCredit = ViewBindings.findChildViewById(rootView, id);
       if (tvDeveloperCredit == null) {
         break missingId;
       }
 
-      return new ActivitySplashBinding((ConstraintLayout) rootView, ivAppIcon, progressBar,
-          tvAppName, tvDeveloperCredit);
+      return new ActivitySplashBinding((ConstraintLayout) rootView, ivAppIcon, tvDeveloperCredit);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

@@ -51,6 +51,10 @@
             android:name="com.jkminidev.clashberry.WarDetailActivity"
             android:exported="false"
             android:theme="@style/Theme.ClashBerry" />
+        <activity
+            android:name="com.jkminidev.clashberry.SearchActivity"
+            android:exported="false"
+            android:theme="@style/Theme.ClashBerry" />
 
         <provider
             android:name="androidx.startup.InitializationProvider"

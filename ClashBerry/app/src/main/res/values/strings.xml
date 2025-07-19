@@ -64,4 +64,7 @@
     <string name="retry">Retry</string>
     <string name="cancel">Cancel</string>
     <string name="ok">OK</string>
+    
+    <!-- Top bar titles -->
+    <string name="current_war">Current War</string>
 </resources>

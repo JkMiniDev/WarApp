@@ -80,7 +80,9 @@ class MainActivity : AppCompatActivity() {
     
     private fun setupTopBar() {
         binding.ivSearch.setOnClickListener {
-            showSearchDialog()
+            // Launch full screen search activity
+            val intent = Intent(this, SearchActivity::class.java)
+            startActivity(intent)
         }
         
         binding.ivMenu.setOnClickListener { view ->
@@ -114,6 +116,9 @@ class MainActivity : AppCompatActivity() {
                 binding.homeContent.visibility = View.VISIBLE
                 binding.bookmarksContent.visibility = View.GONE
                 
+                // Update top bar title
+                binding.tvAppName.text = getString(R.string.current_war)
+                
                 // Update tab colors
                 binding.homeIcon.setColorFilter(ContextCompat.getColor(this, R.color.accent_color))
                 binding.homeText.setTextColor(ContextCompat.getColor(this, R.color.accent_color))
@@ -123,6 +128,9 @@ class MainActivity : AppCompatActivity() {
             "bookmarks" -> {
                 binding.homeContent.visibility = View.GONE
                 binding.bookmarksContent.visibility = View.VISIBLE
+                
+                // Update top bar title
+                binding.tvAppName.text = getString(R.string.bookmarks)
                 
                 // Update tab colors
                 binding.homeIcon.setColorFilter(ContextCompat.getColor(this, R.color.text_color_secondary))

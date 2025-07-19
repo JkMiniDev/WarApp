@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background_primary">
+
+    <!-- Top Search Bar -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/background_secondary"
+        app:navigationIcon="@drawable/ic_back"
+        app:navigationIconTint="@color/text_color">
+
+        <!-- Search Input Layout -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/searchInputLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            app:boxStrokeWidth="0dp"
+            app:boxStrokeWidthFocused="0dp"
+            app:boxBackgroundMode="none"
+            app:hintEnabled="false">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/searchEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/search_hint"
+                android:textColor="@color/text_color"
+                android:textColorHint="@color/text_color_secondary"
+                android:background="@android:color/transparent"
+                android:inputType="text"
+                android:imeOptions="actionSearch"
+                android:maxLines="1" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Search Button -->
+        <ImageButton
+            android:id="@+id/searchButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/ic_search"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/search"
+            app:tint="@color/accent_color" />
+
+    </com.google.android.material.appbar.MaterialToolbar>
+
+    <!-- Content Area -->
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- Loading State -->
+                <LinearLayout
+                    android:id="@+id/loadingLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:visibility="gone"
+                    android:padding="32dp">
+
+                    <ProgressBar
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:indeterminateTint="@color/accent_color" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="@string/loading_data"
+                        android:textColor="@color/text_color_secondary"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+                <!-- Error State -->
+                <LinearLayout
+                    android:id="@+id/errorLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:visibility="gone"
+                    android:padding="32dp">
+
+                    <TextView
+                        android:id="@+id/errorText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/server_down"
+                        android:textColor="@color/error_color"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <Button
+                        android:id="@+id/retryButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="@string/retry"
+                        android:backgroundTint="@color/accent_color" />
+
+                </LinearLayout>
+
+                <!-- Search Results -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/searchResultsRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+
+        </ScrollView>
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+</LinearLayout>

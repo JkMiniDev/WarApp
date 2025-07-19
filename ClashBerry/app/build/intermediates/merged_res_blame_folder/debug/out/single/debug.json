@@ -4,8 +4,8 @@
         "source": "/home/ubuntu/.gradle/daemon/8.4/com.jkminidev.clashberry.app-main-62:/drawable/ic_bookmark_border.xml"
     },
     {
-        "merged": "com.jkminidev.clashberry.app-merged_res-60:/drawable_ic_back.xml.flat",
-        "source": "com.jkminidev.clashberry.app-main-62:/drawable/ic_back.xml"
+        "merged": "com.jkminidev.clashberry.app-merged_res-60:/layout_activity_search.xml.flat",
+        "source": "com.jkminidev.clashberry.app-main-62:/layout/activity_search.xml"
     },
     {
         "merged": "/home/ubuntu/.gradle/daemon/8.4/com.jkminidev.clashberry.app-merged_res-60:/mipmap_ic_launcher.png.flat",
@@ -64,6 +64,10 @@
         "source": "/home/ubuntu/.gradle/daemon/8.4/com.jkminidev.clashberry.app-main-62:/layout/activity_war_detail.xml"
     },
     {
+        "merged": "com.jkminidev.clashberry.app-merged_res-60:/layout_activity_splash.xml.flat",
+        "source": "com.jkminidev.clashberry.app-main-62:/layout/activity_splash.xml"
+    },
+    {
         "merged": "/home/ubuntu/.gradle/daemon/8.4/com.jkminidev.clashberry.app-merged_res-60:/drawable_ic_discord.xml.flat",
         "source": "/home/ubuntu/.gradle/daemon/8.4/com.jkminidev.clashberry.app-main-62:/drawable/ic_discord.xml"
     },
@@ -110,6 +114,10 @@
     {
         "merged": "/home/ubuntu/.gradle/daemon/8.4/com.jkminidev.clashberry.app-merged_res-60:/menu_main_menu.xml.flat",
         "source": "/home/ubuntu/.gradle/daemon/8.4/com.jkminidev.clashberry.app-main-62:/menu/main_menu.xml"
+    },
+    {
+        "merged": "/home/ubuntu/.gradle/daemon/8.4/com.jkminidev.clashberry.app-merged_res-60:/drawable_ic_back.xml.flat",
+        "source": "/home/ubuntu/.gradle/daemon/8.4/com.jkminidev.clashberry.app-main-62:/drawable/ic_back.xml"
     },
     {
         "merged": "/home/ubuntu/.gradle/daemon/8.4/com.jkminidev.clashberry.app-merged_res-60:/drawable_ic_bookmark.xml.flat",

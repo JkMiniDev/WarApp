@@ -4,6 +4,10 @@
         "source": "/home/ubuntu/.gradle/daemon/8.4/com.jkminidev.clashberry.app-main-62:/layout/war_card.xml"
     },
     {
+        "merged": "com.jkminidev.clashberry.app-mergeDebugResources-59:/layout/activity_splash.xml",
+        "source": "com.jkminidev.clashberry.app-main-62:/layout/activity_splash.xml"
+    },
+    {
         "merged": "/home/ubuntu/.gradle/daemon/8.4/com.jkminidev.clashberry.app-mergeDebugResources-59:/layout/item_war_card.xml",
         "source": "/home/ubuntu/.gradle/daemon/8.4/com.jkminidev.clashberry.app-main-62:/layout/item_war_card.xml"
     },
@@ -12,8 +16,8 @@
         "source": "/home/ubuntu/.gradle/daemon/8.4/com.jkminidev.clashberry.app-main-62:/layout/activity_main.xml"
     },
     {
-        "merged": "com.jkminidev.clashberry.app-mergeDebugResources-59:/layout/activity_war_detail.xml",
-        "source": "com.jkminidev.clashberry.app-main-62:/layout/activity_war_detail.xml"
+        "merged": "/home/ubuntu/.gradle/daemon/8.4/com.jkminidev.clashberry.app-mergeDebugResources-59:/layout/activity_war_detail.xml",
+        "source": "/home/ubuntu/.gradle/daemon/8.4/com.jkminidev.clashberry.app-main-62:/layout/activity_war_detail.xml"
     },
     {
         "merged": "/home/ubuntu/.gradle/daemon/8.4/com.jkminidev.clashberry.app-mergeDebugResources-59:/layout/item_member.xml",
@@ -22,6 +26,10 @@
     {
         "merged": "/home/ubuntu/.gradle/daemon/8.4/com.jkminidev.clashberry.app-mergeDebugResources-59:/layout/activity_splash.xml",
         "source": "/home/ubuntu/.gradle/daemon/8.4/com.jkminidev.clashberry.app-main-62:/layout/activity_splash.xml"
+    },
+    {
+        "merged": "com.jkminidev.clashberry.app-mergeDebugResources-59:/layout/activity_search.xml",
+        "source": "com.jkminidev.clashberry.app-main-62:/layout/activity_search.xml"
     },
     {
         "merged": "/home/ubuntu/.gradle/daemon/8.4/com.jkminidev.clashberry.app-mergeDebugResources-59:/layout/item_clan_search.xml",
