@@ -22,7 +22,7 @@ class SearchActivity : AppCompatActivity() {
     
     private fun setupUI() {
         // Set up back button
-        binding.toolbar.setNavigationOnClickListener {
+        binding.backButton.setOnClickListener {
             finish()
         }
         
@@ -74,11 +74,23 @@ class SearchActivity : AppCompatActivity() {
         // TODO: Implement actual search logic
         // For now, simulate search with delay
         binding.searchEditText.postDelayed({
-            // Simulate search results or error
-            if (query.startsWith("#")) {
-                showSearchResults()
-            } else {
-                showErrorState("Invalid Clan not found")
+            // Simulate different scenarios based on input
+            when {
+                query.isEmpty() -> {
+                    showErrorState("Please enter a clan tag")
+                }
+                !query.startsWith("#") -> {
+                    showErrorState("Invalid Clan not found")
+                }
+                query.length < 4 -> {
+                    showErrorState("Invalid Clan not found") 
+                }
+                query.contains("server") -> {
+                    showErrorState("Server Down")
+                }
+                else -> {
+                    showSearchResults()
+                }
             }
         }, 1500)
     }
