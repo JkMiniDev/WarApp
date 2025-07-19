@@ -73,7 +73,6 @@
             android:layout_height="match_parent"
             android:fillViewport="true"
             android:scrollbars="none"
-            android:smoothScrollingEnabled="true"
             android:overScrollMode="never">
 
             <LinearLayout
@@ -194,7 +193,6 @@
             android:fillViewport="true"
             android:visibility="gone"
             android:scrollbars="none"
-            android:smoothScrollingEnabled="true"
             android:overScrollMode="never">
 
             <LinearLayout
