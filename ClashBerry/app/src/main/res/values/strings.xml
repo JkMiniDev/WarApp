@@ -30,6 +30,7 @@
     <string name="github">GitHub</string>
     <string name="discord">Discord</string>
     <string name="patreon">Patreon</string>
+    <string name="refresh">Refresh</string>
     
     <!-- All missing strings from compilation errors -->
     <string name="clan_bookmarked">Clan bookmarked successfully</string>

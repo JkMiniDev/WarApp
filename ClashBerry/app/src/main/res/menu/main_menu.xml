@@ -2,35 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     
     <item
-        android:id="@+id/menu_theme"
-        android:title="@string/theme"
-        android:icon="@drawable/ic_palette" />
+        android:id="@+id/menu_refresh"
+        android:title="@string/refresh"
+        android:icon="@drawable/ic_refresh" />
     
     <item
-        android:id="@+id/menu_update"
-        android:title="@string/update"
-        android:icon="@drawable/ic_update" />
-    
-    <item
-        android:id="@+id/menu_notifications"
-        android:title="@string/notifications"
-        android:icon="@drawable/ic_notifications" />
-    
-    <group android:id="@+id/social_links_group">
-        <item
-            android:id="@+id/menu_github"
-            android:title="@string/github"
-            android:icon="@drawable/ic_github" />
-        
-        <item
-            android:id="@+id/menu_discord"
-            android:title="@string/discord"
-            android:icon="@drawable/ic_discord" />
-        
-        <item
-            android:id="@+id/menu_patreon"
-            android:title="@string/patreon"
-            android:icon="@drawable/ic_patreon" />
-    </group>
+        android:id="@+id/menu_settings"
+        android:title="@string/settings"
+        android:icon="@drawable/ic_settings" />
     
 </menu>

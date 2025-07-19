@@ -253,28 +253,12 @@ class MainActivity : AppCompatActivity() {
         
         popup.setOnMenuItemClickListener { item ->
             when (item.itemId) {
-                R.id.menu_theme -> {
-                    showThemeDialog()
+                R.id.menu_refresh -> {
+                    refreshData()
                     true
                 }
-                R.id.menu_update -> {
-                    checkForUpdates()
-                    true
-                }
-                R.id.menu_notifications -> {
-                    toggleNotifications()
-                    true
-                }
-                R.id.menu_github -> {
-                    openUrl("https://github.com") // Update with your GitHub link
-                    true
-                }
-                R.id.menu_discord -> {
-                    openUrl("https://discord.com") // Update with your Discord link
-                    true
-                }
-                R.id.menu_patreon -> {
-                    openUrl("https://patreon.com") // Update with your Patreon link
+                R.id.menu_settings -> {
+                    openSettings()
                     true
                 }
                 else -> false
@@ -284,57 +268,15 @@ class MainActivity : AppCompatActivity() {
         popup.show()
     }
     
-    private fun showThemeDialog() {
-        val themes = arrayOf("Dark", "Light", "System Default")
-        val currentTheme = preferences.getInt("theme", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-        val selectedIndex = when (currentTheme) {
-            AppCompatDelegate.MODE_NIGHT_YES -> 0
-            AppCompatDelegate.MODE_NIGHT_NO -> 1
-            else -> 2
-        }
-        
-        androidx.appcompat.app.AlertDialog.Builder(this)
-            .setTitle("Theme")
-            .setSingleChoiceItems(themes, selectedIndex) { dialog, which ->
-                val newTheme = when (which) {
-                    0 -> AppCompatDelegate.MODE_NIGHT_YES
-                    1 -> AppCompatDelegate.MODE_NIGHT_NO
-                    else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-                }
-                
-                preferences.edit().putInt("theme", newTheme).apply()
-                AppCompatDelegate.setDefaultNightMode(newTheme)
-                dialog.dismiss()
-            }
-            .show()
+    private fun refreshData() {
+        // Refresh the data by reloading war data and bookmarked clans
+        loadBookmarkedClans()
+        loadWarData()
+        Toast.makeText(this, "Data refreshed", Toast.LENGTH_SHORT).show()
     }
     
-    private fun checkForUpdates() {
-        // Implement update checking logic
-        Toast.makeText(this, getString(R.string.no_update_available), Toast.LENGTH_SHORT).show()
-    }
-    
-    private fun toggleNotifications() {
-        val notificationsEnabled = preferences.getBoolean("notifications_enabled", false)
-        val newState = !notificationsEnabled
-        preferences.edit().putBoolean("notifications_enabled", newState).apply()
-        
-        val message = if (newState) {
-            getString(R.string.notification_enabled)
-        } else {
-            getString(R.string.notification_disabled)
-        }
-        
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-        
-        if (newState) {
-            // Start notification service
-            // TODO: Implement notification worker
-        }
-    }
-    
-    private fun openUrl(url: String) {
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+    private fun openSettings() {
+        val intent = Intent(this, SettingsActivity::class.java)
         startActivity(intent)
     }
     

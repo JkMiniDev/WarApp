@@ -37,6 +37,12 @@
             android:name=".WarDetailActivity"
             android:exported="false"
             android:theme="@style/Theme.ClashBerry" />
+            
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.ClashBerry"
+            android:parentActivityName=".MainActivity" />
     </application>
 
 </manifest>
