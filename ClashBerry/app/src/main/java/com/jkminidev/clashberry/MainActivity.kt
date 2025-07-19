@@ -42,17 +42,17 @@ class MainActivity : AppCompatActivity() {
     private lateinit var warCardsAdapter: WarCardsAdapter
     
     override fun onCreate(savedInstanceState: Bundle?) {
+        preferences = getSharedPreferences("clashberry_prefs", Context.MODE_PRIVATE)
+        applyTheme()
+        
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        
-        preferences = getSharedPreferences("clashberry_prefs", Context.MODE_PRIVATE)
         
         setupUI()
         loadBookmarkedClans()
         loadWarData()
         displayBookmarkedClans()
-        applyTheme()
     }
     
     private fun setupUI() {
