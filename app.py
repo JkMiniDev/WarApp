@@ -20,8 +20,11 @@ HEADERS = {
 
 def get_th_image_url(level):
     """Get PNG image URL for townhall level"""
-    # Base URL for townhall images - you can host these images or use existing ones
-    base_url = "https://cdn.clashofstats.com/images/townhalls"
+    # Example URLs for townhall images - replace with your actual image URLs
+    base_url = "https://example.com/townhalls"
+    # Ensure level is within valid range (1-17)
+    if level < 1 or level > 17:
+        level = 1
     return f"{base_url}/th{level}.png"
 
 def format_clan_tag(tag):
