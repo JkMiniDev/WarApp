@@ -1,5 +1,6 @@
 package com.jkminidev.clashberry
 
+import android.content.Context
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -12,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.jkminidev.clashberry.data.BookmarkedClan
 import com.jkminidev.clashberry.data.ClanBasicInfo
 import com.jkminidev.clashberry.databinding.ActivitySearchBinding
@@ -26,6 +28,7 @@ class SearchActivity : AppCompatActivity() {
     private val apiService = NetworkModule.apiService
     private val gson = Gson()
     private lateinit var searchAdapter: ClanSearchAdapter
+    private val bookmarkedClans = mutableListOf<BookmarkedClan>()
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +37,7 @@ class SearchActivity : AppCompatActivity() {
         
         setupUI()
         setupSearchFunctionality()
+        loadBookmarkedClans()
     }
     
     private fun setupUI() {
@@ -142,18 +146,39 @@ class SearchActivity : AppCompatActivity() {
     }
     
     private fun onSearchResultClicked(clan: ClanBasicInfo) {
-        // Add to bookmarks and finish
+        // Add to bookmarks exactly like the original
         val bookmarkedClan = BookmarkedClan(
             tag = clan.tag,
             name = clan.name,
             badge = clan.badge,
             level = clan.level,
             members = clan.members,
-            clanPoints = 0
+            clanPoints = 0 // We'll update this when we get war data
         )
         
-        Toast.makeText(this, "Clan bookmarked successfully", Toast.LENGTH_SHORT).show()
-        finish()
+        if (!bookmarkedClans.any { it.tag == clan.tag }) {
+            bookmarkedClans.add(bookmarkedClan)
+            saveBookmarkedClans()
+            Toast.makeText(this, getString(R.string.clan_bookmarked), Toast.LENGTH_SHORT).show()
+            finish()
+        } else {
+            Toast.makeText(this, "Clan already bookmarked", Toast.LENGTH_SHORT).show()
+        }
+    }
+    
+    private fun loadBookmarkedClans() {
+        val prefs = getSharedPreferences("clashberry_prefs", Context.MODE_PRIVATE)
+        val bookmarkedJson = prefs.getString("bookmarked_clans", "[]")
+        val type = object : TypeToken<List<BookmarkedClan>>() {}.type
+        val savedClans: List<BookmarkedClan> = gson.fromJson(bookmarkedJson, type)
+        bookmarkedClans.clear()
+        bookmarkedClans.addAll(savedClans)
+    }
+    
+    private fun saveBookmarkedClans() {
+        val prefs = getSharedPreferences("clashberry_prefs", Context.MODE_PRIVATE)
+        val bookmarkedJson = gson.toJson(bookmarkedClans)
+        prefs.edit().putString("bookmarked_clans", bookmarkedJson).apply()
     }
     
     // Standalone adapter for search results
