@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
-import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.jkminidev.clashberry.R;
@@ -27,25 +26,25 @@ public final class ActivitySearchBinding implements ViewBinding {
   private final LinearLayout rootView;
 
   @NonNull
-  public final LinearLayout errorLayout;
+  public final ImageButton backButton;
+
+  @NonNull
+  public final Button btnRetry;
+
+  @NonNull
+  public final Button btnSearch;
 
   @NonNull
   public final TextView errorText;
 
   @NonNull
-  public final LinearLayout loadingLayout;
+  public final TextInputEditText etSearchTag;
 
   @NonNull
-  public final Button retryButton;
+  public final LinearLayout searchErrorLayout;
 
   @NonNull
-  public final ImageButton searchButton;
-
-  @NonNull
-  public final TextInputEditText searchEditText;
-
-  @NonNull
-  public final TextInputLayout searchInputLayout;
+  public final LinearLayout searchLoadingLayout;
 
   @NonNull
   public final RecyclerView searchResultsRecyclerView;
@@ -54,24 +53,24 @@ public final class ActivitySearchBinding implements ViewBinding {
   public final SwipeRefreshLayout swipeRefreshLayout;
 
   @NonNull
-  public final MaterialToolbar toolbar;
+  public final TextInputLayout tilSearchTag;
 
-  private ActivitySearchBinding(@NonNull LinearLayout rootView, @NonNull LinearLayout errorLayout,
-      @NonNull TextView errorText, @NonNull LinearLayout loadingLayout, @NonNull Button retryButton,
-      @NonNull ImageButton searchButton, @NonNull TextInputEditText searchEditText,
-      @NonNull TextInputLayout searchInputLayout, @NonNull RecyclerView searchResultsRecyclerView,
-      @NonNull SwipeRefreshLayout swipeRefreshLayout, @NonNull MaterialToolbar toolbar) {
+  private ActivitySearchBinding(@NonNull LinearLayout rootView, @NonNull ImageButton backButton,
+      @NonNull Button btnRetry, @NonNull Button btnSearch, @NonNull TextView errorText,
+      @NonNull TextInputEditText etSearchTag, @NonNull LinearLayout searchErrorLayout,
+      @NonNull LinearLayout searchLoadingLayout, @NonNull RecyclerView searchResultsRecyclerView,
+      @NonNull SwipeRefreshLayout swipeRefreshLayout, @NonNull TextInputLayout tilSearchTag) {
     this.rootView = rootView;
-    this.errorLayout = errorLayout;
+    this.backButton = backButton;
+    this.btnRetry = btnRetry;
+    this.btnSearch = btnSearch;
     this.errorText = errorText;
-    this.loadingLayout = loadingLayout;
-    this.retryButton = retryButton;
-    this.searchButton = searchButton;
-    this.searchEditText = searchEditText;
-    this.searchInputLayout = searchInputLayout;
+    this.etSearchTag = etSearchTag;
+    this.searchErrorLayout = searchErrorLayout;
+    this.searchLoadingLayout = searchLoadingLayout;
     this.searchResultsRecyclerView = searchResultsRecyclerView;
     this.swipeRefreshLayout = swipeRefreshLayout;
-    this.toolbar = toolbar;
+    this.tilSearchTag = tilSearchTag;
   }
 
   @Override
@@ -101,9 +100,21 @@ public final class ActivitySearchBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
-      id = R.id.errorLayout;
-      LinearLayout errorLayout = ViewBindings.findChildViewById(rootView, id);
-      if (errorLayout == null) {
+      id = R.id.backButton;
+      ImageButton backButton = ViewBindings.findChildViewById(rootView, id);
+      if (backButton == null) {
+        break missingId;
+      }
+
+      id = R.id.btnRetry;
+      Button btnRetry = ViewBindings.findChildViewById(rootView, id);
+      if (btnRetry == null) {
+        break missingId;
+      }
+
+      id = R.id.btnSearch;
+      Button btnSearch = ViewBindings.findChildViewById(rootView, id);
+      if (btnSearch == null) {
         break missingId;
       }
 
@@ -113,33 +124,21 @@ public final class ActivitySearchBinding implements ViewBinding {
         break missingId;
       }
 
-      id = R.id.loadingLayout;
-      LinearLayout loadingLayout = ViewBindings.findChildViewById(rootView, id);
-      if (loadingLayout == null) {
+      id = R.id.etSearchTag;
+      TextInputEditText etSearchTag = ViewBindings.findChildViewById(rootView, id);
+      if (etSearchTag == null) {
         break missingId;
       }
 
-      id = R.id.retryButton;
-      Button retryButton = ViewBindings.findChildViewById(rootView, id);
-      if (retryButton == null) {
+      id = R.id.searchErrorLayout;
+      LinearLayout searchErrorLayout = ViewBindings.findChildViewById(rootView, id);
+      if (searchErrorLayout == null) {
         break missingId;
       }
 
-      id = R.id.searchButton;
-      ImageButton searchButton = ViewBindings.findChildViewById(rootView, id);
-      if (searchButton == null) {
-        break missingId;
-      }
-
-      id = R.id.searchEditText;
-      TextInputEditText searchEditText = ViewBindings.findChildViewById(rootView, id);
-      if (searchEditText == null) {
-        break missingId;
-      }
-
-      id = R.id.searchInputLayout;
-      TextInputLayout searchInputLayout = ViewBindings.findChildViewById(rootView, id);
-      if (searchInputLayout == null) {
+      id = R.id.searchLoadingLayout;
+      LinearLayout searchLoadingLayout = ViewBindings.findChildViewById(rootView, id);
+      if (searchLoadingLayout == null) {
         break missingId;
       }
 
@@ -155,15 +154,15 @@ public final class ActivitySearchBinding implements ViewBinding {
         break missingId;
       }
 
-      id = R.id.toolbar;
-      MaterialToolbar toolbar = ViewBindings.findChildViewById(rootView, id);
-      if (toolbar == null) {
+      id = R.id.tilSearchTag;
+      TextInputLayout tilSearchTag = ViewBindings.findChildViewById(rootView, id);
+      if (tilSearchTag == null) {
         break missingId;
       }
 
-      return new ActivitySearchBinding((LinearLayout) rootView, errorLayout, errorText,
-          loadingLayout, retryButton, searchButton, searchEditText, searchInputLayout,
-          searchResultsRecyclerView, swipeRefreshLayout, toolbar);
+      return new ActivitySearchBinding((LinearLayout) rootView, backButton, btnRetry, btnSearch,
+          errorText, etSearchTag, searchErrorLayout, searchLoadingLayout, searchResultsRecyclerView,
+          swipeRefreshLayout, tilSearchTag);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

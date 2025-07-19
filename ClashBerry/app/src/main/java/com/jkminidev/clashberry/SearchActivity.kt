@@ -30,22 +30,27 @@ class SearchActivity : AppCompatActivity() {
         binding.searchResultsRecyclerView.layoutManager = LinearLayoutManager(this)
         
         // Focus on search input
-        binding.searchEditText.requestFocus()
+        binding.etSearchTag.requestFocus()
         
         // Set up swipe to refresh
         binding.swipeRefreshLayout.setOnRefreshListener {
+            performSearch()
+        }
+        
+        // Set up end icon click (search icon in TextInputLayout)
+        binding.tilSearchTag.setEndIconOnClickListener {
             performSearch()
         }
     }
     
     private fun setupSearchFunctionality() {
         // Search button click
-        binding.searchButton.setOnClickListener {
+        binding.btnSearch.setOnClickListener {
             performSearch()
         }
         
         // Enter key search
-        binding.searchEditText.setOnEditorActionListener { _, actionId, event ->
+        binding.etSearchTag.setOnEditorActionListener { _, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH || 
                 (event?.action == KeyEvent.ACTION_DOWN && event.keyCode == KeyEvent.KEYCODE_ENTER)) {
                 performSearch()
@@ -56,13 +61,13 @@ class SearchActivity : AppCompatActivity() {
         }
         
         // Retry button
-        binding.retryButton.setOnClickListener {
+        binding.btnRetry.setOnClickListener {
             performSearch()
         }
     }
     
     private fun performSearch() {
-        val query = binding.searchEditText.text.toString().trim()
+        val query = binding.etSearchTag.text.toString().trim()
         
         if (query.isEmpty()) {
             return
@@ -73,7 +78,7 @@ class SearchActivity : AppCompatActivity() {
         
         // TODO: Implement actual search logic
         // For now, simulate search with delay
-        binding.searchEditText.postDelayed({
+        binding.etSearchTag.postDelayed({
             // Simulate different scenarios based on input
             when {
                 query.isEmpty() -> {
@@ -96,23 +101,23 @@ class SearchActivity : AppCompatActivity() {
     }
     
     private fun showLoadingState() {
-        binding.loadingLayout.visibility = android.view.View.VISIBLE
-        binding.errorLayout.visibility = android.view.View.GONE
+        binding.searchLoadingLayout.visibility = android.view.View.VISIBLE
+        binding.searchErrorLayout.visibility = android.view.View.GONE
         binding.searchResultsRecyclerView.visibility = android.view.View.GONE
         binding.swipeRefreshLayout.isRefreshing = false
     }
     
     private fun showErrorState(message: String) {
-        binding.loadingLayout.visibility = android.view.View.GONE
-        binding.errorLayout.visibility = android.view.View.VISIBLE
+        binding.searchLoadingLayout.visibility = android.view.View.GONE
+        binding.searchErrorLayout.visibility = android.view.View.VISIBLE
         binding.searchResultsRecyclerView.visibility = android.view.View.GONE
         binding.errorText.text = message
         binding.swipeRefreshLayout.isRefreshing = false
     }
     
     private fun showSearchResults() {
-        binding.loadingLayout.visibility = android.view.View.GONE
-        binding.errorLayout.visibility = android.view.View.GONE
+        binding.searchLoadingLayout.visibility = android.view.View.GONE
+        binding.searchErrorLayout.visibility = android.view.View.GONE
         binding.searchResultsRecyclerView.visibility = android.view.View.VISIBLE
         binding.swipeRefreshLayout.isRefreshing = false
         

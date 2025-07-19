@@ -3302,6 +3302,7 @@ id auto
 id autoComplete
 id autoCompleteToEnd
 id autoCompleteToStart
+id backButton
 id barrier
 id baseline
 id beginOnFirstDraw
@@ -3320,6 +3321,7 @@ id bounceBoth
 id bounceEnd
 id bounceStart
 id btnCancel
+id btnRetry
 id btnSearch
 id buttonPanel
 id cache_measures
@@ -3404,7 +3406,6 @@ id end
 id endToStart
 id enterAlways
 id enterAlwaysCollapsed
-id errorLayout
 id errorText
 id etSearchTag
 id exitUntilCollapsed
@@ -3488,7 +3489,6 @@ id line3
 id linear
 id listMode
 id list_item
-id loadingLayout
 id locale
 id ltr
 id m3_side_sheet
@@ -3624,7 +3624,6 @@ id ratio
 id rectangles
 id recycler_view
 id report_drawn
-id retryButton
 id reverseSawtooth
 id right
 id rightToLeft
@@ -3643,9 +3642,7 @@ id scrollIndicatorDown
 id scrollIndicatorUp
 id scrollView
 id scrollable
-id searchButton
-id searchEditText
-id searchInputLayout
+id searchErrorLayout
 id searchLoadingLayout
 id searchResultsRecyclerView
 id search_badge
