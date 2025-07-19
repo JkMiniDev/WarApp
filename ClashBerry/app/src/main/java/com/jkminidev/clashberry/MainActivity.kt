@@ -39,7 +39,6 @@ class MainActivity : AppCompatActivity() {
     private val bookmarkedClans = mutableListOf<BookmarkedClan>()
     private val warCards = mutableListOf<WarResponse>()
     
-    private lateinit var bookmarkedClansAdapter: BookmarkedClansAdapter
     private lateinit var warCardsAdapter: WarCardsAdapter
     
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,6 +51,7 @@ class MainActivity : AppCompatActivity() {
         setupUI()
         loadBookmarkedClans()
         loadWarData()
+        displayBookmarkedClans()
         applyTheme()
     }
     
@@ -89,17 +89,6 @@ class MainActivity : AppCompatActivity() {
     }
     
     private fun setupRecyclerViews() {
-        // Bookmarked clans RecyclerView
-        bookmarkedClansAdapter = BookmarkedClansAdapter(bookmarkedClans) { clan ->
-            onClanClicked(clan.tag)
-        }
-        binding.bookmarkedClansRecyclerView.apply {
-            layoutManager = LinearLayoutManager(this@MainActivity)
-            adapter = bookmarkedClansAdapter
-            // Enable smooth scrolling
-            isNestedScrollingEnabled = true
-        }
-        
         // War cards setup
         warCardsAdapter = WarCardsAdapter(warCards) { war ->
             openWarDetail(war)
@@ -140,7 +129,7 @@ class MainActivity : AppCompatActivity() {
     }
     
     private fun showSearchDialog() {
-        val dialog = Dialog(this)
+        val dialog = Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
         val dialogBinding = DialogSearchBinding.inflate(layoutInflater)
         dialog.setContentView(dialogBinding.root)
         
@@ -164,6 +153,10 @@ class MainActivity : AppCompatActivity() {
         }
         
         dialogBinding.btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+        
+        dialogBinding.ivBack.setOnClickListener {
             dialog.dismiss()
         }
         
@@ -219,7 +212,7 @@ class MainActivity : AppCompatActivity() {
         if (!bookmarkedClans.any { it.tag == clan.tag }) {
             bookmarkedClans.add(bookmarkedClan)
             saveBookmarkedClans()
-            bookmarkedClansAdapter.notifyDataSetChanged()
+            displayBookmarkedClans()
             Toast.makeText(this, getString(R.string.clan_bookmarked), Toast.LENGTH_SHORT).show()
             
             // Refresh war data
@@ -352,7 +345,7 @@ class MainActivity : AppCompatActivity() {
             val clans: List<BookmarkedClan> = gson.fromJson(json, type)
             bookmarkedClans.clear()
             bookmarkedClans.addAll(clans)
-            bookmarkedClansAdapter.notifyDataSetChanged()
+            displayBookmarkedClans()
         }
     }
     
@@ -427,55 +420,64 @@ class MainActivity : AppCompatActivity() {
         binding.warCardsContainer.addView(warCardBinding.root)
     }
     
+    private fun displayBookmarkedClans() {
+        binding.bookmarkedClansContainer.removeAllViews()
+        
+        if (bookmarkedClans.isEmpty()) {
+            binding.noBookmarksLayout.visibility = View.VISIBLE
+            return
+        }
+        
+        binding.noBookmarksLayout.visibility = View.GONE
+        
+        bookmarkedClans.forEach { clan ->
+            addBookmarkCard(clan)
+        }
+    }
+    
+    private fun addBookmarkCard(clan: BookmarkedClan) {
+        val bookmarkCardBinding = ItemBookmarkCardBinding.inflate(layoutInflater)
+        
+        // Populate bookmark card data
+        bookmarkCardBinding.tvClanName.text = clan.name
+        bookmarkCardBinding.tvClanTag.text = clan.tag
+        bookmarkCardBinding.tvMembersCount.text = getString(R.string.members_count, clan.members)
+        bookmarkCardBinding.tvClanLevel.text = "Level: ${clan.level}"
+        
+        // Load clan badge
+        Glide.with(this)
+            .load(clan.badge)
+            .placeholder(R.mipmap.ic_launcher)
+            .error(R.mipmap.ic_launcher)
+            .circleCrop()
+            .into(bookmarkCardBinding.ivClanBadge)
+        
+        // Set click listener for the card
+        bookmarkCardBinding.root.setOnClickListener {
+            onClanClicked(clan.tag)
+        }
+        
+        // Set bookmark icon click listener
+        bookmarkCardBinding.ivBookmark.setOnClickListener {
+            // Remove from bookmarks
+            bookmarkedClans.remove(clan)
+            saveBookmarkedClans()
+            displayBookmarkedClans()
+            Toast.makeText(this, getString(R.string.clan_removed), Toast.LENGTH_SHORT).show()
+            
+            // Refresh war data
+            loadWarData()
+        }
+        
+        binding.bookmarkedClansContainer.addView(bookmarkCardBinding.root)
+    }
+    
     private fun applyTheme() {
         val theme = preferences.getInt("theme", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         AppCompatDelegate.setDefaultNightMode(theme)
     }
     
     // Adapter classes
-    inner class BookmarkedClansAdapter(
-        private val clans: List<BookmarkedClan>,
-        private val onClanClick: (BookmarkedClan) -> Unit
-    ) : RecyclerView.Adapter<BookmarkedClansAdapter.ViewHolder>() {
-        
-        inner class ViewHolder(val binding: ItemClanSearchBinding) : RecyclerView.ViewHolder(binding.root)
-        
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            val binding = ItemClanSearchBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-            return ViewHolder(binding)
-        }
-        
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val clan = clans[position]
-            
-            holder.binding.tvClanName.text = clan.name
-            holder.binding.tvClanTag.text = clan.tag
-            holder.binding.tvMembersCount.text = getString(R.string.members_count, clan.members)
-            holder.binding.tvClanPoints.text = getString(R.string.clan_points, clan.clanPoints)
-            
-            Glide.with(holder.binding.ivClanBadge)
-                .load(clan.badge)
-                .placeholder(R.mipmap.ic_launcher)
-                .error(R.mipmap.ic_launcher)
-                .circleCrop()
-                .into(holder.binding.ivClanBadge)
-            
-            holder.binding.ivBookmark.setImageResource(R.drawable.ic_bookmark)
-            holder.binding.ivBookmark.setOnClickListener {
-                // Remove from bookmarks
-                bookmarkedClans.remove(clan)
-                saveBookmarkedClans()
-                notifyDataSetChanged()
-                Toast.makeText(this@MainActivity, getString(R.string.clan_removed), Toast.LENGTH_SHORT).show()
-            }
-            
-            holder.binding.root.setOnClickListener {
-                onClanClick(clan)
-            }
-        }
-        
-        override fun getItemCount() = clans.size
-    }
     
     inner class ClanSearchAdapter(
         private val results: MutableList<ClanBasicInfo>,

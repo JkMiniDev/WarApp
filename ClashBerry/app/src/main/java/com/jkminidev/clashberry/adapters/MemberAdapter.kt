@@ -3,9 +3,11 @@ package com.jkminidev.clashberry.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.jkminidev.clashberry.R
 import com.jkminidev.clashberry.data.MemberData
 import com.jkminidev.clashberry.utils.TownHallHelper
@@ -32,6 +34,7 @@ class MemberAdapter(
     override fun getItemCount(): Int = members.size
 
     class MemberViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val ivThIcon: ImageView = itemView.findViewById(R.id.ivThIcon)
         private val tvThEmoji: TextView = itemView.findViewById(R.id.tvThEmoji)
         private val tvMemberName: TextView = itemView.findViewById(R.id.tvMemberName)
         private val tvMemberTag: TextView = itemView.findViewById(R.id.tvMemberTag)
@@ -43,6 +46,14 @@ class MemberAdapter(
 
         fun bind(member: MemberData, displayType: DisplayType) {
             // Basic member info
+            // Load townhall PNG image
+            Glide.with(itemView.context)
+                .load(member.thImageUrl)
+                .placeholder(R.mipmap.ic_launcher)
+                .error(R.mipmap.ic_launcher)
+                .into(ivThIcon)
+            
+            // Keep emoji as fallback (hidden by default)
             tvThEmoji.text = member.thEmoji
             tvMemberName.text = member.name
             tvMemberTag.text = member.tag

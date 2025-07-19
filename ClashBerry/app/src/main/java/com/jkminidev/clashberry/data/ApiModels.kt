@@ -27,6 +27,7 @@ data class MemberData(
     val tag: String,
     val name: String,
     val townhallLevel: Int,
+    val thImageUrl: String,
     val thEmoji: String,
     val mapPosition: Int,
     val attacks: List<AttackData>,
