@@ -75,7 +75,7 @@
             android:gravity="center"
             android:layout_gravity="center"
             android:padding="24dp"
-            android:background="@drawable/button_background"
+            android:background="@color/transparent"
             android:visibility="gone"
             android:elevation="8dp">
 
