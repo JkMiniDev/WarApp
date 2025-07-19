@@ -11,7 +11,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/background_secondary"
+        android:background="@color/transparent"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
@@ -113,74 +113,63 @@
 
     </ScrollView>
 
-    <!-- Social Links Section at bottom -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@color/background_secondary"
-        android:padding="16dp">
+         <!-- Social Links Section at bottom -->
+     <LinearLayout
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:orientation="vertical"
+         android:background="@color/transparent"
+         android:padding="16dp">
 
-        <!-- Social Links Title -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Social Links"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="@color/text_color"
-            android:gravity="center"
-            android:layout_marginBottom="16dp" />
+         <!-- Social Icons Row -->
+         <LinearLayout
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:orientation="horizontal"
+             android:gravity="center"
+             android:layout_marginBottom="16dp">
 
-        <!-- Social Icons Row -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:layout_marginBottom="16dp">
+             <ImageView
+                 android:id="@+id/github_icon"
+                 android:layout_width="48dp"
+                 android:layout_height="48dp"
+                 android:src="@drawable/ic_github"
+                 android:background="@color/transparent"
+                 android:padding="8dp"
+                 android:layout_marginEnd="32dp"
+                 android:contentDescription="@string/github" />
 
-            <ImageView
-                android:id="@+id/github_icon"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:src="@drawable/ic_github"
-                android:background="@color/transparent"
-                android:padding="8dp"
-                android:layout_marginEnd="32dp"
-                android:contentDescription="@string/github" />
+             <ImageView
+                 android:id="@+id/patreon_icon"
+                 android:layout_width="48dp"
+                 android:layout_height="48dp"
+                 android:src="@drawable/ic_patreon"
+                 android:background="@color/transparent"
+                 android:padding="8dp"
+                 android:layout_marginEnd="32dp"
+                 android:contentDescription="@string/patreon" />
 
-            <ImageView
-                android:id="@+id/patreon_icon"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:src="@drawable/ic_patreon"
-                android:background="@color/transparent"
-                android:padding="8dp"
-                android:layout_marginEnd="32dp"
-                android:contentDescription="@string/patreon" />
+             <ImageView
+                 android:id="@+id/discord_icon"
+                 android:layout_width="48dp"
+                 android:layout_height="48dp"
+                 android:src="@drawable/ic_discord"
+                 android:background="@color/transparent"
+                 android:padding="8dp"
+                 android:contentDescription="@string/discord" />
 
-            <ImageView
-                android:id="@+id/discord_icon"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:src="@drawable/ic_discord"
-                android:background="@color/transparent"
-                android:padding="8dp"
-                android:contentDescription="@string/discord" />
+         </LinearLayout>
 
-        </LinearLayout>
+         <!-- App Version -->
+         <TextView
+             android:id="@+id/app_version"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:text="Version 1.0"
+             android:textSize="12sp"
+             android:textColor="@color/text_color_secondary"
+             android:gravity="center" />
 
-        <!-- App Version -->
-        <TextView
-            android:id="@+id/app_version"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Version 1.0"
-            android:textSize="12sp"
-            android:textColor="@color/text_color_secondary"
-            android:gravity="center" />
-
-    </LinearLayout>
+     </LinearLayout>
 
 </LinearLayout>
