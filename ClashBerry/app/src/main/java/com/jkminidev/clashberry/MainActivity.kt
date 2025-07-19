@@ -80,9 +80,7 @@ class MainActivity : AppCompatActivity() {
     
     private fun setupTopBar() {
         binding.ivSearch.setOnClickListener {
-            // Launch full screen search activity
-            val intent = Intent(this, SearchActivity::class.java)
-            startActivity(intent)
+            showSearchDialog()
         }
         
         binding.ivMenu.setOnClickListener { view ->

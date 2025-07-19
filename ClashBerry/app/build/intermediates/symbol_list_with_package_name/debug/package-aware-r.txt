@@ -3302,7 +3302,6 @@ id auto
 id autoComplete
 id autoCompleteToEnd
 id autoCompleteToStart
-id backButton
 id barrier
 id baseline
 id beginOnFirstDraw
@@ -3321,7 +3320,6 @@ id bounceBoth
 id bounceEnd
 id bounceStart
 id btnCancel
-id btnRetry
 id btnSearch
 id buttonPanel
 id cache_measures
@@ -3406,7 +3404,6 @@ id end
 id endToStart
 id enterAlways
 id enterAlwaysCollapsed
-id errorText
 id etSearchTag
 id exitUntilCollapsed
 id expand_activities_button
@@ -3642,7 +3639,6 @@ id scrollIndicatorDown
 id scrollIndicatorUp
 id scrollView
 id scrollable
-id searchErrorLayout
 id searchLoadingLayout
 id searchResultsRecyclerView
 id search_badge
@@ -3702,7 +3698,6 @@ id stretch
 id submenuarrow
 id submit_area
 id supportScrollUp
-id swipeRefreshLayout
 id switchWidget
 id tabLayout
 id tabMode
@@ -3927,7 +3922,6 @@ layout abc_search_view
 layout abc_select_dialog_material
 layout abc_tooltip
 layout activity_main
-layout activity_search
 layout activity_splash
 layout activity_war_detail
 layout custom_dialog

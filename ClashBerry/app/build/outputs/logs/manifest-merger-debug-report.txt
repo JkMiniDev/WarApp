@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from /workspace/ClashBerry/app/src/main/AndroidManifest.xml:2:1-47:12
-INJECTED from /workspace/ClashBerry/app/src/main/AndroidManifest.xml:2:1-47:12
-INJECTED from /workspace/ClashBerry/app/src/main/AndroidManifest.xml:2:1-47:12
-INJECTED from /workspace/ClashBerry/app/src/main/AndroidManifest.xml:2:1-47:12
+ADDED from /workspace/ClashBerry/app/src/main/AndroidManifest.xml:2:1-42:12
+INJECTED from /workspace/ClashBerry/app/src/main/AndroidManifest.xml:2:1-42:12
+INJECTED from /workspace/ClashBerry/app/src/main/AndroidManifest.xml:2:1-42:12
+INJECTED from /workspace/ClashBerry/app/src/main/AndroidManifest.xml:2:1-42:12
 MERGED from [androidx.databinding:viewbinding:8.1.2] /home/ubuntu/.gradle/caches/transforms-3/355be1050bcff1144884639a9bd67cd6/transformed/jetified-viewbinding-8.1.2/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.navigation:navigation-common:2.7.6] /home/ubuntu/.gradle/caches/transforms-3/d8e23e49afda3ca1243111dc3225b401/transformed/navigation-common-2.7.6/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.navigation:navigation-common-ktx:2.7.6] /home/ubuntu/.gradle/caches/transforms-3/12e18be1de445b6666ee0fb98bfd2897/transformed/navigation-common-ktx-2.7.6/AndroidManifest.xml:2:1-7:12
@@ -108,8 +108,8 @@ MERGED from [androidx.work:work-runtime:2.9.0] /home/ubuntu/.gradle/caches/trans
 	android:name
 		ADDED from /workspace/ClashBerry/app/src/main/AndroidManifest.xml:8:22-65
 application
-ADDED from /workspace/ClashBerry/app/src/main/AndroidManifest.xml:10:5-45:19
-INJECTED from /workspace/ClashBerry/app/src/main/AndroidManifest.xml:10:5-45:19
+ADDED from /workspace/ClashBerry/app/src/main/AndroidManifest.xml:10:5-40:19
+INJECTED from /workspace/ClashBerry/app/src/main/AndroidManifest.xml:10:5-40:19
 MERGED from [com.google.android.material:material:1.10.0] /home/ubuntu/.gradle/caches/transforms-3/8db908912bab9fd091954e4640e564b5/transformed/material-1.10.0/AndroidManifest.xml:22:5-20
 MERGED from [com.google.android.material:material:1.10.0] /home/ubuntu/.gradle/caches/transforms-3/8db908912bab9fd091954e4640e564b5/transformed/material-1.10.0/AndroidManifest.xml:22:5-20
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] /home/ubuntu/.gradle/caches/transforms-3/1d67df39e990e4d1062049a49b56db19/transformed/constraintlayout-2.1.4/AndroidManifest.xml:9:5-20
@@ -188,14 +188,6 @@ ADDED from /workspace/ClashBerry/app/src/main/AndroidManifest.xml:36:9-39:55
 		ADDED from /workspace/ClashBerry/app/src/main/AndroidManifest.xml:39:13-52
 	android:name
 		ADDED from /workspace/ClashBerry/app/src/main/AndroidManifest.xml:37:13-46
-activity#com.jkminidev.clashberry.SearchActivity
-ADDED from /workspace/ClashBerry/app/src/main/AndroidManifest.xml:41:9-44:55
-	android:exported
-		ADDED from /workspace/ClashBerry/app/src/main/AndroidManifest.xml:43:13-37
-	android:theme
-		ADDED from /workspace/ClashBerry/app/src/main/AndroidManifest.xml:44:13-52
-	android:name
-		ADDED from /workspace/ClashBerry/app/src/main/AndroidManifest.xml:42:13-43
 uses-sdk
 INJECTED from /workspace/ClashBerry/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from /workspace/ClashBerry/app/src/main/AndroidManifest.xml
