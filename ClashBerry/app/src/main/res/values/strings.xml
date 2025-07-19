@@ -67,4 +67,8 @@
     
     <!-- Top bar titles -->
     <string name="current_war">Current War</string>
+    
+    <!-- Bookmark page strings -->
+    <string name="no_bookmarks">No Bookmarks</string>
+    <string name="bookmark_clans_message">Search and bookmark clans to see them here</string>
 </resources>
