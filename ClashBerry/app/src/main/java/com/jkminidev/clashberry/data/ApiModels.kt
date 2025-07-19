@@ -60,3 +60,14 @@ data class ClanBasicInfo(
     val members: Int,
     val isWarLogPublic: Boolean
 )
+
+data class BookmarkedClan(
+    val tag: String,
+    val name: String,
+    val badge: String,
+    val level: Int,
+    val members: Int,
+    val clanPoints: Int,
+    val isBookmarked: Boolean = true,
+    val lastUpdated: Long = System.currentTimeMillis()
+)

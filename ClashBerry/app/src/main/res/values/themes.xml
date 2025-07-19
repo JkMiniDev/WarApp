@@ -19,6 +19,12 @@
 
     <style name="Theme.ClashBerry" parent="Base.Theme.ClashBerry" />
     
+    <style name="Theme.ClashBerry.Splash" parent="Base.Theme.ClashBerry">
+        <item name="android:windowBackground">@color/background_primary</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+    
     <style name="ClashBerry.Button" parent="Widget.AppCompat.Button">
         <item name="backgroundTint">@color/accent_color</item>
         <item name="android:textColor">@color/black</item>
