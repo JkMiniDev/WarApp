@@ -269,10 +269,17 @@ class MainActivity : AppCompatActivity() {
     }
     
     private fun refreshData() {
+        // Show loading indicator
+        binding.loadingLayout.visibility = View.VISIBLE
+        
         // Refresh the data by reloading war data and bookmarked clans
         loadBookmarkedClans()
         loadWarData()
-        Toast.makeText(this, "Data refreshed", Toast.LENGTH_SHORT).show()
+        
+        // Hide loading indicator after a short delay to show the animation
+        binding.loadingLayout.postDelayed({
+            binding.loadingLayout.visibility = View.GONE
+        }, 1000)
     }
     
     private fun openSettings() {
