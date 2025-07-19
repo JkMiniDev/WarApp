@@ -18,24 +18,12 @@ HEADERS = {
     'Accept': 'application/json'
 }
 
-def get_th_image_url(level):
-    """Get PNG image URL for townhall level"""
-    # Example URLs for townhall images - replace with your actual image URLs
-    base_url = "https://example.com/townhalls"
+def get_th_resource_name(level):
+    """Get resource name for townhall level"""
     # Ensure level is within valid range (1-17)
     if level < 1 or level > 17:
         level = 1
-    return f"{base_url}/th{level}.png"
-
-def get_th_emoji(level):
-    """Get emoji for townhall level as fallback"""
-    emoji_map = {
-        1: "🏠", 2: "🏡", 3: "🏘️", 4: "🏢", 5: "🏥",
-        6: "🏰", 7: "🕌", 8: "🏯", 9: "🛕", 10: "🏛️",
-        11: "🗼", 12: "🏟️", 13: "🗽", 14: "🗿", 15: "🏺",
-        16: "🔧", 17: "🔨"
-    }
-    return emoji_map.get(level, "🏠")
+    return f"th{level}"
 
 def format_clan_tag(tag):
     """Format clan tag to ensure it starts with #"""
@@ -217,8 +205,7 @@ def process_clan_data(clan_raw):
             'tag': member.get('tag'),
             'name': member.get('name'),
             'townhallLevel': member.get('townhallLevel'),
-            'thImageUrl': get_th_image_url(member.get('townhallLevel')),
-            'thEmoji': get_th_emoji(member.get('townhallLevel')),  # Keep emoji as fallback
+            'thResourceName': get_th_resource_name(member.get('townhallLevel')),
             'mapPosition': member.get('mapPosition'),
             'attacks': attacks,
             'attacksUsed': attacks_used,

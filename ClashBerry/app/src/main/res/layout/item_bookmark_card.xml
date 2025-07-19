@@ -94,15 +94,7 @@
 
         </LinearLayout>
 
-        <!-- War Status -->
-        <TextView
-            android:id="@+id/tvWarStatus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:textColor="@color/text_color_secondary"
-            android:layout_marginBottom="8dp"
-            android:text="Tap to view current war" />
+
 
     </LinearLayout>
 
