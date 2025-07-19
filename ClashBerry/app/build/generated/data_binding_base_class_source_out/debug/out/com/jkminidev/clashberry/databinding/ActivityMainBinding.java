@@ -11,7 +11,6 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewbinding.ViewBinding;
@@ -42,9 +41,6 @@ public final class ActivityMainBinding implements ViewBinding {
 
   @NonNull
   public final LinearLayout bottomNavigation;
-
-  @NonNull
-  public final CardView championshipBanner;
 
   @NonNull
   public final FrameLayout contentFrame;
@@ -83,11 +79,11 @@ public final class ActivityMainBinding implements ViewBinding {
       @NonNull RecyclerView bookmarkedClansRecyclerView, @NonNull ScrollView bookmarksContent,
       @NonNull ImageView bookmarksIcon, @NonNull LinearLayout bookmarksTab,
       @NonNull TextView bookmarksText, @NonNull LinearLayout bottomNavigation,
-      @NonNull CardView championshipBanner, @NonNull FrameLayout contentFrame,
-      @NonNull ScrollView homeContent, @NonNull ImageView homeIcon, @NonNull LinearLayout homeTab,
-      @NonNull TextView homeText, @NonNull ImageView ivMenu, @NonNull ImageView ivSearch,
-      @NonNull LinearLayout noWarsLayout, @NonNull LinearLayout topAppBar,
-      @NonNull TextView tvAppName, @NonNull LinearLayout warCardsContainer) {
+      @NonNull FrameLayout contentFrame, @NonNull ScrollView homeContent,
+      @NonNull ImageView homeIcon, @NonNull LinearLayout homeTab, @NonNull TextView homeText,
+      @NonNull ImageView ivMenu, @NonNull ImageView ivSearch, @NonNull LinearLayout noWarsLayout,
+      @NonNull LinearLayout topAppBar, @NonNull TextView tvAppName,
+      @NonNull LinearLayout warCardsContainer) {
     this.rootView = rootView;
     this.bookmarkedClansRecyclerView = bookmarkedClansRecyclerView;
     this.bookmarksContent = bookmarksContent;
@@ -95,7 +91,6 @@ public final class ActivityMainBinding implements ViewBinding {
     this.bookmarksTab = bookmarksTab;
     this.bookmarksText = bookmarksText;
     this.bottomNavigation = bottomNavigation;
-    this.championshipBanner = championshipBanner;
     this.contentFrame = contentFrame;
     this.homeContent = homeContent;
     this.homeIcon = homeIcon;
@@ -172,12 +167,6 @@ public final class ActivityMainBinding implements ViewBinding {
         break missingId;
       }
 
-      id = R.id.championshipBanner;
-      CardView championshipBanner = ViewBindings.findChildViewById(rootView, id);
-      if (championshipBanner == null) {
-        break missingId;
-      }
-
       id = R.id.contentFrame;
       FrameLayout contentFrame = ViewBindings.findChildViewById(rootView, id);
       if (contentFrame == null) {
@@ -246,8 +235,8 @@ public final class ActivityMainBinding implements ViewBinding {
 
       return new ActivityMainBinding((ConstraintLayout) rootView, bookmarkedClansRecyclerView,
           bookmarksContent, bookmarksIcon, bookmarksTab, bookmarksText, bottomNavigation,
-          championshipBanner, contentFrame, homeContent, homeIcon, homeTab, homeText, ivMenu,
-          ivSearch, noWarsLayout, topAppBar, tvAppName, warCardsContainer);
+          contentFrame, homeContent, homeIcon, homeTab, homeText, ivMenu, ivSearch, noWarsLayout,
+          topAppBar, tvAppName, warCardsContainer);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

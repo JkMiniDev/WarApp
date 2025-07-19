@@ -64,10 +64,6 @@
         "source": "/home/ubuntu/.gradle/daemon/8.4/com.jkminidev.clashberry.app-main-62:/layout/activity_war_detail.xml"
     },
     {
-        "merged": "com.jkminidev.clashberry.app-merged_res-60:/layout_activity_splash.xml.flat",
-        "source": "com.jkminidev.clashberry.app-main-62:/layout/activity_splash.xml"
-    },
-    {
         "merged": "/home/ubuntu/.gradle/daemon/8.4/com.jkminidev.clashberry.app-merged_res-60:/drawable_ic_discord.xml.flat",
         "source": "/home/ubuntu/.gradle/daemon/8.4/com.jkminidev.clashberry.app-main-62:/drawable/ic_discord.xml"
     },
@@ -84,6 +80,10 @@
         "source": "/home/ubuntu/.gradle/daemon/8.4/com.jkminidev.clashberry.app-main-62:/layout/item_war_card.xml"
     },
     {
+        "merged": "com.jkminidev.clashberry.app-merged_res-60:/layout_activity_main.xml.flat",
+        "source": "com.jkminidev.clashberry.app-main-62:/layout/activity_main.xml"
+    },
+    {
         "merged": "/home/ubuntu/.gradle/daemon/8.4/com.jkminidev.clashberry.app-merged_res-60:/drawable_ic_update.xml.flat",
         "source": "/home/ubuntu/.gradle/daemon/8.4/com.jkminidev.clashberry.app-main-62:/drawable/ic_update.xml"
     },
@@ -98,6 +98,10 @@
     {
         "merged": "/home/ubuntu/.gradle/daemon/8.4/com.jkminidev.clashberry.app-merged_res-60:/drawable_ic_crossed_swords.xml.flat",
         "source": "/home/ubuntu/.gradle/daemon/8.4/com.jkminidev.clashberry.app-main-62:/drawable/ic_crossed_swords.xml"
+    },
+    {
+        "merged": "/home/ubuntu/.gradle/daemon/8.4/com.jkminidev.clashberry.app-merged_res-60:/layout_activity_search.xml.flat",
+        "source": "/home/ubuntu/.gradle/daemon/8.4/com.jkminidev.clashberry.app-main-62:/layout/activity_search.xml"
     },
     {
         "merged": "/home/ubuntu/.gradle/daemon/8.4/com.jkminidev.clashberry.app-merged_res-60:/layout_item_clan_search.xml.flat",

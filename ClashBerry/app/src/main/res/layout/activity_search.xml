@@ -32,7 +32,7 @@
                 android:id="@+id/searchEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/search_hint"
+                android:hint="@string/enter_clan_tag"
                 android:textColor="@color/text_color"
                 android:textColorHint="@color/text_color_secondary"
                 android:background="@android:color/transparent"

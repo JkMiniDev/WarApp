@@ -81,62 +81,6 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <!-- World Championship Banner (similar to screenshot) -->
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/championshipBanner"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="4dp"
-                    app:cardBackgroundColor="@color/background_secondary">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:padding="16dp"
-                        android:gravity="center_vertical">
-
-                        <ImageView
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:src="@mipmap/ic_launcher"
-                            android:layout_marginEnd="16dp" />
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="World Championship"
-                                android:textSize="18sp"
-                                android:textStyle="bold"
-                                android:textColor="@color/text_color" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Open Qualifier - Leaderboard"
-                                android:textSize="14sp"
-                                android:textColor="@color/text_color_secondary" />
-
-                        </LinearLayout>
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:src="@drawable/ic_arrow_forward"
-                            android:contentDescription="View Championship" />
-
-                    </LinearLayout>
-
-                </androidx.cardview.widget.CardView>
-
                 <!-- War Cards Container -->
                 <LinearLayout
                     android:id="@+id/warCardsContainer"
@@ -200,15 +144,6 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/bookmarks"
-                    android:textSize="24sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_color"
-                    android:layout_marginBottom="16dp" />
 
                 <!-- Bookmarked Clans List -->
                 <androidx.recyclerview.widget.RecyclerView
