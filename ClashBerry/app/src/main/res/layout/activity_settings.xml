@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="?android:attr/colorBackground">
+    android:background="@color/background_primary">
 
     <!-- Toolbar -->
     <androidx.appcompat.widget.Toolbar
@@ -29,33 +29,6 @@
 
             <!-- Settings Options -->
             <LinearLayout
-                android:id="@+id/theme_option"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="16dp"
-                android:background="@color/transparent"
-                android:layout_marginBottom="8dp"
-                android:gravity="center_vertical">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_palette"
-                    android:contentDescription="@string/theme" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="16dp"
-                    android:text="@string/theme"
-                    android:textSize="16sp"
-                    android:textColor="?android:attr/textColorPrimary" />
-
-            </LinearLayout>
-
-            <LinearLayout
                 android:id="@+id/update_option"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -78,7 +51,7 @@
                     android:layout_marginStart="16dp"
                     android:text="@string/update"
                     android:textSize="16sp"
-                    android:textColor="?android:attr/textColorPrimary" />
+                    android:textColor="@color/text_color" />
 
             </LinearLayout>
 
@@ -105,7 +78,7 @@
                     android:layout_marginStart="16dp"
                     android:text="@string/notifications"
                     android:textSize="16sp"
-                    android:textColor="?android:attr/textColorPrimary" />
+                    android:textColor="@color/text_color" />
 
             </LinearLayout>
 
@@ -167,7 +140,7 @@
              android:layout_height="wrap_content"
              android:text="Version 1.0"
              android:textSize="12sp"
-                           android:textColor="?android:attr/textColorSecondary"
+                           android:textColor="@color/text_color_secondary"
              android:gravity="center" />
 
      </LinearLayout>

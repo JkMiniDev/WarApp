@@ -39,11 +39,6 @@ class SettingsActivity : AppCompatActivity() {
     }
     
     private fun setupClickListeners() {
-        // Theme setting
-        binding.themeOption.setOnClickListener {
-            showThemeDialog()
-        }
-        
         // Update setting
         binding.updateOption.setOnClickListener {
             checkForUpdates()
@@ -68,30 +63,7 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
     
-    private fun showThemeDialog() {
-        val themes = arrayOf("Dark", "Light", "System Default")
-        val currentTheme = preferences.getInt("theme", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-        val selectedIndex = when (currentTheme) {
-            AppCompatDelegate.MODE_NIGHT_YES -> 0
-            AppCompatDelegate.MODE_NIGHT_NO -> 1
-            else -> 2
-        }
-        
-        androidx.appcompat.app.AlertDialog.Builder(this)
-            .setTitle("Theme")
-            .setSingleChoiceItems(themes, selectedIndex) { dialog, which ->
-                val newTheme = when (which) {
-                    0 -> AppCompatDelegate.MODE_NIGHT_YES
-                    1 -> AppCompatDelegate.MODE_NIGHT_NO
-                    else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-                }
-                
-                preferences.edit().putInt("theme", newTheme).apply()
-                AppCompatDelegate.setDefaultNightMode(newTheme)
-                dialog.dismiss()
-            }
-            .show()
-    }
+
     
     private fun checkForUpdates() {
         // Implement update checking logic

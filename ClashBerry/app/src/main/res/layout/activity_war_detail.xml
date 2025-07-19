@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="?android:attr/colorBackground">
+    android:background="@color/background_primary">
 
     <!-- Top App Bar -->
     <com.google.android.material.appbar.MaterialToolbar
@@ -13,9 +13,9 @@
         android:layout_height="?attr/actionBarSize"
         android:background="@color/transparent"
         app:title="War Details"
-        app:titleTextColor="?android:attr/textColorPrimary"
+        app:titleTextColor="@color/text_color"
         app:navigationIcon="@drawable/ic_back"
-        app:navigationIconTint="?android:attr/textColorPrimary" />
+        app:navigationIconTint="@color/text_color" />
 
     <!-- War Content Container -->
     <ScrollView
