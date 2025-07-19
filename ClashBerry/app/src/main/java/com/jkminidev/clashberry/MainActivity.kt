@@ -109,8 +109,8 @@ class MainActivity : AppCompatActivity() {
                 // Update tab colors
                 binding.homeIcon.setColorFilter(ContextCompat.getColor(this, R.color.accent_color))
                 binding.homeText.setTextColor(ContextCompat.getColor(this, R.color.accent_color))
-                binding.bookmarksIcon.setColorFilter(ContextCompat.getColor(this, R.color.text_color_secondary))
-                binding.bookmarksText.setTextColor(ContextCompat.getColor(this, R.color.text_color_secondary))
+                binding.bookmarksIcon.setColorFilter(getThemeColor(android.R.attr.textColorSecondary))
+                binding.bookmarksText.setTextColor(getThemeColor(android.R.attr.textColorSecondary))
             }
             "bookmarks" -> {
                 binding.homeContent.visibility = View.GONE
@@ -120,8 +120,8 @@ class MainActivity : AppCompatActivity() {
                 binding.tvAppName.text = getString(R.string.bookmarks)
                 
                 // Update tab colors
-                binding.homeIcon.setColorFilter(ContextCompat.getColor(this, R.color.text_color_secondary))
-                binding.homeText.setTextColor(ContextCompat.getColor(this, R.color.text_color_secondary))
+                binding.homeIcon.setColorFilter(getThemeColor(android.R.attr.textColorSecondary))
+                binding.homeText.setTextColor(getThemeColor(android.R.attr.textColorSecondary))
                 binding.bookmarksIcon.setColorFilter(ContextCompat.getColor(this, R.color.accent_color))
                 binding.bookmarksText.setTextColor(ContextCompat.getColor(this, R.color.accent_color))
             }
@@ -424,6 +424,12 @@ class MainActivity : AppCompatActivity() {
     private fun applyTheme() {
         val theme = preferences.getInt("theme", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         AppCompatDelegate.setDefaultNightMode(theme)
+    }
+    
+    private fun getThemeColor(attr: Int): Int {
+        val typedValue = android.util.TypedValue()
+        theme.resolveAttribute(attr, typedValue, true)
+        return typedValue.data
     }
     
     // Adapter classes
