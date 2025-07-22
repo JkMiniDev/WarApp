@@ -51,7 +51,6 @@ class WarDisplayHelper(private val context: Context) {
         
         setupWarHeader(cardView, warData)
         setupWarStats(cardView, warData)
-        setupTabLayout(cardView, warData)
         
         return cardView
     }
@@ -137,35 +136,6 @@ class WarDisplayHelper(private val context: Context) {
             "${String.format("%.2f", warData.opponent.destructionPercentage)}%"
         cardView.findViewById<TextView>(R.id.tvClan2Attacks).text = 
             "${warData.opponent.attacks}/$totalAttacks"
-    }
-    
-    private fun setupTabLayout(cardView: CardView, warData: WarResponse) {
-        val tabLayout = cardView.findViewById<TabLayout>(R.id.tabLayout)
-        val contentContainer = cardView.findViewById<LinearLayout>(R.id.contentContainer)
-        
-        // Add tabs
-        tabLayout.addTab(tabLayout.newTab().setText(context.getString(R.string.overview)))
-        tabLayout.addTab(tabLayout.newTab().setText(context.getString(R.string.attacks)))
-        tabLayout.addTab(tabLayout.newTab().setText(context.getString(R.string.defenses)))
-        tabLayout.addTab(tabLayout.newTab().setText(context.getString(R.string.roster)))
-        
-        // Show initial content (overview)
-        showOverviewTab(contentContainer, warData)
-        
-        // Tab selection listener
-        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                when (tab?.position) {
-                    0 -> showOverviewTab(contentContainer, warData)
-                    1 -> showAttacksTab(contentContainer, warData)
-                    2 -> showDefensesTab(contentContainer, warData)
-                    3 -> showRosterTab(contentContainer, warData)
-                }
-            }
-            
-            override fun onTabUnselected(tab: TabLayout.Tab?) {}
-            override fun onTabReselected(tab: TabLayout.Tab?) {}
-        })
     }
     
     private fun showOverviewTab(container: FrameLayout, warData: WarResponse) {
