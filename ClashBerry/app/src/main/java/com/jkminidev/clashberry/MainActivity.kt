@@ -173,6 +173,10 @@ class MainActivity : AppCompatActivity() {
         }
         
         dialog.show()
+        // Automatically focus the search EditText and show the keyboard
+        dialogBinding.etSearchTag.requestFocus()
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
+        imm.showSoftInput(dialogBinding.etSearchTag, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT)
     }
     
     private fun searchClan(clanTag: String, adapter: ClanSearchAdapter, dialogBinding: DialogSearchBinding) {
