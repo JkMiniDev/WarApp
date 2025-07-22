@@ -154,7 +154,7 @@ class WarDisplayHelper(private val context: Context) {
         container.addView(warCard)
     }
     
-    private fun showActivityTab(container: FrameLayout, warData: WarResponse, showAttacks: Boolean, onToggle: (Boolean) -> Unit) {
+    fun showActivityTab(container: FrameLayout, warData: WarResponse, showAttacks: Boolean, onToggle: (Boolean) -> Unit) {
         container.removeAllViews()
         val layout = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
@@ -191,7 +191,7 @@ class WarDisplayHelper(private val context: Context) {
         container.addView(layout)
     }
     
-    private fun showRosterTab(container: FrameLayout, warData: WarResponse) {
+    fun showRosterTab(container: FrameLayout, warData: WarResponse) {
         container.removeAllViews()
         val recyclerView = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
