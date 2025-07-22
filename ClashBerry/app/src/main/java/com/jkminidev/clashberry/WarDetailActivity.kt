@@ -37,6 +37,6 @@ class WarDetailActivity : AppCompatActivity() {
     
     private fun displayWarData(warData: WarResponse) {
         // Use the existing WarDisplayHelper to show war details
-        warDisplayHelper.displayWar(warData, binding.warContentContainer)
+        warDisplayHelper.displayWar(warData, binding.warContentContainer, binding.tabLayout)
     }
 }

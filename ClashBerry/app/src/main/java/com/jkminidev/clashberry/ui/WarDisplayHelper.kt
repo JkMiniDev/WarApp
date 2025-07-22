@@ -15,14 +15,34 @@ import com.jkminidev.clashberry.R
 import com.jkminidev.clashberry.data.WarResponse
 import com.jkminidev.clashberry.adapters.MemberAdapter
 import com.jkminidev.clashberry.utils.TownHallHelper
+import android.widget.FrameLayout
 
 class WarDisplayHelper(private val context: Context) {
     
-    fun displayWar(warData: WarResponse, container: LinearLayout) {
-        container.removeAllViews()
-        
-        val warCard = createWarCard(warData)
-        container.addView(warCard)
+    fun displayWar(warData: WarResponse, container: FrameLayout, tabLayout: com.google.android.material.tabs.TabLayout) {
+        // Set up tabs
+        tabLayout.removeAllTabs()
+        tabLayout.addTab(tabLayout.newTab().setText(context.getString(R.string.overview)))
+        tabLayout.addTab(tabLayout.newTab().setText(context.getString(R.string.attacks)))
+        tabLayout.addTab(tabLayout.newTab().setText(context.getString(R.string.defenses)))
+        tabLayout.addTab(tabLayout.newTab().setText(context.getString(R.string.roster)))
+
+        // Show initial content (overview)
+        showOverviewTab(container, warData)
+
+        // Tab selection listener
+        tabLayout.addOnTabSelectedListener(object : com.google.android.material.tabs.TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: com.google.android.material.tabs.TabLayout.Tab?) {
+                when (tab?.position) {
+                    0 -> showOverviewTab(container, warData)
+                    1 -> showAttacksTab(container, warData)
+                    2 -> showDefensesTab(container, warData)
+                    3 -> showRosterTab(container, warData)
+                }
+            }
+            override fun onTabUnselected(tab: com.google.android.material.tabs.TabLayout.Tab?) {}
+            override fun onTabReselected(tab: com.google.android.material.tabs.TabLayout.Tab?) {}
+        })
     }
     
     private fun createWarCard(warData: WarResponse): View {
@@ -148,23 +168,14 @@ class WarDisplayHelper(private val context: Context) {
         })
     }
     
-    private fun showOverviewTab(container: LinearLayout, warData: WarResponse) {
+    private fun showOverviewTab(container: FrameLayout, warData: WarResponse) {
         container.removeAllViews()
-        
-        val textView = TextView(context).apply {
-            text = context.getString(R.string.war_overview)
-            textSize = 18f
-            setTextColor(ContextCompat.getColor(context, R.color.text_color))
-            setPadding(16, 16, 16, 32)
-        }
-        container.addView(textView)
-        
-        // Add team composition here if needed
+        val warCard = createWarCard(warData)
+        container.addView(warCard)
     }
     
-    private fun showAttacksTab(container: LinearLayout, warData: WarResponse) {
+    private fun showAttacksTab(container: FrameLayout, warData: WarResponse) {
         container.removeAllViews()
-        
         val recyclerView = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
             adapter = MemberAdapter(warData.clan.members, MemberAdapter.DisplayType.ATTACKS)
@@ -173,9 +184,8 @@ class WarDisplayHelper(private val context: Context) {
         container.addView(recyclerView)
     }
     
-    private fun showDefensesTab(container: LinearLayout, warData: WarResponse) {
+    private fun showDefensesTab(container: FrameLayout, warData: WarResponse) {
         container.removeAllViews()
-        
         val recyclerView = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
             adapter = MemberAdapter(warData.clan.members, MemberAdapter.DisplayType.DEFENSES)
@@ -184,9 +194,8 @@ class WarDisplayHelper(private val context: Context) {
         container.addView(recyclerView)
     }
     
-    private fun showRosterTab(container: LinearLayout, warData: WarResponse) {
+    private fun showRosterTab(container: FrameLayout, warData: WarResponse) {
         container.removeAllViews()
-        
         val recyclerView = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
             adapter = MemberAdapter(warData.clan.members, MemberAdapter.DisplayType.ROSTER)

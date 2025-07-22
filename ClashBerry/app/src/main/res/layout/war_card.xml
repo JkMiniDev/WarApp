@@ -319,25 +319,7 @@
             </LinearLayout>
 
         </LinearLayout>
-
-        <!-- Tab Layout -->
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tabLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:tabTextColor="@color/text_color_secondary"
-            app:tabSelectedTextColor="@color/accent_color"
-            app:tabIndicatorColor="@color/accent_color"
-            app:tabMode="scrollable" />
-
-        <!-- Content Container -->
-        <LinearLayout
-            android:id="@+id/contentContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" />
-
+        
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>
