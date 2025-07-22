@@ -144,16 +144,17 @@ class MainActivity : AppCompatActivity() {
             isNestedScrollingEnabled = true
         }
         
-        dialogBinding.btnSearch.setOnClickListener {
-            val clanTag = dialogBinding.etSearchTag.text.toString().trim()
-            if (clanTag.isNotEmpty()) {
-                searchClan(clanTag, searchAdapter, dialogBinding)
-            }
-        }
+        // Remove btnSearch and btnCancel listeners
+        // dialogBinding.btnSearch.setOnClickListener {
+        //     val clanTag = dialogBinding.etSearchTag.text.toString().trim()
+        //     if (clanTag.isNotEmpty()) {
+        //         searchClan(clanTag, searchAdapter, dialogBinding)
+        //     }
+        // }
         
-        dialogBinding.btnCancel.setOnClickListener {
-            dialog.dismiss()
-        }
+        // dialogBinding.btnCancel.setOnClickListener {
+        //     dialog.dismiss()
+        // }
         
         dialogBinding.ivBack.setOnClickListener {
             dialog.dismiss()
