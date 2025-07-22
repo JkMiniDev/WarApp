@@ -23,26 +23,36 @@ class WarDisplayHelper(private val context: Context) {
         // Set up tabs
         tabLayout.removeAllTabs()
         tabLayout.addTab(tabLayout.newTab().setText(context.getString(R.string.overview)))
-        tabLayout.addTab(tabLayout.newTab().setText(context.getString(R.string.attacks)))
-        tabLayout.addTab(tabLayout.newTab().setText(context.getString(R.string.defenses)))
+        tabLayout.addTab(tabLayout.newTab().setText("Activity"))
         tabLayout.addTab(tabLayout.newTab().setText(context.getString(R.string.roster)))
 
         // Show initial content (overview)
         showOverviewTab(container, warData)
+
+        // Track which activity view is selected (attack or defence)
+        var showAttacks = true
+
+        fun showActivityTab() {
+            showActivityTab(container, warData, showAttacks) { isAttack ->
+                showAttacks = isAttack
+            }
+        }
 
         // Tab selection listener
         tabLayout.addOnTabSelectedListener(object : com.google.android.material.tabs.TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: com.google.android.material.tabs.TabLayout.Tab?) {
                 when (tab?.position) {
                     0 -> showOverviewTab(container, warData)
-                    1 -> showAttacksTab(container, warData)
-                    2 -> showDefensesTab(container, warData)
-                    3 -> showRosterTab(container, warData)
+                    1 -> showActivityTab()
+                    2 -> showRosterTab(container, warData)
                 }
             }
             override fun onTabUnselected(tab: com.google.android.material.tabs.TabLayout.Tab?) {}
             override fun onTabReselected(tab: com.google.android.material.tabs.TabLayout.Tab?) {}
         })
+
+        // Optional: Add ViewPager2 for swipe navigation (if available in the project)
+        // This would require refactoring to use a FragmentStateAdapter or similar.
     }
     
     private fun createWarCard(warData: WarResponse): View {
@@ -144,24 +154,41 @@ class WarDisplayHelper(private val context: Context) {
         container.addView(warCard)
     }
     
-    private fun showAttacksTab(container: FrameLayout, warData: WarResponse) {
+    private fun showActivityTab(container: FrameLayout, warData: WarResponse, showAttacks: Boolean, onToggle: (Boolean) -> Unit) {
         container.removeAllViews()
+        val layout = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+        }
+        // Toggle button (Switch or SegmentedButton)
+        val toggle = android.widget.Switch(context).apply {
+            text = if (showAttacks) context.getString(R.string.attacks) else context.getString(R.string.defenses)
+            isChecked = showAttacks
+            setOnCheckedChangeListener { _, isChecked ->
+                text = if (isChecked) context.getString(R.string.attacks) else context.getString(R.string.defenses)
+                layout.removeViewAt(1)
+                val recyclerView = RecyclerView(context).apply {
+                    layoutManager = LinearLayoutManager(context)
+                    adapter = MemberAdapter(warData.clan.members, if (isChecked) MemberAdapter.DisplayType.ATTACKS else MemberAdapter.DisplayType.DEFENSES)
+                    setPadding(8, 8, 8, 8)
+                }
+                layout.addView(recyclerView)
+                onToggle(isChecked)
+            }
+        }
+        // Align toggle to right
+        val toggleContainer = LinearLayout(context).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = android.view.Gravity.END
+            addView(toggle)
+        }
+        layout.addView(toggleContainer)
         val recyclerView = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
-            adapter = MemberAdapter(warData.clan.members, MemberAdapter.DisplayType.ATTACKS)
+            adapter = MemberAdapter(warData.clan.members, if (showAttacks) MemberAdapter.DisplayType.ATTACKS else MemberAdapter.DisplayType.DEFENSES)
             setPadding(8, 8, 8, 8)
         }
-        container.addView(recyclerView)
-    }
-    
-    private fun showDefensesTab(container: FrameLayout, warData: WarResponse) {
-        container.removeAllViews()
-        val recyclerView = RecyclerView(context).apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = MemberAdapter(warData.clan.members, MemberAdapter.DisplayType.DEFENSES)
-            setPadding(8, 8, 8, 8)
-        }
-        container.addView(recyclerView)
+        layout.addView(recyclerView)
+        container.addView(layout)
     }
     
     private fun showRosterTab(container: FrameLayout, warData: WarResponse) {
