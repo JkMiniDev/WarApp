@@ -17,6 +17,8 @@ import android.os.Parcelable
 import android.os.Parcel
 import android.widget.FrameLayout
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 
 class WarDetailActivity : AppCompatActivity() {
     
@@ -30,9 +32,10 @@ class WarDetailActivity : AppCompatActivity() {
         binding = ActivityWarDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
         
+        setSupportActionBar(binding.toolbar) // Ensure toolbar acts as ActionBar
         warDisplayHelper = WarDisplayHelper(this)
         
-        // Set up toolbar
+        // Set up toolbar navigation
         binding.toolbar.setNavigationOnClickListener {
             finish()
         }
@@ -73,7 +76,7 @@ class WarDetailActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: android.view.MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_refresh -> {
-                // TODO: Implement refresh war data logic (same as main screen)
+                refreshWarData()
                 true
             }
             R.id.menu_settings -> {
@@ -81,6 +84,43 @@ class WarDetailActivity : AppCompatActivity() {
                 true
             }
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun refreshWarData() {
+        // Show loading indicator (add a simple ProgressBar overlay if not present)
+        if (binding.root.findViewById<android.widget.FrameLayout>(R.id.loadingOverlay) == null) {
+            val overlay = android.widget.FrameLayout(this)
+            overlay.id = R.id.loadingOverlay
+            overlay.setBackgroundColor(android.graphics.Color.parseColor("#80000000"))
+            val progress = android.widget.ProgressBar(this)
+            val params = android.widget.FrameLayout.LayoutParams(
+                android.widget.FrameLayout.LayoutParams.WRAP_CONTENT,
+                android.widget.FrameLayout.LayoutParams.WRAP_CONTENT
+            )
+            params.gravity = android.view.Gravity.CENTER
+            overlay.addView(progress, params)
+            (binding.root as ViewGroup).addView(overlay, ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+        }
+        val clanTag = warData.clan.tag
+        lifecycleScope.launch {
+            try {
+                val response = com.jkminidev.clashberry.network.NetworkModule.apiService.getWarData(clanTag)
+                if (response.isSuccessful) {
+                    response.body()?.let { newWarData ->
+                        warData = newWarData
+                        setupViewPagerAndBottomNav() // Re-setup to update fragments
+                    }
+                } else {
+                    android.widget.Toast.makeText(this@WarDetailActivity, "Failed to refresh war data", android.widget.Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                android.widget.Toast.makeText(this@WarDetailActivity, "Error refreshing war data", android.widget.Toast.LENGTH_SHORT).show()
+            } finally {
+                val overlay = binding.root.findViewById<android.widget.FrameLayout>(R.id.loadingOverlay)
+                overlay?.let { (binding.root as ViewGroup).removeView(it) }
+            }
         }
     }
 
