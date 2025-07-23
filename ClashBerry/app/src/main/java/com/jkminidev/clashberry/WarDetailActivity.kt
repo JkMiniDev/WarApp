@@ -28,6 +28,9 @@ class WarDetailActivity : AppCompatActivity() {
     private val gson = Gson()
     private lateinit var warData: WarResponse
     private lateinit var warContentContainer: FrameLayout
+    private lateinit var warPagerAdapter: WarPagerAdapter
+    private var currentOverviewFragment: OverviewFragment? = null
+    private var currentActivityFragment: ActivityFragment? = null
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,33 +45,32 @@ class WarDetailActivity : AppCompatActivity() {
             finish()
         }
         
-        // Add a FrameLayout for war content if not present
-        val contentContainer = FrameLayout(this)
-        contentContainer.id = View.generateViewId()
-        val params = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            0, 1f
-        )
-        (binding.root as ViewGroup).addView(contentContainer, 1, params)
-        warContentContainer = contentContainer
-        
         // Get war data from intent
         val warDataJson = intent.getStringExtra("war_data")
         if (warDataJson != null) {
             warData = gson.fromJson(warDataJson, WarResponse::class.java)
-            showWarContent(warData)
+            setupViewPagerAndBottomNav()
         } else {
             finish()
         }
     }
 
-    private fun showWarContent(warData: WarResponse) {
-        // Don't clear until new data is ready
-        val newContent = FrameLayout(this)
-        warDisplayHelper.displayWar(warData, newContent, com.google.android.material.tabs.TabLayout(this))
-        warContentContainer.addView(newContent)
-        // Remove the old view (keep only the last one)
-        while (warContentContainer.childCount > 1) warContentContainer.removeViewAt(0)
+    private fun setupViewPagerAndBottomNav() {
+        warPagerAdapter = WarPagerAdapter(this)
+        binding.viewPager.adapter = warPagerAdapter
+        binding.viewPager.offscreenPageLimit = 2
+        binding.bottomNavigationView.setOnNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_overview -> binding.viewPager.currentItem = 0
+                R.id.nav_activity -> binding.viewPager.currentItem = 1
+            }
+            true
+        }
+        binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                binding.bottomNavigationView.menu.getItem(position).isChecked = true
+            }
+        })
     }
 
     private fun refreshWarData() {
@@ -80,7 +82,7 @@ class WarDetailActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     response.body()?.let { newWarData ->
                         warData = newWarData
-                        showWarContent(newWarData)
+                        updateCurrentFragmentWithNewData(newWarData)
                     }
                 } else {
                     android.widget.Toast.makeText(this@WarDetailActivity, "Failed to refresh war data", android.widget.Toast.LENGTH_SHORT).show()
@@ -90,6 +92,17 @@ class WarDetailActivity : AppCompatActivity() {
             } finally {
                 hideLoadingOverlay()
             }
+        }
+    }
+
+    private fun updateCurrentFragmentWithNewData(newWarData: WarResponse) {
+        val position = binding.viewPager.currentItem
+        val fm = supportFragmentManager
+        val fragment = fm.findFragmentByTag("android:switcher:${binding.viewPager.id}:$position")
+        if (fragment is OverviewFragment) {
+            fragment.bindWarData(newWarData)
+        } else if (fragment is ActivityFragment) {
+            fragment.bindWarData(newWarData)
         }
     }
 
@@ -131,6 +144,85 @@ class WarDetailActivity : AppCompatActivity() {
                 true
             }
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    inner class WarPagerAdapter(fa: FragmentActivity) : FragmentStateAdapter(fa) {
+        override fun getItemCount(): Int = 2
+        override fun createFragment(position: Int): Fragment {
+            return when (position) {
+                0 -> OverviewFragment.newInstance(warData)
+                1 -> ActivityFragment.newInstance(warData)
+                else -> throw IllegalArgumentException()
+            }
+        }
+    }
+
+    class OverviewFragment : Fragment() {
+        private var warData: WarResponse? = null
+        private var rootView: View? = null
+        companion object {
+            private const val ARG_WAR_DATA = "war_data"
+            fun newInstance(warData: WarResponse): OverviewFragment {
+                val fragment = OverviewFragment()
+                val args = Bundle()
+                args.putString(ARG_WAR_DATA, Gson().toJson(warData))
+                fragment.arguments = args
+                return fragment
+            }
+        }
+        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+            val context = requireContext()
+            warData = Gson().fromJson(requireArguments().getString(ARG_WAR_DATA), WarResponse::class.java)
+            val helper = WarDisplayHelper(context)
+            val frame = FrameLayout(context)
+            warData?.let { helper.displayWar(it, frame, com.google.android.material.tabs.TabLayout(context)) }
+            rootView = frame
+            return frame
+        }
+        fun bindWarData(newWarData: WarResponse) {
+            warData = newWarData
+            // Update only the data views, not the root view
+            rootView?.let {
+                (it as? FrameLayout)?.removeAllViews()
+                val helper = WarDisplayHelper(requireContext())
+                helper.displayWar(newWarData, it as FrameLayout, com.google.android.material.tabs.TabLayout(requireContext()))
+            }
+        }
+    }
+
+    class ActivityFragment : Fragment() {
+        private var warData: WarResponse? = null
+        private var rootView: View? = null
+        companion object {
+            private const val ARG_WAR_DATA = "war_data"
+            fun newInstance(warData: WarResponse): ActivityFragment {
+                val fragment = ActivityFragment()
+                val args = Bundle()
+                args.putString(ARG_WAR_DATA, Gson().toJson(warData))
+                fragment.arguments = args
+                return fragment
+            }
+        }
+        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+            val context = requireContext()
+            warData = Gson().fromJson(requireArguments().getString(ARG_WAR_DATA), WarResponse::class.java)
+            val frame = FrameLayout(context)
+            warData?.let {
+                val helper = WarDisplayHelper(context)
+                helper.showActivityTab(frame, it, true) { }
+            }
+            rootView = frame
+            return frame
+        }
+        fun bindWarData(newWarData: WarResponse) {
+            warData = newWarData
+            // Update only the data views, not the root view
+            rootView?.let {
+                (it as? FrameLayout)?.removeAllViews()
+                val helper = WarDisplayHelper(requireContext())
+                helper.showActivityTab(it as FrameLayout, newWarData, true) { }
+            }
         }
     }
 }
