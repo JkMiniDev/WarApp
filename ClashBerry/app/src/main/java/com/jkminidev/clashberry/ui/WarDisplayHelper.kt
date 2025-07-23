@@ -161,7 +161,10 @@ class WarDisplayHelper(private val context: Context) {
         val layout = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
         }
-        // Toggle option (RadioGroup with two RadioButtons)
+        // Determine third option label
+        val isWarEnded = warData.state == "warEnded"
+        val thirdLabel = if (isWarEnded) context.getString(R.string.missed) else context.getString(R.string.remaining)
+        // Toggle option (RadioGroup with three RadioButtons)
         val radioGroup = RadioGroup(context).apply {
             orientation = RadioGroup.HORIZONTAL
         }
@@ -175,13 +178,44 @@ class WarDisplayHelper(private val context: Context) {
             id = 2
             isChecked = !showAttacks
         }
+        val remainingRadio = RadioButton(context).apply {
+            text = thirdLabel
+            id = 3
+            isChecked = false
+        }
         radioGroup.addView(attackRadio)
         radioGroup.addView(defenceRadio)
+        radioGroup.addView(remainingRadio)
+        fun getFilteredMembers(selected: Int): List<com.jkminidev.clashberry.data.MemberData> {
+            return when (selected) {
+                1 -> warData.clan.members.filter { it.attacks.isNotEmpty() }
+                2 -> warData.clan.members // Defence logic unchanged
+                3 -> {
+                    val attacksExpected = if (warData.warType == "cwl") 1 else 2
+                    if (isWarEnded) {
+                        warData.clan.members.filter { it.attacks.size < attacksExpected }
+                    } else {
+                        warData.clan.members.filter { it.attacks.size < attacksExpected }
+                    }
+                }
+                else -> warData.clan.members
+            }
+        }
+        fun getDisplayType(selected: Int): MemberAdapter.DisplayType {
+            return when (selected) {
+                1 -> MemberAdapter.DisplayType.ATTACKS
+                2 -> MemberAdapter.DisplayType.DEFENSES
+                3 -> MemberAdapter.DisplayType.REMAINING // You may need to add this to your adapter
+                else -> MemberAdapter.DisplayType.ATTACKS
+            }
+        }
         radioGroup.setOnCheckedChangeListener { _, checkedId ->
             layout.removeViewAt(1)
+            val filtered = getFilteredMembers(checkedId)
+            val displayType = getDisplayType(checkedId)
             val recyclerView = RecyclerView(context).apply {
                 layoutManager = LinearLayoutManager(context)
-                adapter = MemberAdapter(warData.clan.members, if (checkedId == 1) MemberAdapter.DisplayType.ATTACKS else MemberAdapter.DisplayType.DEFENSES)
+                adapter = MemberAdapter(filtered, displayType)
                 setPadding(8, 8, 8, 8)
             }
             layout.addView(recyclerView)
@@ -194,9 +228,10 @@ class WarDisplayHelper(private val context: Context) {
             addView(radioGroup)
         }
         layout.addView(toggleContainer)
+        val filtered = getFilteredMembers(1)
         val recyclerView = RecyclerView(context).apply {
             layoutManager = LinearLayoutManager(context)
-            adapter = MemberAdapter(warData.clan.members, if (showAttacks) MemberAdapter.DisplayType.ATTACKS else MemberAdapter.DisplayType.DEFENSES)
+            adapter = MemberAdapter(filtered, MemberAdapter.DisplayType.ATTACKS)
             setPadding(8, 8, 8, 8)
         }
         layout.addView(recyclerView)
