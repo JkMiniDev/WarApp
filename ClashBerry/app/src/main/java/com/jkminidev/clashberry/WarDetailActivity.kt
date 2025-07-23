@@ -174,9 +174,13 @@ class WarDetailActivity : AppCompatActivity() {
         fun updateWarData(newWarData: WarResponse) {
             warData = newWarData
             rootView?.let {
-                (it as? FrameLayout)?.removeAllViews()
+                val frame = it as FrameLayout
                 val helper = WarDisplayHelper(requireContext())
-                helper.displayWar(newWarData, it as FrameLayout, com.google.android.material.tabs.TabLayout(requireContext()))
+                val newContent = FrameLayout(requireContext())
+                helper.displayWar(newWarData, newContent, com.google.android.material.tabs.TabLayout(requireContext()))
+                frame.addView(newContent)
+                // Remove the old view (keep only the last one)
+                while (frame.childCount > 1) frame.removeViewAt(0)
             }
         }
     }
@@ -208,9 +212,13 @@ class WarDetailActivity : AppCompatActivity() {
         fun updateWarData(newWarData: WarResponse) {
             warData = newWarData
             rootView?.let {
-                (it as? FrameLayout)?.removeAllViews()
+                val frame = it as FrameLayout
                 val helper = WarDisplayHelper(requireContext())
-                helper.showActivityTab(it as FrameLayout, newWarData, true) { }
+                val newContent = FrameLayout(requireContext())
+                helper.showActivityTab(newContent, newWarData, true) { }
+                frame.addView(newContent)
+                // Remove the old view (keep only the last one)
+                while (frame.childCount > 1) frame.removeViewAt(0)
             }
         }
     }
