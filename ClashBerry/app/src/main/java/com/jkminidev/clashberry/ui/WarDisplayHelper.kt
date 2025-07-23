@@ -30,12 +30,14 @@ class WarDisplayHelper(private val context: Context) {
         companion object {
             private const val ARG_TAB_TYPE = "tab_type"
             private const val ARG_WAR_DATA = "war_data"
+            private const val ARG_SELECTED_CLAN = "selected_clan"
             
-            fun newInstance(tabType: Int, warData: WarResponse): SubTabFragment {
+            fun newInstance(tabType: Int, warData: WarResponse, selectedClan: Int): SubTabFragment {
                 val fragment = SubTabFragment()
                 val args = Bundle()
                 args.putInt(ARG_TAB_TYPE, tabType)
                 args.putString(ARG_WAR_DATA, com.google.gson.Gson().toJson(warData))
+                args.putInt(ARG_SELECTED_CLAN, selectedClan)
                 fragment.arguments = args
                 return fragment
             }
@@ -44,6 +46,7 @@ class WarDisplayHelper(private val context: Context) {
         override fun onCreateView(inflater: android.view.LayoutInflater, container: android.view.ViewGroup?, savedInstanceState: Bundle?): android.view.View? {
             val context = requireContext()
             val tabType = requireArguments().getInt(ARG_TAB_TYPE)
+            val selectedClan = requireArguments().getInt(ARG_SELECTED_CLAN, 0) // 0: own clan, 1: opponent
             val warData = com.google.gson.Gson().fromJson(requireArguments().getString(ARG_WAR_DATA), WarResponse::class.java)
             
             val recyclerView = RecyclerView(context).apply {
@@ -51,14 +54,17 @@ class WarDisplayHelper(private val context: Context) {
                 setPadding(8, 8, 8, 8)
             }
             
+            // Select the clan data based on selectedClan
+            val clanData = if (selectedClan == 0) warData.clan else warData.opponent
+            
             val filteredMembers = when (tabType) {
-                0 -> warData.clan.members.filter { it.attacks.isNotEmpty() }
-                1 -> warData.clan.members // Defence logic unchanged
+                0 -> clanData.members.filter { it.attacks.isNotEmpty() }
+                1 -> clanData.members // Defence logic unchanged
                 2 -> {
                     val attacksExpected = if (warData.warType == "cwl") 1 else 2
-                    warData.clan.members.filter { it.attacks.size < attacksExpected }
+                    clanData.members.filter { it.attacks.size < attacksExpected }
                 }
-                else -> warData.clan.members
+                else -> clanData.members
             }
             
             val displayType = when (tabType) {
@@ -76,13 +82,19 @@ class WarDisplayHelper(private val context: Context) {
     // Adapter for sub-tab ViewPager2
     inner class SubTabPagerAdapter(
         private val options: List<String>,
-        private val warData: WarResponse
+        private val warData: WarResponse,
+        private var selectedClan: Int = 0
     ) : FragmentStateAdapter(context as FragmentActivity) {
         
         override fun getItemCount(): Int = options.size
         
         override fun createFragment(position: Int): Fragment {
-            return SubTabFragment.newInstance(position, warData)
+            return SubTabFragment.newInstance(position, warData, selectedClan)
+        }
+        
+        fun updateSelectedClan(newSelectedClan: Int) {
+            selectedClan = newSelectedClan
+            notifyDataSetChanged()
         }
     }
     
@@ -100,7 +112,7 @@ class WarDisplayHelper(private val context: Context) {
         var selectedActivityTab = 0
 
         fun showActivityTab() {
-            showActivityTab(container, warData, selectedActivityTab) { selectedTab ->
+            showActivityTab(container, warData, selectedActivityTab, 0) { selectedTab, selectedClan ->
                 selectedActivityTab = selectedTab
             }
         }
@@ -221,7 +233,7 @@ class WarDisplayHelper(private val context: Context) {
         container.addView(warCard)
     }
     
-    fun showActivityTab(container: FrameLayout, warData: WarResponse, initialSelectedTab: Int, onToggle: (Int) -> Unit) {
+    fun showActivityTab(container: FrameLayout, warData: WarResponse, initialSelectedTab: Int, initialSelectedClan: Int = 0, onToggle: (Int, Int) -> Unit) {
         container.removeAllViews()
         val layout = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
@@ -234,11 +246,80 @@ class WarDisplayHelper(private val context: Context) {
             thirdLabel
         )
         var selected = initialSelectedTab // 0: Attack, 1: Defence, 2: Remaining/Missed
+        var selectedClan = initialSelectedClan // 0: own clan, 1: opponent clan
+        
+        // Create clan selection toggle
+        val clanToggleBar = LinearLayout(context).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = android.view.Gravity.CENTER
+            setPadding(16, 8, 16, 8)
+        }
+        
+        val clanOptions = listOf(warData.clan, warData.opponent)
+        val clanToggleViews = mutableListOf<LinearLayout>()
+        
+        fun updateClanToggle() {
+            clanToggleViews.forEachIndexed { idx, clanView ->
+                val textView = clanView.getChildAt(1) as TextView
+                if (idx == selectedClan) {
+                    textView.setTextColor(ContextCompat.getColor(context, R.color.accent_color))
+                    textView.setTypeface(textView.typeface, android.graphics.Typeface.BOLD)
+                    clanView.setBackgroundResource(R.drawable.toggle_underline)
+                } else {
+                    textView.setTextColor(ContextCompat.getColor(context, R.color.text_color))
+                    textView.setTypeface(textView.typeface, android.graphics.Typeface.NORMAL)
+                    clanView.background = null
+                }
+            }
+        }
         
         // Create ViewPager2 for swipe functionality between sub-tabs
         val viewPager = androidx.viewpager2.widget.ViewPager2(context)
-        val subTabAdapter = SubTabPagerAdapter(options, warData)
+        val subTabAdapter = SubTabPagerAdapter(options, warData, selectedClan)
         viewPager.adapter = subTabAdapter
+        
+        clanOptions.forEachIndexed { idx, clan ->
+            val clanLayout = LinearLayout(context).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = android.view.Gravity.CENTER_VERTICAL
+                setPadding(24, 12, 24, 12)
+                                 setOnClickListener {
+                     if (selectedClan != idx) {
+                         selectedClan = idx
+                         updateClanToggle()
+                         subTabAdapter.updateSelectedClan(selectedClan)
+                         onToggle(selected, selectedClan)
+                     }
+                 }
+            }
+            
+            val clanBadge = android.widget.ImageView(context).apply {
+                layoutParams = LinearLayout.LayoutParams(48, 48).apply {
+                    setMargins(0, 0, 12, 0)
+                }
+                scaleType = android.widget.ImageView.ScaleType.FIT_CENTER
+            }
+            
+            // Load clan badge using Glide
+            Glide.with(context)
+                .load(clan.badge)
+                .placeholder(R.mipmap.ic_launcher)
+                .error(R.mipmap.ic_launcher)
+                .circleCrop()
+                .into(clanBadge)
+            
+            val clanName = TextView(context).apply {
+                text = clan.name
+                textSize = 14f
+                setTextColor(ContextCompat.getColor(context, R.color.text_color))
+                gravity = android.view.Gravity.CENTER_VERTICAL
+            }
+            
+            clanLayout.addView(clanBadge)
+            clanLayout.addView(clanName)
+            clanToggleViews.add(clanLayout)
+            clanToggleBar.addView(clanLayout)
+        }
         
         // Set current item after a delay to avoid initialization issues
         viewPager.post {
@@ -289,17 +370,19 @@ class WarDisplayHelper(private val context: Context) {
             override fun onPageSelected(position: Int) {
                 selected = position
                 updateToggle()
-                onToggle(selected)
+                onToggle(selected, selectedClan)
             }
         })
         
-        // Add toggle bar and ViewPager2
+        // Add clan toggle bar, sub-tab toggle bar and ViewPager2
+        layout.addView(clanToggleBar)
         layout.addView(toggleBar)
         layout.addView(viewPager, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.MATCH_PARENT
         ))
         updateToggle()
+        updateClanToggle()
         container.addView(layout)
     }
     

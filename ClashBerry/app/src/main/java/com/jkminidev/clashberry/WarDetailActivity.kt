@@ -275,10 +275,12 @@ class WarDetailActivity : AppCompatActivity() {
         private var warData: WarResponse? = null
         private var rootView: FrameLayout? = null
         private var selectedSubTab: Int = 0 // 0: Attack, 1: Defence, 2: Remaining/Missed
+        private var selectedClan: Int = 0 // 0: own clan, 1: opponent clan
         
         companion object {
             private const val ARG_WAR_DATA = "war_data"
             private const val ARG_SELECTED_SUB_TAB = "selected_sub_tab"
+            private const val ARG_SELECTED_CLAN = "selected_clan"
             
             fun newInstance(warData: WarResponse): ActivityFragment {
                 val fragment = ActivityFragment()
@@ -296,15 +298,17 @@ class WarDetailActivity : AppCompatActivity() {
             val warDataJson = savedInstanceState?.getString(ARG_WAR_DATA) 
                 ?: requireArguments().getString(ARG_WAR_DATA)
             
-            // Restore selected sub-tab state
+            // Restore selected sub-tab and clan state
             selectedSubTab = savedInstanceState?.getInt(ARG_SELECTED_SUB_TAB, 0) ?: 0
+            selectedClan = savedInstanceState?.getInt(ARG_SELECTED_CLAN, 0) ?: 0
             
             warData = Gson().fromJson(warDataJson, WarResponse::class.java)
             val frame = FrameLayout(context)
             warData?.let {
                 val helper = WarDisplayHelper(context)
-                helper.showActivityTab(frame, it, selectedSubTab) { newSelectedTab ->
+                helper.showActivityTab(frame, it, selectedSubTab, selectedClan) { newSelectedTab, newSelectedClan ->
                     selectedSubTab = newSelectedTab
+                    selectedClan = newSelectedClan
                 }
             }
             rootView = frame
@@ -317,6 +321,7 @@ class WarDetailActivity : AppCompatActivity() {
                 outState.putString(ARG_WAR_DATA, Gson().toJson(it))
             }
             outState.putInt(ARG_SELECTED_SUB_TAB, selectedSubTab)
+            outState.putInt(ARG_SELECTED_CLAN, selectedClan)
         }
         
         fun bindWarData(newWarData: WarResponse) {
@@ -325,8 +330,9 @@ class WarDetailActivity : AppCompatActivity() {
             rootView?.let {
                 it.removeAllViews()
                 val helper = WarDisplayHelper(requireContext())
-                helper.showActivityTab(it, newWarData, selectedSubTab) { newSelectedTab ->
+                helper.showActivityTab(it, newWarData, selectedSubTab, selectedClan) { newSelectedTab, newSelectedClan ->
                     selectedSubTab = newSelectedTab
+                    selectedClan = newSelectedClan
                 }
             }
         }
