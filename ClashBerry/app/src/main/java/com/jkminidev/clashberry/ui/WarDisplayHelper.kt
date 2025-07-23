@@ -161,80 +161,98 @@ class WarDisplayHelper(private val context: Context) {
         val layout = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
         }
-        // Determine third option label
         val isWarEnded = warData.state == "warEnded"
         val thirdLabel = if (isWarEnded) context.getString(R.string.missed) else context.getString(R.string.remaining)
-        // Toggle option (RadioGroup with three RadioButtons)
-        val radioGroup = RadioGroup(context).apply {
-            orientation = RadioGroup.HORIZONTAL
+        val options = listOf(
+            context.getString(R.string.attacks),
+            context.getString(R.string.defenses),
+            thirdLabel
+        )
+        var selected = 0 // 0: Attack, 1: Defence, 2: Remaining/Missed
+        // Custom toggle bar
+        val toggleBar = LinearLayout(context).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = android.view.Gravity.CENTER
         }
-        val attackRadio = RadioButton(context).apply {
-            text = context.getString(R.string.attacks)
-            id = 1
-            isChecked = showAttacks
+        val toggleViews = options.mapIndexed { idx, label ->
+            TextView(context).apply {
+                text = label
+                setPadding(32, 16, 32, 16)
+                setTextColor(ContextCompat.getColor(context, R.color.text_color))
+                setTypeface(typeface, android.graphics.Typeface.BOLD)
+                gravity = android.view.Gravity.CENTER
+                setOnClickListener {
+                    if (selected != idx) {
+                        selected = idx
+                        updateToggle()
+                        updateList()
+                    }
+                }
+            }
         }
-        val defenceRadio = RadioButton(context).apply {
-            text = context.getString(R.string.defenses)
-            id = 2
-            isChecked = !showAttacks
+        fun updateToggle() {
+            toggleViews.forEachIndexed { idx, tv ->
+                if (idx == selected) {
+                    tv.setTextColor(ContextCompat.getColor(context, R.color.accent_color))
+                    tv.setTypeface(tv.typeface, android.graphics.Typeface.BOLD)
+                    tv.background = android.graphics.drawable.GradientDrawable().apply {
+                        setColor(android.graphics.Color.TRANSPARENT)
+                        setStroke(0, android.graphics.Color.TRANSPARENT)
+                        setSize(0, 0)
+                        setBounds(0, 0, 0, 0)
+                    }
+                    // Add green underline
+                    tv.setPadding(tv.paddingLeft, tv.paddingTop, tv.paddingRight, tv.paddingBottom)
+                    tv.setBackgroundResource(R.drawable.toggle_underline)
+                } else {
+                    tv.setTextColor(ContextCompat.getColor(context, R.color.text_color))
+                    tv.setTypeface(tv.typeface, android.graphics.Typeface.BOLD)
+                    tv.background = null
+                }
+            }
         }
-        val remainingRadio = RadioButton(context).apply {
-            text = thirdLabel
-            id = 3
-            isChecked = false
-        }
-        radioGroup.addView(attackRadio)
-        radioGroup.addView(defenceRadio)
-        radioGroup.addView(remainingRadio)
+        toggleViews.forEach { toggleBar.addView(it) }
+        // Add underline drawable
+        // res/drawable/toggle_underline.xml:
+        // <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+        //   <size android:height="4dp" />
+        //   <solid android:color="@color/accent_color" />
+        // </shape>
         fun getFilteredMembers(selected: Int): List<com.jkminidev.clashberry.data.MemberData> {
             return when (selected) {
-                1 -> warData.clan.members.filter { it.attacks.isNotEmpty() }
-                2 -> warData.clan.members // Defence logic unchanged
-                3 -> {
+                0 -> warData.clan.members.filter { it.attacks.isNotEmpty() }
+                1 -> warData.clan.members // Defence logic unchanged
+                2 -> {
                     val attacksExpected = if (warData.warType == "cwl") 1 else 2
-                    if (isWarEnded) {
-                        warData.clan.members.filter { it.attacks.size < attacksExpected }
-                    } else {
-                        warData.clan.members.filter { it.attacks.size < attacksExpected }
-                    }
+                    warData.clan.members.filter { it.attacks.size < attacksExpected }
                 }
                 else -> warData.clan.members
             }
         }
         fun getDisplayType(selected: Int): MemberAdapter.DisplayType {
             return when (selected) {
-                1 -> MemberAdapter.DisplayType.ATTACKS
-                2 -> MemberAdapter.DisplayType.DEFENSES
-                3 -> MemberAdapter.DisplayType.REMAINING // You may need to add this to your adapter
+                0 -> MemberAdapter.DisplayType.ATTACKS
+                1 -> MemberAdapter.DisplayType.DEFENSES
+                2 -> MemberAdapter.DisplayType.REMAINING
                 else -> MemberAdapter.DisplayType.ATTACKS
             }
         }
-        radioGroup.setOnCheckedChangeListener { _, checkedId ->
-            layout.removeViewAt(1)
-            val filtered = getFilteredMembers(checkedId)
-            val displayType = getDisplayType(checkedId)
+        fun updateList() {
+            if (layout.childCount > 1) layout.removeViewAt(1)
+            val filtered = getFilteredMembers(selected)
+            val displayType = getDisplayType(selected)
             val recyclerView = RecyclerView(context).apply {
                 layoutManager = LinearLayoutManager(context)
                 adapter = MemberAdapter(filtered, displayType)
                 setPadding(8, 8, 8, 8)
             }
             layout.addView(recyclerView)
-            onToggle(checkedId == 1)
+            onToggle(selected == 0)
         }
-        // Align toggle to right
-        val toggleContainer = LinearLayout(context).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = android.view.Gravity.END
-            addView(radioGroup)
-        }
-        layout.addView(toggleContainer)
-        val filtered = getFilteredMembers(1)
-        val recyclerView = RecyclerView(context).apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = MemberAdapter(filtered, MemberAdapter.DisplayType.ATTACKS)
-            setPadding(8, 8, 8, 8)
-        }
-        layout.addView(recyclerView)
+        // Add toggle bar and initial list
+        layout.addView(toggleBar)
+        updateToggle()
+        updateList()
         container.addView(layout)
     }
     
