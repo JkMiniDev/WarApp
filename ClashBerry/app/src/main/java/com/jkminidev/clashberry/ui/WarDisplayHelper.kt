@@ -395,8 +395,8 @@ class WarDisplayHelper(private val context: Context) {
         
         // Icons for each sub-tab option
         val iconResources = listOf(
-            R.drawable.ic_attack,
-            R.drawable.ic_defense,
+            R.drawable.ic_attack_new,
+            R.drawable.ic_defense_new,
             if (isWarEnded) R.drawable.ic_missed else R.drawable.ic_remaining
         )
         
