@@ -16,6 +16,8 @@ import com.jkminidev.clashberry.data.WarResponse
 import com.jkminidev.clashberry.adapters.MemberAdapter
 import com.jkminidev.clashberry.utils.TownHallHelper
 import android.widget.FrameLayout
+import android.widget.RadioGroup
+import android.widget.RadioButton
 
 class WarDisplayHelper(private val context: Context) {
     
@@ -159,27 +161,37 @@ class WarDisplayHelper(private val context: Context) {
         val layout = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
         }
-        // Toggle button (Switch or SegmentedButton)
-        val toggle = android.widget.Switch(context).apply {
-            text = if (showAttacks) context.getString(R.string.attacks) else context.getString(R.string.defenses)
+        // Toggle option (RadioGroup with two RadioButtons)
+        val radioGroup = RadioGroup(context).apply {
+            orientation = RadioGroup.HORIZONTAL
+        }
+        val attackRadio = RadioButton(context).apply {
+            text = context.getString(R.string.attacks)
+            id = 1
             isChecked = showAttacks
-            setOnCheckedChangeListener { _, isChecked ->
-                text = if (isChecked) context.getString(R.string.attacks) else context.getString(R.string.defenses)
-                layout.removeViewAt(1)
-                val recyclerView = RecyclerView(context).apply {
-                    layoutManager = LinearLayoutManager(context)
-                    adapter = MemberAdapter(warData.clan.members, if (isChecked) MemberAdapter.DisplayType.ATTACKS else MemberAdapter.DisplayType.DEFENSES)
-                    setPadding(8, 8, 8, 8)
-                }
-                layout.addView(recyclerView)
-                onToggle(isChecked)
+        }
+        val defenceRadio = RadioButton(context).apply {
+            text = context.getString(R.string.defenses)
+            id = 2
+            isChecked = !showAttacks
+        }
+        radioGroup.addView(attackRadio)
+        radioGroup.addView(defenceRadio)
+        radioGroup.setOnCheckedChangeListener { _, checkedId ->
+            layout.removeViewAt(1)
+            val recyclerView = RecyclerView(context).apply {
+                layoutManager = LinearLayoutManager(context)
+                adapter = MemberAdapter(warData.clan.members, if (checkedId == 1) MemberAdapter.DisplayType.ATTACKS else MemberAdapter.DisplayType.DEFENSES)
+                setPadding(8, 8, 8, 8)
             }
+            layout.addView(recyclerView)
+            onToggle(checkedId == 1)
         }
         // Align toggle to right
         val toggleContainer = LinearLayout(context).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = android.view.Gravity.END
-            addView(toggle)
+            addView(radioGroup)
         }
         layout.addView(toggleContainer)
         val recyclerView = RecyclerView(context).apply {
