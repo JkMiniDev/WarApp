@@ -1,0 +1,3 @@
+<resources>
+    <item name="loadingOverlay" type="id"/>
+</resources>
