@@ -82,6 +82,9 @@ class WarDetailActivity : AppCompatActivity() {
         binding.viewPager.adapter = warPagerAdapter
         binding.viewPager.offscreenPageLimit = 2
         
+        // Disable swipe functionality
+        binding.viewPager.isUserInputEnabled = false
+        
         binding.bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_overview -> {
@@ -95,14 +98,6 @@ class WarDetailActivity : AppCompatActivity() {
                 else -> false
             }
         }
-        
-        binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                if (position < binding.bottomNavigationView.menu.size()) {
-                    binding.bottomNavigationView.menu.getItem(position).isChecked = true
-                }
-            }
-        })
         
         // Set initial selection
         binding.bottomNavigationView.selectedItemId = R.id.nav_overview

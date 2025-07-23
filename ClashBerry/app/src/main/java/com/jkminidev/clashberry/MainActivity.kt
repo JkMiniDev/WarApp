@@ -313,7 +313,7 @@ class MainActivity : AppCompatActivity() {
                                 else -> getString(R.string.war_ended)
                             }
                             warCardBinding.tvTimeRemaining.text = when {
-                                warData.state == "warEnded" -> "00:00"
+                                warData.state == "warEnded" -> "0h 00m"
                                 else -> warData.timeRemaining ?: "Unknown"
                             }
                             warCardBinding.tvLeftStars.text = warData.clan.stars.toString()
@@ -364,7 +364,7 @@ class MainActivity : AppCompatActivity() {
         }
         
         warCardBinding.tvTimeRemaining.text = when {
-            warData.state == "warEnded" -> "00:00"
+            warData.state == "warEnded" -> "0h 00m"
             else -> warData.timeRemaining ?: "Unknown"
         }
         warCardBinding.tvLeftStars.text = warData.clan.stars.toString()
@@ -540,7 +540,7 @@ class MainActivity : AppCompatActivity() {
             }
             
             holder.binding.tvTimeRemaining.text = when {
-                war.state == "warEnded" -> "00:00"
+                war.state == "warEnded" -> "0h 00m"
                 else -> war.timeRemaining ?: "Unknown"
             }
             holder.binding.tvLeftStars.text = war.clan.stars.toString()

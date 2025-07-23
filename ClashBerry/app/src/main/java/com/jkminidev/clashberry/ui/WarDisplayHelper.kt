@@ -18,8 +18,75 @@ import com.jkminidev.clashberry.utils.TownHallHelper
 import android.widget.FrameLayout
 import android.widget.RadioGroup
 import android.widget.RadioButton
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import android.os.Bundle
 
 class WarDisplayHelper(private val context: Context) {
+    
+    // SubTab Fragment for ViewPager2
+    class SubTabFragment : Fragment() {
+        companion object {
+            private const val ARG_TAB_TYPE = "tab_type"
+            private const val ARG_WAR_DATA = "war_data"
+            
+            fun newInstance(tabType: Int, warData: WarResponse): SubTabFragment {
+                val fragment = SubTabFragment()
+                val args = Bundle()
+                args.putInt(ARG_TAB_TYPE, tabType)
+                args.putString(ARG_WAR_DATA, com.google.gson.Gson().toJson(warData))
+                fragment.arguments = args
+                return fragment
+            }
+        }
+        
+        override fun onCreateView(inflater: android.view.LayoutInflater, container: android.view.ViewGroup?, savedInstanceState: Bundle?): android.view.View? {
+            val context = requireContext()
+            val tabType = requireArguments().getInt(ARG_TAB_TYPE)
+            val warData = com.google.gson.Gson().fromJson(requireArguments().getString(ARG_WAR_DATA), WarResponse::class.java)
+            
+            val recyclerView = RecyclerView(context).apply {
+                layoutManager = LinearLayoutManager(context)
+                setPadding(8, 8, 8, 8)
+            }
+            
+            val filteredMembers = when (tabType) {
+                0 -> warData.clan.members.filter { it.attacks.isNotEmpty() }
+                1 -> warData.clan.members // Defence logic unchanged
+                2 -> {
+                    val attacksExpected = if (warData.warType == "cwl") 1 else 2
+                    warData.clan.members.filter { it.attacks.size < attacksExpected }
+                }
+                else -> warData.clan.members
+            }
+            
+            val displayType = when (tabType) {
+                0 -> MemberAdapter.DisplayType.ATTACKS
+                1 -> MemberAdapter.DisplayType.DEFENSES
+                2 -> MemberAdapter.DisplayType.REMAINING
+                else -> MemberAdapter.DisplayType.ATTACKS
+            }
+            
+            recyclerView.adapter = MemberAdapter(filteredMembers, displayType)
+            return recyclerView
+        }
+    }
+    
+    // Adapter for sub-tab ViewPager2
+    inner class SubTabPagerAdapter(
+        private val options: List<String>,
+        private val warData: WarResponse,
+        private val onTabSelected: (Int) -> Unit
+    ) : FragmentStateAdapter(context as FragmentActivity) {
+        
+        override fun getItemCount(): Int = options.size
+        
+        override fun createFragment(position: Int): Fragment {
+            onTabSelected(position)
+            return SubTabFragment.newInstance(position, warData)
+        }
+    }
     
     fun displayWar(warData: WarResponse, container: FrameLayout, tabLayout: com.google.android.material.tabs.TabLayout) {
         // Set up tabs
@@ -111,7 +178,7 @@ class WarDisplayHelper(private val context: Context) {
         if (warData.timeRemaining != null && warData.timeLabel != null) {
             statusDisplay += " • ${warData.timeRemaining} ${warData.timeLabel}"
         } else if (warData.state == "warEnded") {
-            statusDisplay += " • 00:00"
+            statusDisplay += " • 0h 00m"
         }
         if (warData.warType == "cwl" && warData.cwlRound != null) {
             statusDisplay += " • ${context.getString(R.string.cwl_round, warData.cwlRound)}"
@@ -169,6 +236,16 @@ class WarDisplayHelper(private val context: Context) {
             thirdLabel
         )
         var selected = initialSelectedTab // 0: Attack, 1: Defence, 2: Remaining/Missed
+        
+        // Create ViewPager2 for swipe functionality between sub-tabs
+        val viewPager = androidx.viewpager2.widget.ViewPager2(context)
+        val subTabAdapter = SubTabPagerAdapter(options, warData) { position ->
+            selected = position
+            onToggle(selected)
+        }
+        viewPager.adapter = subTabAdapter
+        viewPager.currentItem = selected
+        
         // Custom toggle bar
         val toggleBar = LinearLayout(context).apply {
             orientation = LinearLayout.HORIZONTAL
@@ -190,37 +267,7 @@ class WarDisplayHelper(private val context: Context) {
                 }
             }
         }
-        fun getFilteredMembers(selected: Int): List<com.jkminidev.clashberry.data.MemberData> {
-            return when (selected) {
-                0 -> warData.clan.members.filter { it.attacks.isNotEmpty() }
-                1 -> warData.clan.members // Defence logic unchanged
-                2 -> {
-                    val attacksExpected = if (warData.warType == "cwl") 1 else 2
-                    warData.clan.members.filter { it.attacks.size < attacksExpected }
-                }
-                else -> warData.clan.members
-            }
-        }
-        fun getDisplayType(selected: Int): MemberAdapter.DisplayType {
-            return when (selected) {
-                0 -> MemberAdapter.DisplayType.ATTACKS
-                1 -> MemberAdapter.DisplayType.DEFENSES
-                2 -> MemberAdapter.DisplayType.REMAINING
-                else -> MemberAdapter.DisplayType.ATTACKS
-            }
-        }
-        fun updateList() {
-            if (layout.childCount > 1) layout.removeViewAt(1)
-            val filtered = getFilteredMembers(selected)
-            val displayType = getDisplayType(selected)
-            val recyclerView = RecyclerView(context).apply {
-                layoutManager = LinearLayoutManager(context)
-                adapter = MemberAdapter(filtered, displayType)
-                setPadding(8, 8, 8, 8)
-            }
-            layout.addView(recyclerView)
-            onToggle(selected)
-        }
+        
         options.forEachIndexed { idx, label ->
             val tv = TextView(context).apply {
                 text = label
@@ -231,18 +278,34 @@ class WarDisplayHelper(private val context: Context) {
                 setOnClickListener {
                     if (selected != idx) {
                         selected = idx
+                        viewPager.currentItem = selected
                         updateToggle()
-                        updateList()
+                        onToggle(selected)
                     }
                 }
             }
             toggleViews.add(tv)
             toggleBar.addView(tv)
         }
-        // Add toggle bar and initial list
+        
+        // Add ViewPager2 page change callback
+        viewPager.registerOnPageChangeCallback(object : androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                if (selected != position) {
+                    selected = position
+                    updateToggle()
+                    onToggle(selected)
+                }
+            }
+        })
+        
+        // Add toggle bar and ViewPager2
         layout.addView(toggleBar)
+        layout.addView(viewPager, LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.MATCH_PARENT
+        ))
         updateToggle()
-        updateList()
         container.addView(layout)
     }
     
