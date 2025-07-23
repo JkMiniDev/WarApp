@@ -27,6 +27,11 @@ class WarDisplayHelper(private val context: Context) {
     
     // SubTab Fragment for ViewPager2
     class SubTabFragment : Fragment() {
+        private var recyclerView: RecyclerView? = null
+        private var currentTabType: Int = 0
+        private var currentWarData: WarResponse? = null
+        private var currentSelectedClan: Int = 0
+        
         companion object {
             private const val ARG_TAB_TYPE = "tab_type"
             private const val ARG_WAR_DATA = "war_data"
@@ -45,37 +50,50 @@ class WarDisplayHelper(private val context: Context) {
         
         override fun onCreateView(inflater: android.view.LayoutInflater, container: android.view.ViewGroup?, savedInstanceState: Bundle?): android.view.View? {
             val context = requireContext()
-            val tabType = requireArguments().getInt(ARG_TAB_TYPE)
-            val selectedClan = requireArguments().getInt(ARG_SELECTED_CLAN, 0) // 0: own clan, 1: opponent
-            val warData = com.google.gson.Gson().fromJson(requireArguments().getString(ARG_WAR_DATA), WarResponse::class.java)
+            currentTabType = requireArguments().getInt(ARG_TAB_TYPE)
+            currentSelectedClan = requireArguments().getInt(ARG_SELECTED_CLAN, 0) // 0: own clan, 1: opponent
+            currentWarData = com.google.gson.Gson().fromJson(requireArguments().getString(ARG_WAR_DATA), WarResponse::class.java)
             
-            val recyclerView = RecyclerView(context).apply {
+            recyclerView = RecyclerView(context).apply {
                 layoutManager = LinearLayoutManager(context)
                 setPadding(8, 8, 8, 8)
             }
             
-            // Select the clan data based on selectedClan
-            val clanData = if (selectedClan == 0) warData.clan else warData.opponent
-            
-            val filteredMembers = when (tabType) {
-                0 -> clanData.members.filter { it.attacks.isNotEmpty() }
-                1 -> clanData.members // Defence logic unchanged
-                2 -> {
-                    val attacksExpected = if (warData.warType == "cwl") 1 else 2
-                    clanData.members.filter { it.attacks.size < attacksExpected }
-                }
-                else -> clanData.members
-            }
-            
-            val displayType = when (tabType) {
-                0 -> MemberAdapter.DisplayType.ATTACKS
-                1 -> MemberAdapter.DisplayType.DEFENSES
-                2 -> MemberAdapter.DisplayType.REMAINING
-                else -> MemberAdapter.DisplayType.ATTACKS
-            }
-            
-            recyclerView.adapter = MemberAdapter(filteredMembers, displayType)
+            updateContent()
             return recyclerView
+        }
+        
+        private fun updateContent() {
+            currentWarData?.let { warData ->
+                // Select the clan data based on selectedClan
+                val clanData = if (currentSelectedClan == 0) warData.clan else warData.opponent
+                
+                val filteredMembers = when (currentTabType) {
+                    0 -> clanData.members.filter { it.attacks.isNotEmpty() }
+                    1 -> clanData.members // Defence logic unchanged
+                    2 -> {
+                        val attacksExpected = if (warData.warType == "cwl") 1 else 2
+                        clanData.members.filter { it.attacks.size < attacksExpected }
+                    }
+                    else -> clanData.members
+                }
+                
+                val displayType = when (currentTabType) {
+                    0 -> MemberAdapter.DisplayType.ATTACKS
+                    1 -> MemberAdapter.DisplayType.DEFENSES
+                    2 -> MemberAdapter.DisplayType.REMAINING
+                    else -> MemberAdapter.DisplayType.ATTACKS
+                }
+                
+                recyclerView?.adapter = MemberAdapter(filteredMembers, displayType)
+            }
+        }
+        
+        fun updateClanSelection(newSelectedClan: Int) {
+            if (currentSelectedClan != newSelectedClan) {
+                currentSelectedClan = newSelectedClan
+                updateContent()
+            }
         }
     }
     
@@ -86,15 +104,38 @@ class WarDisplayHelper(private val context: Context) {
         private var selectedClan: Int = 0
     ) : FragmentStateAdapter(context as FragmentActivity) {
         
+        private val fragmentManager = (context as FragmentActivity).supportFragmentManager
+        
         override fun getItemCount(): Int = options.size
         
         override fun createFragment(position: Int): Fragment {
             return SubTabFragment.newInstance(position, warData, selectedClan)
         }
         
+        override fun getItemId(position: Int): Long {
+            // Generate unique ID based on position and selected clan
+            // This forces fragment recreation when clan changes
+            return (position.toString() + selectedClan.toString()).hashCode().toLong()
+        }
+        
+        override fun containsItem(itemId: Long): Boolean {
+            // Check if item exists for current clan selection
+            val currentIds = (0 until itemCount).map { getItemId(it) }
+            return currentIds.contains(itemId)
+        }
+        
         fun updateSelectedClan(newSelectedClan: Int) {
-            selectedClan = newSelectedClan
-            notifyDataSetChanged()
+            if (selectedClan != newSelectedClan) {
+                // First try to update existing fragments
+                for (i in 0 until itemCount) {
+                    val fragmentTag = "f$i"
+                    val fragment = fragmentManager.findFragmentByTag(fragmentTag) as? SubTabFragment
+                    fragment?.updateClanSelection(newSelectedClan)
+                }
+                
+                selectedClan = newSelectedClan
+                notifyDataSetChanged()
+            }
         }
     }
     
