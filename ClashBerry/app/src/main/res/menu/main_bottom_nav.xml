@@ -3,7 +3,7 @@
     <item
         android:id="@+id/nav_home"
         android:title="Home"
-        android:icon="@drawable/ic_crossed_swords" />
+        android:icon="@drawable/ic_crossed_swords_home" />
     <item
         android:id="@+id/nav_bookmarks"
         android:title="Bookmarks"
