@@ -180,14 +180,8 @@ class WarDisplayHelper(private val context: Context) {
                 if (idx == selected) {
                     tv.setTextColor(ContextCompat.getColor(context, R.color.accent_color))
                     tv.setTypeface(tv.typeface, android.graphics.Typeface.BOLD)
-                    tv.background = android.graphics.drawable.GradientDrawable().apply {
-                        setColor(android.graphics.Color.TRANSPARENT)
-                        setStroke(0, android.graphics.Color.TRANSPARENT)
-                        setSize(0, 0)
-                        setBounds(0, 0, 0, 0)
-                    }
-                    // Add green underline
-                    tv.setPadding(tv.paddingLeft, tv.paddingTop, tv.paddingRight, tv.paddingBottom)
+                    // Only set underline, no background color
+                    tv.background = null
                     tv.setBackgroundResource(R.drawable.toggle_underline)
                 } else {
                     tv.setTextColor(ContextCompat.getColor(context, R.color.text_color))
