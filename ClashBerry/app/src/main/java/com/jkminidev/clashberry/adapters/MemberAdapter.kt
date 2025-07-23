@@ -17,7 +17,7 @@ class MemberAdapter(
 ) : RecyclerView.Adapter<MemberAdapter.MemberViewHolder>() {
 
     enum class DisplayType {
-        ATTACKS, DEFENSES, ROSTER
+        ATTACKS, DEFENSES, ROSTER, REMAINING
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MemberViewHolder {
@@ -66,6 +66,7 @@ class MemberAdapter(
                 DisplayType.ROSTER -> {
                     // Just show basic info for roster
                 }
+                DisplayType.REMAINING -> showRemaining(member)
             }
         }
 
@@ -101,6 +102,20 @@ class MemberAdapter(
                 }
                 layoutDefenses.addView(defenseView)
             }
+        }
+
+        private fun showRemaining(member: MemberData) {
+            layoutAttackInfo.visibility = View.VISIBLE
+            layoutAttacks.removeAllViews()
+            val attacksExpected = if (member.attacks.size == 1) 2 else 2 // You may want to pass this in
+            val remaining = attacksExpected - member.attacks.size
+            val remainingView = TextView(itemView.context).apply {
+                text = if (remaining > 0) "Remaining Attacks: $remaining" else itemView.context.getString(R.string.no_attacks_yet)
+                setTextColor(itemView.context.getColor(R.color.text_color_secondary))
+                textSize = 14f
+                setPadding(8, 8, 8, 8)
+            }
+            layoutAttacks.addView(remainingView)
         }
 
         private fun createAttackView(stars: Int, destruction: Double): View {

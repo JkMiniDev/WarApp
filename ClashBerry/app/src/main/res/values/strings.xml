@@ -72,4 +72,6 @@
     <!-- Bookmark page strings -->
     <string name="no_bookmarks">No Bookmarks</string>
     <string name="bookmark_clans_message">Search and bookmark clans to see them here</string>
+    <string name="missed">Missed</string>
+    <string name="remaining">Remaining</string>
 </resources>
