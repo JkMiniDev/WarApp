@@ -261,6 +261,7 @@ class MainActivity : AppCompatActivity() {
         loadBookmarkedClans()
         loadWarData {
             hideLoadingOverlay()
+            Toast.makeText(this, "Refreshed Successful", Toast.LENGTH_SHORT).show()
         }
     }
 

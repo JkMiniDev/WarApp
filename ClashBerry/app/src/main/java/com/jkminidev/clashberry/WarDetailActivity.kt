@@ -118,7 +118,7 @@ class WarDetailActivity : AppCompatActivity() {
                     response.body()?.let { newWarData ->
                         warData = newWarData
                         updateCurrentFragmentWithNewData(newWarData)
-                        android.widget.Toast.makeText(this@WarDetailActivity, "War data refreshed", android.widget.Toast.LENGTH_SHORT).show()
+                        android.widget.Toast.makeText(this@WarDetailActivity, "Refreshed Successful", android.widget.Toast.LENGTH_SHORT).show()
                     }
                 } else {
                     val errorHandler = com.jkminidev.clashberry.utils.ErrorHandler
@@ -172,32 +172,13 @@ class WarDetailActivity : AppCompatActivity() {
             val overlay = android.widget.FrameLayout(this)
             overlay.id = R.id.loadingOverlay
             overlay.setBackgroundColor(android.graphics.Color.parseColor("#80000000"))
-            
-            val loadingLayout = android.widget.LinearLayout(this).apply {
-                orientation = android.widget.LinearLayout.VERTICAL
-                gravity = android.view.Gravity.CENTER
-                setPadding(24, 24, 24, 24)
-            }
-            
             val progress = android.widget.ProgressBar(this)
-            val textView = android.widget.TextView(this).apply {
-                text = "Refreshing war data..."
-                setTextColor(android.graphics.Color.WHITE)
-                textSize = 16f
-                gravity = android.view.Gravity.CENTER
-                setPadding(0, 16, 0, 0)
-            }
-            
-            loadingLayout.addView(progress)
-            loadingLayout.addView(textView)
-            
             val params = android.widget.FrameLayout.LayoutParams(
                 android.widget.FrameLayout.LayoutParams.WRAP_CONTENT,
                 android.widget.FrameLayout.LayoutParams.WRAP_CONTENT
             )
             params.gravity = android.view.Gravity.CENTER
-            overlay.addView(loadingLayout, params)
-            
+            overlay.addView(progress, params)
             (binding.root as ViewGroup).addView(overlay, ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
         }
