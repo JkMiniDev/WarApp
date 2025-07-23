@@ -140,7 +140,7 @@ class WarDetailActivity : AppCompatActivity() {
 
     private fun updateCurrentFragmentWithNewData(newWarData: WarResponse) {
         try {
-            // Update all fragments that might be instantiated
+            // Update all fragments that might be instantiated without recreating adapter
             val fm = supportFragmentManager
             
             // Try to find fragments using different methods
@@ -159,15 +159,18 @@ class WarDetailActivity : AppCompatActivity() {
                 }
             }
             
-            // Also update the adapter's reference
-            warPagerAdapter = WarPagerAdapter(this)
-            binding.viewPager.adapter = warPagerAdapter
+            // DON'T recreate the adapter - this was causing the tab reset
+            // Just update the existing fragments with new data
             
         } catch (e: Exception) {
-            // Fallback: recreate the adapter entirely
+            android.util.Log.e("WarDetailActivity", "Error updating fragments", e)
+            // Only recreate adapter as last resort, and preserve tab position
+            val currentPosition = binding.viewPager.currentItem
             warPagerAdapter = WarPagerAdapter(this)
             binding.viewPager.adapter = warPagerAdapter
-            android.util.Log.e("WarDetailActivity", "Error updating fragments, recreated adapter", e)
+            binding.viewPager.post {
+                binding.viewPager.currentItem = currentPosition
+            }
         }
     }
 
