@@ -381,13 +381,24 @@ class WarDisplayHelper(private val context: Context) {
                     // Only set underline, no background color
                     tv.background = null
                     tv.setBackgroundResource(R.drawable.toggle_underline)
+                    // Tint the icon to accent color
+                    tv.compoundDrawables[0]?.setTint(ContextCompat.getColor(context, R.color.accent_color))
                 } else {
                     tv.setTextColor(ContextCompat.getColor(context, R.color.text_color))
                     tv.setTypeface(tv.typeface, android.graphics.Typeface.BOLD)
                     tv.background = null
+                    // Tint the icon to normal text color
+                    tv.compoundDrawables[0]?.setTint(ContextCompat.getColor(context, R.color.text_color))
                 }
             }
         }
+        
+        // Icons for each sub-tab option
+        val iconResources = listOf(
+            R.drawable.ic_attack,
+            R.drawable.ic_defense,
+            if (isWarEnded) R.drawable.ic_missed else R.drawable.ic_remaining
+        )
         
         options.forEachIndexed { idx, label ->
             val tv = TextView(context).apply {
@@ -396,6 +407,9 @@ class WarDisplayHelper(private val context: Context) {
                 setTextColor(ContextCompat.getColor(context, R.color.text_color))
                 setTypeface(typeface, android.graphics.Typeface.BOLD)
                 gravity = android.view.Gravity.CENTER
+                // Add icon before text
+                setCompoundDrawablesWithIntrinsicBounds(iconResources[idx], 0, 0, 0)
+                compoundDrawablePadding = 8
                 setOnClickListener {
                     if (selected != idx) {
                         viewPager.currentItem = idx
