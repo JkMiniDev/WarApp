@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity() {
         
         setupUI()
         loadBookmarkedClans()
-        loadWarData()
+        loadWarData { }
         displayBookmarkedClans()
     }
     
@@ -203,7 +203,7 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, getString(R.string.clan_bookmarked), Toast.LENGTH_SHORT).show()
             
             // Refresh war data
-            loadWarData()
+            loadWarData { }
         } else {
             Toast.makeText(this, "Clan already bookmarked", Toast.LENGTH_SHORT).show()
         }
@@ -259,9 +259,13 @@ class MainActivity : AppCompatActivity() {
         showLoadingOverlay()
         // Refresh the data by reloading war data and bookmarked clans
         loadBookmarkedClans()
-        loadWarData {
+        loadWarData { success ->
             hideLoadingOverlay()
-            Toast.makeText(this, "Refreshed Successful", Toast.LENGTH_SHORT).show()
+            if (success) {
+                Toast.makeText(this, "Refreshed Successful", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Refresh Unsuccessful", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -287,17 +291,18 @@ class MainActivity : AppCompatActivity() {
         overlay?.let { (binding.root as ViewGroup).removeView(it) }
     }
 
-    private fun loadWarData(onComplete: (() -> Unit)? = null) {
+    private fun loadWarData(onComplete: ((Boolean) -> Unit)? = null) {
         if (bookmarkedClans.isEmpty()) {
             binding.noWarsLayout.visibility = View.VISIBLE
             binding.warCardsContainer.removeAllViews()
-            onComplete?.invoke()
+            onComplete?.invoke(true)
             return
         }
         binding.noWarsLayout.visibility = View.GONE
         // Don't clear warCardsContainer yet
         val newWarCards = mutableListOf<View>()
         var loadedCount = 0
+        var successfulCount = 0
         val total = bookmarkedClans.size
         bookmarkedClans.forEach { clan ->
             lifecycleScope.launch {
@@ -336,6 +341,7 @@ class MainActivity : AppCompatActivity() {
                                 openWarDetail(warData)
                             }
                             newWarCards.add(warCardBinding.root)
+                            successfulCount++
                         }
                     }
                 } catch (e: Exception) {
@@ -346,7 +352,8 @@ class MainActivity : AppCompatActivity() {
                         // All war data loaded, now update UI
                         binding.warCardsContainer.removeAllViews()
                         newWarCards.forEach { binding.warCardsContainer.addView(it) }
-                        onComplete?.invoke()
+                        // Consider successful if at least one clan loaded successfully
+                        onComplete?.invoke(successfulCount > 0)
                     }
                 }
             }
@@ -441,7 +448,7 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, getString(R.string.clan_removed), Toast.LENGTH_SHORT).show()
             
             // Refresh war data
-            loadWarData()
+            loadWarData { }
         }
         
         binding.bookmarkedClansContainer.addView(bookmarkCardBinding.root)

@@ -126,7 +126,7 @@ class WarDetailActivity : AppCompatActivity() {
                     android.widget.Toast.makeText(this@WarDetailActivity, errorResponse.message, android.widget.Toast.LENGTH_LONG).show()
                 }
             } catch (e: Exception) {
-                android.widget.Toast.makeText(this@WarDetailActivity, "Error refreshing war data: ${e.message}", android.widget.Toast.LENGTH_SHORT).show()
+                android.widget.Toast.makeText(this@WarDetailActivity, "Connection Failed", android.widget.Toast.LENGTH_SHORT).show()
             } finally {
                 hideLoadingOverlay()
             }
