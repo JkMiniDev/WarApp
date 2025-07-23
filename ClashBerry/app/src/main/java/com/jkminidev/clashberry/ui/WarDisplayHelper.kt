@@ -76,14 +76,12 @@ class WarDisplayHelper(private val context: Context) {
     // Adapter for sub-tab ViewPager2
     inner class SubTabPagerAdapter(
         private val options: List<String>,
-        private val warData: WarResponse,
-        private val onTabSelected: (Int) -> Unit
+        private val warData: WarResponse
     ) : FragmentStateAdapter(context as FragmentActivity) {
         
         override fun getItemCount(): Int = options.size
         
         override fun createFragment(position: Int): Fragment {
-            onTabSelected(position)
             return SubTabFragment.newInstance(position, warData)
         }
     }
@@ -239,12 +237,13 @@ class WarDisplayHelper(private val context: Context) {
         
         // Create ViewPager2 for swipe functionality between sub-tabs
         val viewPager = androidx.viewpager2.widget.ViewPager2(context)
-        val subTabAdapter = SubTabPagerAdapter(options, warData) { position ->
-            selected = position
-            onToggle(selected)
-        }
+        val subTabAdapter = SubTabPagerAdapter(options, warData)
         viewPager.adapter = subTabAdapter
-        viewPager.currentItem = selected
+        
+        // Set current item after a delay to avoid initialization issues
+        viewPager.post {
+            viewPager.currentItem = selected
+        }
         
         // Custom toggle bar
         val toggleBar = LinearLayout(context).apply {
@@ -277,10 +276,7 @@ class WarDisplayHelper(private val context: Context) {
                 gravity = android.view.Gravity.CENTER
                 setOnClickListener {
                     if (selected != idx) {
-                        selected = idx
-                        viewPager.currentItem = selected
-                        updateToggle()
-                        onToggle(selected)
+                        viewPager.currentItem = idx
                     }
                 }
             }
@@ -291,11 +287,9 @@ class WarDisplayHelper(private val context: Context) {
         // Add ViewPager2 page change callback
         viewPager.registerOnPageChangeCallback(object : androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
-                if (selected != position) {
-                    selected = position
-                    updateToggle()
-                    onToggle(selected)
-                }
+                selected = position
+                updateToggle()
+                onToggle(selected)
             }
         })
         
