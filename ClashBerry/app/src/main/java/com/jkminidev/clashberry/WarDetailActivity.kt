@@ -111,6 +111,7 @@ class WarDetailActivity : AppCompatActivity() {
     private fun refreshWarData() {
         showLoadingOverlay()
         val clanTag = warData.clan.tag
+        val currentTabPosition = binding.viewPager.currentItem // Save current tab position
         lifecycleScope.launch {
             try {
                 val response = com.jkminidev.clashberry.network.NetworkModule.apiService.getWarData(clanTag)
@@ -118,6 +119,10 @@ class WarDetailActivity : AppCompatActivity() {
                     response.body()?.let { newWarData ->
                         warData = newWarData
                         updateCurrentFragmentWithNewData(newWarData)
+                        // Restore the tab position after refresh
+                        binding.viewPager.post {
+                            binding.viewPager.currentItem = currentTabPosition
+                        }
                         android.widget.Toast.makeText(this@WarDetailActivity, "Refreshed Successful", android.widget.Toast.LENGTH_SHORT).show()
                     }
                 } else {
