@@ -17,17 +17,6 @@
         app:navigationIcon="@drawable/ic_back"
         app:navigationIconTint="@color/text_color" />
 
-    <!-- Tab Layout -->
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tabLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        app:tabTextColor="@color/text_color_secondary"
-        app:tabSelectedTextColor="@color/accent_color"
-        app:tabIndicatorColor="@color/accent_color"
-        app:tabMode="scrollable" />
-
     <!-- ViewPager2 for swipe navigation -->
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager"
@@ -35,5 +24,13 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:background="@color/background_primary" />
+
+    <!-- Bottom Navigation Bar -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigationView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/background_secondary"
+        app:menu="@menu/war_detail_bottom_nav" />
 
 </LinearLayout>

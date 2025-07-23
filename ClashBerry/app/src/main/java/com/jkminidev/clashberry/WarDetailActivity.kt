@@ -16,6 +16,7 @@ import android.view.View
 import android.os.Parcelable
 import android.os.Parcel
 import android.widget.FrameLayout
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class WarDetailActivity : AppCompatActivity() {
     
@@ -40,41 +41,36 @@ class WarDetailActivity : AppCompatActivity() {
         val warDataJson = intent.getStringExtra("war_data")
         if (warDataJson != null) {
             warData = gson.fromJson(warDataJson, WarResponse::class.java)
-            setupViewPagerAndTabs()
+            setupViewPagerAndBottomNav()
         } else {
             finish()
         }
     }
 
-    private fun setupViewPagerAndTabs() {
+    private fun setupViewPagerAndBottomNav() {
         val adapter = WarPagerAdapter(this, warData)
         binding.viewPager.adapter = adapter
-        binding.viewPager.offscreenPageLimit = 3
-        // TabLayout and ViewPager2 sync
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText(getString(R.string.overview)))
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Activity"))
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText(getString(R.string.roster)))
-        binding.tabLayout.addOnTabSelectedListener(object : com.google.android.material.tabs.TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: com.google.android.material.tabs.TabLayout.Tab?) {
-                tab?.let { binding.viewPager.currentItem = it.position }
+        binding.viewPager.offscreenPageLimit = 2
+        binding.bottomNavigationView.setOnNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_overview -> binding.viewPager.currentItem = 0
+                R.id.nav_activity -> binding.viewPager.currentItem = 1
             }
-            override fun onTabUnselected(tab: com.google.android.material.tabs.TabLayout.Tab?) {}
-            override fun onTabReselected(tab: com.google.android.material.tabs.TabLayout.Tab?) {}
-        })
+            true
+        }
         binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
-                binding.tabLayout.selectTab(binding.tabLayout.getTabAt(position))
+                binding.bottomNavigationView.menu.getItem(position).isChecked = true
             }
         })
     }
 
     class WarPagerAdapter(fa: FragmentActivity, private val warData: WarResponse) : FragmentStateAdapter(fa) {
-        override fun getItemCount(): Int = 3
+        override fun getItemCount(): Int = 2
         override fun createFragment(position: Int): Fragment {
             return when (position) {
                 0 -> OverviewFragment.newInstance(warData)
                 1 -> ActivityFragment.newInstance(warData)
-                2 -> RoasterFragment.newInstance(warData)
                 else -> throw IllegalArgumentException()
             }
         }
@@ -119,27 +115,6 @@ class WarDetailActivity : AppCompatActivity() {
             // Use the helper's showActivityTab logic
             val helper = WarDisplayHelper(context)
             helper.showActivityTab(frame, warData, true) { }
-            return frame
-        }
-    }
-
-    class RoasterFragment : Fragment() {
-        companion object {
-            private const val ARG_WAR_DATA = "war_data"
-            fun newInstance(warData: WarResponse): RoasterFragment {
-                val fragment = RoasterFragment()
-                val args = Bundle()
-                args.putString(ARG_WAR_DATA, Gson().toJson(warData))
-                fragment.arguments = args
-                return fragment
-            }
-        }
-        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-            val context = requireContext()
-            val warData = Gson().fromJson(requireArguments().getString(ARG_WAR_DATA), WarResponse::class.java)
-            val frame = FrameLayout(context)
-            val helper = WarDisplayHelper(context)
-            helper.showRosterTab(frame, warData)
             return frame
         }
     }
