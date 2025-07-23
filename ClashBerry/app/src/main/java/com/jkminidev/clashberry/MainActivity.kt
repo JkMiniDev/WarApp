@@ -65,15 +65,15 @@ class MainActivity : AppCompatActivity() {
     }
     
     private fun setupBottomNavigation() {
-        binding.homeTab.setOnClickListener {
-            switchTab("home")
+        binding.bottomNavigationView.setOnNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_home -> switchTab("home")
+                R.id.nav_bookmarks -> switchTab("bookmarks")
+            }
+            true
         }
-        
-        binding.bookmarksTab.setOnClickListener {
-            switchTab("bookmarks")
-        }
-        
         // Set initial tab
+        binding.bottomNavigationView.selectedItemId = R.id.nav_home
         switchTab("home")
     }
     
@@ -96,33 +96,16 @@ class MainActivity : AppCompatActivity() {
     
     private fun switchTab(tab: String) {
         currentTab = tab
-        
         when (tab) {
             "home" -> {
                 binding.homeContent.visibility = View.VISIBLE
                 binding.bookmarksContent.visibility = View.GONE
-                
-                // Update top bar title
                 binding.tvAppName.text = getString(R.string.current_war)
-                
-                // Update tab colors
-                binding.homeIcon.setColorFilter(ContextCompat.getColor(this, R.color.accent_color))
-                binding.homeText.setTextColor(ContextCompat.getColor(this, R.color.accent_color))
-                binding.bookmarksIcon.setColorFilter(ContextCompat.getColor(this, R.color.text_color_secondary))
-                binding.bookmarksText.setTextColor(ContextCompat.getColor(this, R.color.text_color_secondary))
             }
             "bookmarks" -> {
                 binding.homeContent.visibility = View.GONE
                 binding.bookmarksContent.visibility = View.VISIBLE
-                
-                // Update top bar title
                 binding.tvAppName.text = getString(R.string.bookmarks)
-                
-                // Update tab colors
-                binding.homeIcon.setColorFilter(ContextCompat.getColor(this, R.color.text_color_secondary))
-                binding.homeText.setTextColor(ContextCompat.getColor(this, R.color.text_color_secondary))
-                binding.bookmarksIcon.setColorFilter(ContextCompat.getColor(this, R.color.accent_color))
-                binding.bookmarksText.setTextColor(ContextCompat.getColor(this, R.color.accent_color))
             }
         }
     }
