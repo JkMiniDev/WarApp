@@ -15,7 +15,8 @@
         app:title="War Details"
         app:titleTextColor="@color/text_color"
         app:navigationIcon="@drawable/ic_back"
-        app:navigationIconTint="@color/text_color" />
+        app:navigationIconTint="@color/text_color"
+        app:menu="@menu/war_details_menu" />
 
     <!-- ViewPager2 for swipe navigation -->
     <androidx.viewpager2.widget.ViewPager2

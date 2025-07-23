@@ -65,6 +65,25 @@ class WarDetailActivity : AppCompatActivity() {
         })
     }
 
+    override fun onCreateOptionsMenu(menu: android.view.Menu?): Boolean {
+        menuInflater.inflate(R.menu.war_details_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: android.view.MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_refresh -> {
+                // TODO: Implement refresh war data logic
+                true
+            }
+            R.id.menu_settings -> {
+                startActivity(android.content.Intent(this, SettingsActivity::class.java))
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
     class WarPagerAdapter(fa: FragmentActivity, private val warData: WarResponse) : FragmentStateAdapter(fa) {
         override fun getItemCount(): Int = 2
         override fun createFragment(position: Int): Fragment {
