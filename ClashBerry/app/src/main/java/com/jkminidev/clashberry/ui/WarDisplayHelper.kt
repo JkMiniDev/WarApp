@@ -31,12 +31,12 @@ class WarDisplayHelper(private val context: Context) {
         // Show initial content (overview)
         showOverviewTab(container, warData)
 
-        // Track which activity view is selected (attack or defence)
-        var showAttacks = true
+        // Track which activity view is selected (0: Attack, 1: Defence, 2: Remaining/Missed)
+        var selectedActivityTab = 0
 
         fun showActivityTab() {
-            showActivityTab(container, warData, showAttacks) { isAttack ->
-                showAttacks = isAttack
+            showActivityTab(container, warData, selectedActivityTab) { selectedTab ->
+                selectedActivityTab = selectedTab
             }
         }
 
@@ -156,7 +156,7 @@ class WarDisplayHelper(private val context: Context) {
         container.addView(warCard)
     }
     
-    fun showActivityTab(container: FrameLayout, warData: WarResponse, showAttacks: Boolean, onToggle: (Boolean) -> Unit) {
+    fun showActivityTab(container: FrameLayout, warData: WarResponse, initialSelectedTab: Int, onToggle: (Int) -> Unit) {
         container.removeAllViews()
         val layout = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
@@ -168,7 +168,7 @@ class WarDisplayHelper(private val context: Context) {
             context.getString(R.string.defenses),
             thirdLabel
         )
-        var selected = 0 // 0: Attack, 1: Defence, 2: Remaining/Missed
+        var selected = initialSelectedTab // 0: Attack, 1: Defence, 2: Remaining/Missed
         // Custom toggle bar
         val toggleBar = LinearLayout(context).apply {
             orientation = LinearLayout.HORIZONTAL
@@ -219,7 +219,7 @@ class WarDisplayHelper(private val context: Context) {
                 setPadding(8, 8, 8, 8)
             }
             layout.addView(recyclerView)
-            onToggle(selected == 0)
+            onToggle(selected)
         }
         options.forEachIndexed { idx, label ->
             val tv = TextView(context).apply {

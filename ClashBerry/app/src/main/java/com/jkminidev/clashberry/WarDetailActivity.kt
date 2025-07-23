@@ -279,8 +279,12 @@ class WarDetailActivity : AppCompatActivity() {
     class ActivityFragment : Fragment() {
         private var warData: WarResponse? = null
         private var rootView: FrameLayout? = null
+        private var selectedSubTab: Int = 0 // 0: Attack, 1: Defence, 2: Remaining/Missed
+        
         companion object {
             private const val ARG_WAR_DATA = "war_data"
+            private const val ARG_SELECTED_SUB_TAB = "selected_sub_tab"
+            
             fun newInstance(warData: WarResponse): ActivityFragment {
                 val fragment = ActivityFragment()
                 val args = Bundle()
@@ -297,11 +301,16 @@ class WarDetailActivity : AppCompatActivity() {
             val warDataJson = savedInstanceState?.getString(ARG_WAR_DATA) 
                 ?: requireArguments().getString(ARG_WAR_DATA)
             
+            // Restore selected sub-tab state
+            selectedSubTab = savedInstanceState?.getInt(ARG_SELECTED_SUB_TAB, 0) ?: 0
+            
             warData = Gson().fromJson(warDataJson, WarResponse::class.java)
             val frame = FrameLayout(context)
             warData?.let {
                 val helper = WarDisplayHelper(context)
-                helper.showActivityTab(frame, it, true) { }
+                helper.showActivityTab(frame, it, selectedSubTab) { newSelectedTab ->
+                    selectedSubTab = newSelectedTab
+                }
             }
             rootView = frame
             return frame
@@ -312,15 +321,18 @@ class WarDetailActivity : AppCompatActivity() {
             warData?.let {
                 outState.putString(ARG_WAR_DATA, Gson().toJson(it))
             }
+            outState.putInt(ARG_SELECTED_SUB_TAB, selectedSubTab)
         }
         
         fun bindWarData(newWarData: WarResponse) {
             warData = newWarData
-            // Update only the data views, not the root view
+            // Update only the data views, not the root view, preserve selected sub-tab
             rootView?.let {
                 it.removeAllViews()
                 val helper = WarDisplayHelper(requireContext())
-                helper.showActivityTab(it, newWarData, true) { }
+                helper.showActivityTab(it, newWarData, selectedSubTab) { newSelectedTab ->
+                    selectedSubTab = newSelectedTab
+                }
             }
         }
     }
