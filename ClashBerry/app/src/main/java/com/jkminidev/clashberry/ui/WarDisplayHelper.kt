@@ -174,22 +174,7 @@ class WarDisplayHelper(private val context: Context) {
             orientation = LinearLayout.HORIZONTAL
             gravity = android.view.Gravity.CENTER
         }
-        val toggleViews = options.mapIndexed { idx, label ->
-            TextView(context).apply {
-                text = label
-                setPadding(32, 16, 32, 16)
-                setTextColor(ContextCompat.getColor(context, R.color.text_color))
-                setTypeface(typeface, android.graphics.Typeface.BOLD)
-                gravity = android.view.Gravity.CENTER
-                setOnClickListener {
-                    if (selected != idx) {
-                        selected = idx
-                        updateToggle()
-                        updateList()
-                    }
-                }
-            }
-        }
+        val toggleViews = mutableListOf<TextView>()
         fun updateToggle() {
             toggleViews.forEachIndexed { idx, tv ->
                 if (idx == selected) {
@@ -211,13 +196,6 @@ class WarDisplayHelper(private val context: Context) {
                 }
             }
         }
-        toggleViews.forEach { toggleBar.addView(it) }
-        // Add underline drawable
-        // res/drawable/toggle_underline.xml:
-        // <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
-        //   <size android:height="4dp" />
-        //   <solid android:color="@color/accent_color" />
-        // </shape>
         fun getFilteredMembers(selected: Int): List<com.jkminidev.clashberry.data.MemberData> {
             return when (selected) {
                 0 -> warData.clan.members.filter { it.attacks.isNotEmpty() }
@@ -248,6 +226,24 @@ class WarDisplayHelper(private val context: Context) {
             }
             layout.addView(recyclerView)
             onToggle(selected == 0)
+        }
+        options.forEachIndexed { idx, label ->
+            val tv = TextView(context).apply {
+                text = label
+                setPadding(32, 16, 32, 16)
+                setTextColor(ContextCompat.getColor(context, R.color.text_color))
+                setTypeface(typeface, android.graphics.Typeface.BOLD)
+                gravity = android.view.Gravity.CENTER
+                setOnClickListener {
+                    if (selected != idx) {
+                        selected = idx
+                        updateToggle()
+                        updateList()
+                    }
+                }
+            }
+            toggleViews.add(tv)
+            toggleBar.addView(tv)
         }
         // Add toggle bar and initial list
         layout.addView(toggleBar)
