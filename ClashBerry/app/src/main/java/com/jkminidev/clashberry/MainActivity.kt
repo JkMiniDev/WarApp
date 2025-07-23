@@ -446,6 +446,27 @@ class MainActivity : AppCompatActivity() {
         binding.bookmarkedClansContainer.addView(bookmarkCardBinding.root)
     }
     
+    private fun openSettings() {
+        val intent = Intent(this, SettingsActivity::class.java)
+        startActivity(intent)
+    }
+
+    private fun loadBookmarkedClans() {
+        val json = preferences.getString("bookmarked_clans", null)
+        if (json != null) {
+            val type = object : com.google.gson.reflect.TypeToken<List<BookmarkedClan>>() {}.type
+            val clans: List<BookmarkedClan> = gson.fromJson(json, type)
+            bookmarkedClans.clear()
+            bookmarkedClans.addAll(clans)
+            displayBookmarkedClans()
+        }
+    }
+
+    private fun saveBookmarkedClans() {
+        val json = gson.toJson(bookmarkedClans)
+        preferences.edit().putString("bookmarked_clans", json).apply()
+    }
+    
 
     
     // Adapter classes
