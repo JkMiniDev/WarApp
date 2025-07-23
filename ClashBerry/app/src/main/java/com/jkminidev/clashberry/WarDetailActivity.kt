@@ -66,14 +66,14 @@ class WarDetailActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: android.view.Menu?): Boolean {
-        menuInflater.inflate(R.menu.war_details_menu, menu)
+        menuInflater.inflate(R.menu.main_menu, menu)
         return true
     }
 
     override fun onOptionsItemSelected(item: android.view.MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_refresh -> {
-                // TODO: Implement refresh war data logic
+                // TODO: Implement refresh war data logic (same as main screen)
                 true
             }
             R.id.menu_settings -> {
