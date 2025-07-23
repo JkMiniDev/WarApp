@@ -256,62 +256,97 @@ class MainActivity : AppCompatActivity() {
     }
     
     private fun refreshData() {
-        // Show loading indicator
-        binding.loadingLayout.visibility = View.VISIBLE
-        
+        showLoadingOverlay()
         // Refresh the data by reloading war data and bookmarked clans
         loadBookmarkedClans()
-        loadWarData()
-        
-        // Hide loading indicator after a short delay to show the animation
-        binding.loadingLayout.postDelayed({
-            binding.loadingLayout.visibility = View.GONE
-        }, 1000)
-    }
-    
-    private fun openSettings() {
-        val intent = Intent(this, SettingsActivity::class.java)
-        startActivity(intent)
-    }
-    
-    private fun loadBookmarkedClans() {
-        val json = preferences.getString("bookmarked_clans", null)
-        if (json != null) {
-            val type = object : TypeToken<List<BookmarkedClan>>() {}.type
-            val clans: List<BookmarkedClan> = gson.fromJson(json, type)
-            bookmarkedClans.clear()
-            bookmarkedClans.addAll(clans)
-            displayBookmarkedClans()
+        loadWarData {
+            hideLoadingOverlay()
         }
     }
-    
-    private fun saveBookmarkedClans() {
-        val json = gson.toJson(bookmarkedClans)
-        preferences.edit().putString("bookmarked_clans", json).apply()
+
+    private fun showLoadingOverlay() {
+        if (binding.root.findViewById<android.widget.FrameLayout>(R.id.loadingOverlay) == null) {
+            val overlay = android.widget.FrameLayout(this)
+            overlay.id = R.id.loadingOverlay
+            overlay.setBackgroundColor(android.graphics.Color.parseColor("#80000000"))
+            val progress = android.widget.ProgressBar(this)
+            val params = android.widget.FrameLayout.LayoutParams(
+                android.widget.FrameLayout.LayoutParams.WRAP_CONTENT,
+                android.widget.FrameLayout.LayoutParams.WRAP_CONTENT
+            )
+            params.gravity = android.view.Gravity.CENTER
+            overlay.addView(progress, params)
+            (binding.root as ViewGroup).addView(overlay, ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+        }
     }
-    
-    private fun loadWarData() {
+
+    private fun hideLoadingOverlay() {
+        val overlay = binding.root.findViewById<android.widget.FrameLayout>(R.id.loadingOverlay)
+        overlay?.let { (binding.root as ViewGroup).removeView(it) }
+    }
+
+    private fun loadWarData(onComplete: (() -> Unit)? = null) {
         if (bookmarkedClans.isEmpty()) {
             binding.noWarsLayout.visibility = View.VISIBLE
             binding.warCardsContainer.removeAllViews()
+            onComplete?.invoke()
             return
         }
-        
         binding.noWarsLayout.visibility = View.GONE
-        binding.warCardsContainer.removeAllViews()
-        
-        // Load war data for each bookmarked clan
+        // Don't clear warCardsContainer yet
+        val newWarCards = mutableListOf<View>()
+        var loadedCount = 0
+        val total = bookmarkedClans.size
         bookmarkedClans.forEach { clan ->
             lifecycleScope.launch {
                 try {
                     val response = apiService.getWarData(clan.tag)
                     if (response.isSuccessful) {
                         response.body()?.let { warData ->
-                            addWarCard(warData)
+                            val warCardBinding = ItemWarCardBinding.inflate(layoutInflater)
+                            // Populate war card data (same as addWarCard)
+                            warCardBinding.tvWarStatus.text = when (warData.state) {
+                                "preparation" -> getString(R.string.preparation)
+                                "inWar" -> getString(R.string.battle_day)
+                                else -> getString(R.string.war_ended)
+                            }
+                            warCardBinding.tvTimeRemaining.text = when {
+                                warData.state == "warEnded" -> "00:00"
+                                else -> warData.timeRemaining ?: "Unknown"
+                            }
+                            warCardBinding.tvLeftStars.text = warData.clan.stars.toString()
+                            warCardBinding.tvRightStars.text = warData.opponent.stars.toString()
+                            warCardBinding.tvLeftClanName.text = warData.clan.name
+                            warCardBinding.tvRightClanName.text = warData.opponent.name
+                            Glide.with(this@MainActivity)
+                                .load(warData.clan.badge)
+                                .placeholder(R.mipmap.ic_launcher)
+                                .error(R.mipmap.ic_launcher)
+                                .circleCrop()
+                                .into(warCardBinding.ivLeftClanBadge)
+                            Glide.with(this@MainActivity)
+                                .load(warData.opponent.badge)
+                                .placeholder(R.mipmap.ic_launcher)
+                                .error(R.mipmap.ic_launcher)
+                                .circleCrop()
+                                .into(warCardBinding.ivRightClanBadge)
+                            warCardBinding.root.setOnClickListener {
+                                openWarDetail(warData)
+                            }
+                            newWarCards.add(warCardBinding.root)
                         }
                     }
                 } catch (e: Exception) {
                     // Silently handle errors for individual clans
+                } finally {
+                    loadedCount++
+                    if (loadedCount == total) {
+                        // All war data loaded, now update UI
+                        binding.warCardsContainer.removeAllViews()
+                        newWarCards.forEach { binding.warCardsContainer.addView(it) }
+                        onComplete?.invoke()
+                    }
                 }
             }
         }
