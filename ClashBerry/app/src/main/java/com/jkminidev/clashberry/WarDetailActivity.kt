@@ -27,9 +27,6 @@ class WarDetailActivity : AppCompatActivity() {
     private lateinit var warDisplayHelper: WarDisplayHelper
     private val gson = Gson()
     private lateinit var warData: WarResponse
-    private lateinit var warPagerAdapter: WarPagerAdapter
-    private var currentOverviewFragment: OverviewFragment? = null
-    private var currentActivityFragment: ActivityFragment? = null
     private lateinit var warContentContainer: FrameLayout
     
     override fun onCreate(savedInstanceState: Bundle?) {
