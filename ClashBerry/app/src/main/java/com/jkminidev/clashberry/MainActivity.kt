@@ -159,6 +159,30 @@ class MainActivity : AppCompatActivity() {
         dialog.show()
     }
     
+    private fun showRemoveBookmarkConfirmation(clan: BookmarkedClan) {
+        androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle("Remove Bookmark")
+            .setMessage("Are you sure you want to remove '${clan.name}' from your bookmarks?")
+            .setPositiveButton("Remove") { _, _ ->
+                removeBookmarkedClan(clan)
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+    
+    private fun removeBookmarkedClan(clan: BookmarkedClan) {
+        bookmarkedClans.remove(clan)
+        saveBookmarkedClans()
+        Toast.makeText(this, "${clan.name} removed from bookmarks", Toast.LENGTH_SHORT).show()
+        
+        // If the removed clan was currently selected, clear the selection
+        if (selectedClan?.tag == clan.tag) {
+            selectedClan = null
+            currentWarData = null
+            updateSelectedClanDisplay()
+        }
+    }
+    
     private fun showSearchDialog() {
         val dialog = Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
         val dialogBinding = DialogSearchBinding.inflate(layoutInflater)
@@ -454,6 +478,11 @@ class MainActivity : AppCompatActivity() {
             
             holder.binding.root.setOnClickListener {
                 onClanClick(clan)
+            }
+            
+            // Handle bookmark removal with confirmation
+            holder.binding.ivBookmark.setOnClickListener {
+                showRemoveBookmarkConfirmation(clan)
             }
         }
         

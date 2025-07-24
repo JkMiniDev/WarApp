@@ -21,58 +21,11 @@
         android:layout_height="0dp"
         android:layout_weight="1">
 
-                    <LinearLayout
+                                <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="16dp">
-
-                <!-- Bookmarks Section -->
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Bookmarks"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_color"
-                    android:layout_marginBottom="8dp" />
-
-                <LinearLayout
-                    android:id="@+id/bookmarks_option"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="16dp"
-                    android:background="?attr/selectableItemBackground"
-                    android:layout_marginBottom="24dp"
-                    android:gravity="center_vertical">
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_bookmark"
-                        android:contentDescription="Bookmarks" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="16dp"
-                        android:text="Manage Bookmarks"
-                        android:textSize="16sp"
-                        android:textColor="@color/text_color" />
-
-                </LinearLayout>
-
-                <!-- Settings Section -->
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Settings"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_color"
-                    android:layout_marginBottom="8dp" />
 
                 <!-- Settings Options -->
                 <LinearLayout
