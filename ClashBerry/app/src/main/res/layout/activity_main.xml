@@ -8,145 +8,150 @@
     android:background="@color/background_primary"
     tools:context=".MainActivity">
 
-    <!-- Top App Bar - Normal Mode -->
-    <LinearLayout
-        android:id="@+id/topAppBar"
+    <!-- Top Bar Container -->
+    <FrameLayout
+        android:id="@+id/topBarContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp"
-        android:gravity="center_vertical"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:background="@color/transparent">
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Clan Selector -->
+        <!-- Top App Bar - Normal Mode -->
         <LinearLayout
-            android:id="@+id/clanSelectorLayout"
-            android:layout_width="0dp"
+            android:id="@+id/topAppBar"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:orientation="horizontal"
+            android:padding="16dp"
             android:gravity="center_vertical"
-            android:background="?attr/selectableItemBackground"
-            android:padding="8dp">
+            android:background="@color/transparent">
 
-            <!-- Clan Badge -->
-            <ImageView
-                android:id="@+id/ivSelectedClanBadge"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@drawable/ic_placeholder"
-                android:layout_marginEnd="12dp"
-                android:contentDescription="Selected Clan Badge" />
-
-            <!-- Clan Name and Arrow Container -->
+            <!-- Clan Selector -->
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:id="@+id/clanSelectorLayout"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                android:background="?attr/selectableItemBackground"
+                android:padding="8dp">
 
-                <!-- Clan Name -->
-                <TextView
-                    android:id="@+id/tvSelectedClanName"
+                <!-- Clan Badge -->
+                <ImageView
+                    android:id="@+id/ivSelectedClanBadge"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/ic_placeholder"
+                    android:layout_marginEnd="12dp"
+                    android:contentDescription="Selected Clan Badge" />
+
+                <!-- Clan Name and Arrow Container -->
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Select Clan"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_color"
-                    android:gravity="start|center_vertical"
-                    android:singleLine="true"
-                    android:ellipsize="end"
-                    android:maxWidth="200dp" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
 
-                <!-- Dropdown Arrow -->
-                <ImageView
-                    android:id="@+id/ivDropdownArrow"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_arrow_drop_down"
-                    android:contentDescription="Dropdown" />
+                    <!-- Clan Name -->
+                    <TextView
+                        android:id="@+id/tvSelectedClanName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Select Clan"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_color"
+                        android:gravity="start|center_vertical"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:maxWidth="200dp" />
+
+                    <!-- Dropdown Arrow -->
+                    <ImageView
+                        android:id="@+id/ivDropdownArrow"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_arrow_drop_down"
+                        android:contentDescription="Dropdown" />
+
+                </LinearLayout>
 
             </LinearLayout>
 
+            <!-- Search Icon -->
+            <ImageView
+                android:id="@+id/ivSearch"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_search"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="12dp"
+                android:contentDescription="@string/search_clans"
+                android:layout_marginEnd="8dp" />
+
+            <!-- Menu Icon (3 dots) -->
+            <ImageView
+                android:id="@+id/ivMenu"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_more_vert"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="12dp"
+                android:contentDescription="Menu" />
+
         </LinearLayout>
 
-        <!-- Search Icon -->
-        <ImageView
-            android:id="@+id/ivSearch"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/ic_search"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="12dp"
-            android:contentDescription="@string/search_clans"
-            android:layout_marginEnd="8dp" />
-
-        <!-- Menu Icon (3 dots) -->
-        <ImageView
-            android:id="@+id/ivMenu"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/ic_more_vert"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="12dp"
-            android:contentDescription="Menu" />
-
-    </LinearLayout>
-
-    <!-- Top App Bar - Search Mode -->
-    <LinearLayout
-        android:id="@+id/searchAppBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp"
-        android:gravity="center_vertical"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:background="@color/transparent"
-        android:visibility="gone">
-
-        <!-- Back Arrow -->
-        <ImageView
-            android:id="@+id/ivSearchBack"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/ic_arrow_back"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="12dp"
-            android:contentDescription="Back"
-            android:layout_marginEnd="8dp" />
-
-        <!-- Search EditText -->
-        <androidx.appcompat.widget.AppCompatEditText
-            android:id="@+id/etSearchTag"
-            android:layout_width="0dp"
+        <!-- Top App Bar - Search Mode -->
+        <LinearLayout
+            android:id="@+id/searchAppBar"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="@string/search_hint"
-            android:background="@android:color/transparent"
-            android:inputType="textNoSuggestions|textCapCharacters"
-            android:maxLength="15"
-            android:imeOptions="actionSearch"
-            android:textColor="@color/text_color"
-            android:textColorHint="@color/text_color_secondary"
-            android:padding="0dp"
-            android:textSize="18sp"
-            android:singleLine="true" />
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:gravity="center_vertical"
+            android:background="@color/transparent"
+            android:visibility="gone">
 
-    </LinearLayout>
+            <!-- Back Arrow -->
+            <ImageView
+                android:id="@+id/ivSearchBack"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_arrow_back"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="12dp"
+                android:contentDescription="Back"
+                android:layout_marginEnd="8dp" />
+
+            <!-- Search EditText -->
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/etSearchTag"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/search_hint"
+                android:background="@android:color/transparent"
+                android:inputType="textNoSuggestions|textCapCharacters"
+                android:maxLength="15"
+                android:imeOptions="actionSearch"
+                android:textColor="@color/text_color"
+                android:textColorHint="@color/text_color_secondary"
+                android:padding="0dp"
+                android:textSize="18sp"
+                android:singleLine="true" />
+
+        </LinearLayout>
+
+    </FrameLayout>
 
     <!-- Main Content Area with Pull-to-Refresh -->
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/topAppBar"
+        app:layout_constraintTop_toBottomOf="@id/topBarContainer"
         app:layout_constraintBottom_toTopOf="@id/bottomNavigationView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -181,6 +186,45 @@
                 android:textSize="16sp"
                 android:textColor="@color/text_color"
                 android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <!-- Search Placeholder (when no search performed) -->
+        <LinearLayout
+            android:id="@+id/searchPlaceholderLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="64dp"
+            android:visibility="gone"
+            android:background="@color/background_primary">
+
+            <ImageView
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:src="@drawable/ic_search"
+                android:layout_marginBottom="24dp"
+                android:alpha="0.6"
+                android:contentDescription="Search" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/search_hint"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_color"
+                android:layout_marginBottom="8dp"
+                android:textAlignment="center" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Enter a clan tag to find clans"
+                android:textSize="14sp"
+                android:textColor="@color/text_color_secondary"
+                android:textAlignment="center" />
 
         </LinearLayout>
 

@@ -305,12 +305,30 @@ class MainActivity : AppCompatActivity() {
                 val clanTag = binding.etSearchTag.text.toString().trim()
                 if (clanTag.isNotEmpty()) {
                     searchClan(clanTag, searchAdapter)
+                } else {
+                    // Show placeholder when search is empty
+                    binding.searchResultsRecyclerView.visibility = View.GONE
+                    binding.searchPlaceholderLayout.visibility = View.VISIBLE
+                    searchAdapter.updateResults(emptyList())
                 }
                 true
             } else {
                 false
             }
         }
+        
+        // Also handle text changes to show placeholder when field is cleared
+        binding.etSearchTag.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: android.text.Editable?) {
+                if (s.isNullOrEmpty()) {
+                    binding.searchResultsRecyclerView.visibility = View.GONE
+                    binding.searchPlaceholderLayout.visibility = View.VISIBLE
+                    searchAdapter.updateResults(emptyList())
+                }
+            }
+        })
     }
     
     private fun showInlineSearch() {
@@ -320,10 +338,12 @@ class MainActivity : AppCompatActivity() {
         binding.topAppBar.visibility = View.GONE
         binding.searchAppBar.visibility = View.VISIBLE
         
-        // Hide main content and show search results
+        // Hide main content and show search interface
         binding.viewPager.visibility = View.GONE
         binding.noWarLayout.visibility = View.GONE
-        binding.searchResultsRecyclerView.visibility = View.VISIBLE
+        binding.loadingLayout.visibility = View.GONE
+        binding.searchResultsRecyclerView.visibility = View.GONE
+        binding.searchPlaceholderLayout.visibility = View.VISIBLE
         
         // Clear previous search results
         searchAdapter.updateResults(emptyList())
@@ -342,9 +362,9 @@ class MainActivity : AppCompatActivity() {
         binding.topAppBar.visibility = View.VISIBLE
         binding.searchAppBar.visibility = View.GONE
         
-        // Hide search results and show main content
+        // Hide search interface
         binding.searchResultsRecyclerView.visibility = View.GONE
-        binding.viewPager.visibility = View.VISIBLE
+        binding.searchPlaceholderLayout.visibility = View.GONE
         
         // Restore proper content visibility
         if (currentWarData != null) {
@@ -361,6 +381,10 @@ class MainActivity : AppCompatActivity() {
     }
     
     private fun searchClan(clanTag: String, adapter: ClanSearchAdapter) {
+        // Hide placeholder and show results area
+        binding.searchPlaceholderLayout.visibility = View.GONE
+        binding.searchResultsRecyclerView.visibility = View.VISIBLE
+        
         lifecycleScope.launch {
             try {
                 val response = apiService.getClanInfo(clanTag)
