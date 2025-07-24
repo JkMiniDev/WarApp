@@ -41,9 +41,10 @@ data class AttackData(
 )
 
 data class ErrorResponse(
-    val error: String,
+    val error: String? = null,
+    val reason: String? = null,
     val message: String,
-    val clan: ClanInfo?
+    val clan: ClanInfo? = null
 )
 
 data class ClanInfo(

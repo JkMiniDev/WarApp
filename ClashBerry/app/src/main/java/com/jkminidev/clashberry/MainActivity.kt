@@ -534,8 +534,10 @@ class MainActivity : AppCompatActivity() {
                 val response = apiService.getWarData(clan.tag)
                 if (response.isSuccessful) {
                     response.body()?.let { warData ->
+                        android.util.Log.d("MainActivity", "War data received, state: ${warData.state}")
                         // Check if clan is not in war
                         if (warData.state == "notInWar") {
+                            android.util.Log.d("MainActivity", "Clan not in war, showing no war layout")
                             if (showCenterLoading) {
                                 binding.loadingLayout.visibility = View.GONE
                             }
@@ -558,6 +560,7 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                 } else {
+                    android.util.Log.d("MainActivity", "War data request failed, code: ${response.code()}")
                     if (showCenterLoading) {
                         binding.loadingLayout.visibility = View.GONE
                     }
@@ -568,14 +571,14 @@ class MainActivity : AppCompatActivity() {
                     // Check for specific error codes
                     when (response.code()) {
                         403 -> {
-                            // Check if it's a private war log error (accessDenied)
+                            // Check if it's a private war log error (reason: accessDenied)
                             try {
                                 val errorHandler = ErrorHandler
                                 val errorResponse = errorHandler.parseError(response)
-                                if (errorResponse.error == "accessDenied") {
+                                if (errorResponse.reason == "accessDenied" || errorResponse.error == "accessDenied") {
                                     updateNoWarLayout(NoWarState.PRIVATE_WAR_LOG)
                                 } else {
-                                    updateNoWarLayout(NoWarState.NO_ONGOING_WAR)
+                                    updateNoWarLayout(NoWarState.PRIVATE_WAR_LOG) // Default for 403
                                 }
                             } catch (e: Exception) {
                                 // If error parsing fails, assume private war log for 403
@@ -592,6 +595,7 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             } catch (e: Exception) {
+                android.util.Log.e("MainActivity", "War data loading failed", e)
                 if (showCenterLoading) {
                     binding.loadingLayout.visibility = View.GONE
                 }
