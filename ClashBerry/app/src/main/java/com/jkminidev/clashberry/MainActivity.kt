@@ -108,7 +108,18 @@ class MainActivity : AppCompatActivity() {
     }
     
     private fun updateSelectedClanDisplay() {
-        if (selectedClan != null) {
+        if (bookmarkedClans.isEmpty()) {
+            // No bookmarks - show "No Bookmarks" without arrow, and show no bookmarks message in main screen
+            binding.tvSelectedClanName.text = "No Bookmarks"
+            binding.ivSelectedClanBadge.setImageResource(R.mipmap.ic_launcher)
+            binding.clanSelectorLayout.findViewById<android.widget.ImageView>(R.id.ivDropdownArrow)?.visibility = View.GONE
+            binding.noWarLayout.visibility = View.VISIBLE
+            binding.viewPager.visibility = View.GONE
+            
+            // Update the no war message for no bookmarks case
+            updateNoWarLayoutForNoBookmarks()
+        } else if (selectedClan != null) {
+            // Has bookmarks and clan is selected
             binding.tvSelectedClanName.text = selectedClan!!.name
             Glide.with(this)
                 .load(selectedClan!!.badge)
@@ -116,17 +127,48 @@ class MainActivity : AppCompatActivity() {
                 .error(R.mipmap.ic_launcher)
                 .circleCrop()
                 .into(binding.ivSelectedClanBadge)
+            binding.clanSelectorLayout.findViewById<android.widget.ImageView>(R.id.ivDropdownArrow)?.visibility = View.VISIBLE
             binding.noWarLayout.visibility = View.GONE
             binding.viewPager.visibility = View.VISIBLE
         } else {
-            binding.tvSelectedClanName.text = "Select Clan"
-            binding.ivSelectedClanBadge.setImageResource(R.mipmap.ic_launcher)
-            binding.noWarLayout.visibility = View.VISIBLE
-            binding.viewPager.visibility = View.GONE
+            // Has bookmarks but no clan selected - auto-select first clan
+            selectedClan = bookmarkedClans.first()
+            loadWarDataForClan(selectedClan!!)
+            updateSelectedClanDisplay()
+        }
+    }
+    
+    private fun updateNoWarLayoutForNoBookmarks() {
+        // Update the no war layout to show no bookmarks message
+        val noWarLayout = binding.noWarLayout
+        val iconView = noWarLayout.findViewById<android.widget.ImageView>(R.id.ivNoWarIcon)
+        val titleView = noWarLayout.findViewById<android.widget.TextView>(R.id.tvNoWarTitle) 
+        val messageView = noWarLayout.findViewById<android.widget.TextView>(R.id.tvNoWarMessage)
+        
+        // If views don't exist with IDs, update by finding them by type
+        if (iconView == null || titleView == null || messageView == null) {
+            val imageView = noWarLayout.getChildAt(0) as? android.widget.ImageView
+            val linearLayout = noWarLayout.getChildAt(1) as? android.widget.LinearLayout
+            if (imageView != null && linearLayout != null) {
+                imageView.setImageResource(R.drawable.ic_bookmark)
+                val title = linearLayout.getChildAt(0) as? android.widget.TextView
+                val message = linearLayout.getChildAt(1) as? android.widget.TextView
+                title?.text = "No Bookmarked Clans"
+                message?.text = "Search and bookmark clans to view their war details here"
+            }
+        } else {
+            iconView.setImageResource(R.drawable.ic_bookmark)
+            titleView.text = "No Bookmarked Clans"
+            messageView.text = "Search and bookmark clans to view their war details here"
         }
     }
     
     private fun showClanSelectorDialog() {
+        // Don't show dialog if no bookmarks
+        if (bookmarkedClans.isEmpty()) {
+            return
+        }
+        
         val dialog = Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
         val dialogBinding = DialogClanSelectorBinding.inflate(layoutInflater)
         dialog.setContentView(dialogBinding.root)
@@ -175,8 +217,8 @@ class MainActivity : AppCompatActivity() {
         saveBookmarkedClans()
         Toast.makeText(this, "${clan.name} removed from bookmarks", Toast.LENGTH_SHORT).show()
         
-        // If the removed clan was currently selected, clear the selection
-        if (selectedClan?.tag == clan.tag) {
+        // If the removed clan was currently selected or no bookmarks left
+        if (selectedClan?.tag == clan.tag || bookmarkedClans.isEmpty()) {
             selectedClan = null
             currentWarData = null
             updateSelectedClanDisplay()
@@ -278,9 +320,17 @@ class MainActivity : AppCompatActivity() {
         )
         
         if (!bookmarkedClans.any { it.tag == clan.tag }) {
+            val wasEmpty = bookmarkedClans.isEmpty()
             bookmarkedClans.add(bookmarkedClan)
             saveBookmarkedClans()
             Toast.makeText(this, getString(R.string.clan_bookmarked), Toast.LENGTH_SHORT).show()
+            
+            // If this was the first bookmark, auto-select it and load war data
+            if (wasEmpty) {
+                selectedClan = bookmarkedClan
+                updateSelectedClanDisplay()
+                loadWarDataForClan(bookmarkedClan)
+            }
         } else {
             Toast.makeText(this, "Clan already bookmarked", Toast.LENGTH_SHORT).show()
         }
@@ -387,7 +437,14 @@ class MainActivity : AppCompatActivity() {
             val clans: List<BookmarkedClan> = gson.fromJson(json, type)
             bookmarkedClans.clear()
             bookmarkedClans.addAll(clans)
+            
+            // Auto-select first clan if available and no clan currently selected
+            if (bookmarkedClans.isNotEmpty() && selectedClan == null) {
+                selectedClan = bookmarkedClans.first()
+                loadWarDataForClan(selectedClan!!)
+            }
         }
+        updateSelectedClanDisplay()
     }
 
     private fun saveBookmarkedClans() {
