@@ -7,5 +7,11 @@
     android:tint="@color/text_color">
   <path
       android:fillColor="@android:color/white"
-      android:pathData="M12,1L3,5v6c0,5.55 3.84,10.74 9,12c5.16,-1.26 9,-6.45 9,-12V5L12,1z"/>
+      android:pathData="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1Z"/>
+  <path
+      android:fillColor="@color/background_primary"
+      android:pathData="M12,3L5,6V11C5,15.52 8.05,19.45 12,20.5C15.95,19.45 19,15.52 19,11V6L12,3Z"/>
+  <path
+      android:fillColor="@android:color/white"
+      android:pathData="M9,10L11,10L11,8L13,8L13,10L15,10L15,12L13,12L13,14L11,14L11,12L9,12L9,10Z"/>
 </vector>

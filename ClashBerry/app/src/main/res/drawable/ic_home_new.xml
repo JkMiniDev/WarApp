@@ -7,11 +7,5 @@
     android:tint="@color/text_color">
   <path
       android:fillColor="@android:color/white"
-      android:pathData="M6,3L5,4L5,6L4,7L2,7L2,9L4,9L5,10L17,22L18,22L22,18L22,17L10,5L9,4L9,2L7,2L7,4L6,3z"/>
-  <path
-      android:fillColor="@android:color/white"
-      android:pathData="M18,3L17,4L15,2L14,2L14,4L15,5L3,17L2,18L6,22L7,22L19,10L20,9L22,9L22,7L20,7L19,6L19,4L18,3z"/>
-  <path
-      android:fillColor="@android:color/white"
-      android:pathData="M11,11L13,11L13,13L11,13L11,11z"/>
+      android:pathData="M10,20v-6h4v6h5v-8h3L12,3 2,12h3v8z"/>
 </vector>
