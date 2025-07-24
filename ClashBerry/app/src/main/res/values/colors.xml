@@ -6,45 +6,45 @@
     <color name="transparent">#00000000</color>
     
     <!-- Primary Colors -->
-    <color name="green_primary">#4CAF50</color>
-    <color name="green_dark">#388E3C</color>
-    <color name="green_light">#81C784</color>
+    <color name="green_primary">#1E3A8A</color>
+    <color name="green_dark">#1E40AF</color>
+    <color name="green_light">#3B82F6</color>
     
     <!-- Theme Colors -->
-    <color name="accent_color">#4CAF50</color>
-    <color name="accent_color_dark">#388E3C</color>
+    <color name="accent_color">#3B82F6</color>
+    <color name="accent_color_dark">#1E3A8A</color>
     
     <!-- Dark Theme Colors (Current Default) -->
-    <color name="background_primary">#121212</color>
-    <color name="background_secondary">#1E1E1E</color>
-    <color name="background_tertiary">#2C2C2C</color>
+    <color name="background_primary">#0F172A</color>
+    <color name="background_secondary">#1E293B</color>
+    <color name="background_tertiary">#334155</color>
     <color name="text_color">#FFFFFF</color>
-    <color name="text_color_secondary">#AAAAAA</color>
-    <color name="border_color">#333333</color>
+    <color name="text_color_secondary">#CBD5E1</color>
+    <color name="border_color">#475569</color>
     <color name="error_color">#F44336</color>
     
     <!-- Light Theme Colors -->
     <color name="background_primary_light">#FFFFFF</color>
-    <color name="background_secondary_light">#F5F5F5</color>
-    <color name="background_tertiary_light">#EEEEEE</color>
-    <color name="text_color_light">#000000</color>
-    <color name="text_color_secondary_light">#666666</color>
-    <color name="border_color_light">#CCCCCC</color>
+    <color name="background_secondary_light">#F8FAFC</color>
+    <color name="background_tertiary_light">#F1F5F9</color>
+    <color name="text_color_light">#0F172A</color>
+    <color name="text_color_secondary_light">#64748B</color>
+    <color name="border_color_light">#CBD5E1</color>
     
     <!-- Status Colors -->
-    <color name="war_active">#FF9800</color>
-    <color name="war_preparation">#2196F3</color>
-    <color name="war_ended">#9E9E9E</color>
-    <color name="no_war">#607D8B</color>
+    <color name="war_active">#3B82F6</color>
+    <color name="war_preparation">#1E3A8A</color>
+    <color name="war_ended">#64748B</color>
+    <color name="no_war">#475569</color>
     <color name="star_color">#FFD700</color>
     
     <!-- War Status Colors (missing from compilation errors) -->
-    <color name="preparation_color">#2196F3</color>
-    <color name="in_war_color">#FF9800</color>
-    <color name="war_ended_color">#9E9E9E</color>
+    <color name="preparation_color">#1E3A8A</color>
+    <color name="in_war_color">#3B82F6</color>
+    <color name="war_ended_color">#64748B</color>
     
     <!-- Additional Colors -->
-    <color name="success_color">#4CAF50</color>
-    <color name="warning_color">#FF9800</color>
-    <color name="info_color">#2196F3</color>
+    <color name="success_color">#10B981</color>
+    <color name="warning_color">#F59E0B</color>
+    <color name="info_color">#3B82F6</color>
 </resources>
