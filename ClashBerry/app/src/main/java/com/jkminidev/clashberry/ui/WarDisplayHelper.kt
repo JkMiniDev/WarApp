@@ -319,30 +319,39 @@ class WarDisplayHelper(private val context: Context) {
         val subTabAdapter = SubTabPagerAdapter(options, warData, selectedClan)
         viewPager.adapter = subTabAdapter
         
-        // Request parent to not intercept touch events only during horizontal scrolling
+        // Prevent SwipeRefreshLayout from intercepting horizontal swipes
         var initialX = 0f
         var initialY = 0f
+        var isHorizontalSwipe = false
+        
         viewPager.setOnTouchListener { _, event ->
             when (event.action) {
                 android.view.MotionEvent.ACTION_DOWN -> {
                     initialX = event.x
                     initialY = event.y
-                    viewPager.parent?.requestDisallowInterceptTouchEvent(false)
+                    isHorizontalSwipe = false
+                    // Don't prevent interception initially
+                    disallowParentInterceptTouchEvent(viewPager, false)
                 }
                 android.view.MotionEvent.ACTION_MOVE -> {
                     val deltaX = kotlin.math.abs(event.x - initialX)
                     val deltaY = kotlin.math.abs(event.y - initialY)
                     
-                    // Only prevent parent interception if horizontal movement is greater than vertical
-                    if (deltaX > deltaY && deltaX > 20) { // 20px threshold for horizontal swipe detection
-                        viewPager.parent?.requestDisallowInterceptTouchEvent(true)
-                    } else {
-                        viewPager.parent?.requestDisallowInterceptTouchEvent(false)
+                    // Detect horizontal swipe with stricter criteria
+                    if (deltaX > 30 && deltaX > deltaY * 1.5) { // More strict horizontal detection
+                        if (!isHorizontalSwipe) {
+                            isHorizontalSwipe = true
+                            disallowParentInterceptTouchEvent(viewPager, true)
+                        }
+                    } else if (!isHorizontalSwipe && deltaY > 30) {
+                        // Clearly vertical movement, allow pull-to-refresh
+                        disallowParentInterceptTouchEvent(viewPager, false)
                     }
                 }
                 android.view.MotionEvent.ACTION_UP,
                 android.view.MotionEvent.ACTION_CANCEL -> {
-                    viewPager.parent?.requestDisallowInterceptTouchEvent(false)
+                    disallowParentInterceptTouchEvent(viewPager, false)
+                    isHorizontalSwipe = false
                 }
             }
             false
@@ -478,5 +487,17 @@ class WarDisplayHelper(private val context: Context) {
             setPadding(8, 8, 8, 8)
         }
         container.addView(recyclerView)
+    }
+    
+    private fun disallowParentInterceptTouchEvent(view: android.view.View, disallow: Boolean) {
+        var parent = view.parent
+        while (parent != null) {
+            if (parent is androidx.swiperefreshlayout.widget.SwipeRefreshLayout) {
+                parent.requestDisallowInterceptTouchEvent(disallow)
+                break
+            }
+            parent?.requestDisallowInterceptTouchEvent(disallow)
+            parent = parent.parent
+        }
     }
 }
