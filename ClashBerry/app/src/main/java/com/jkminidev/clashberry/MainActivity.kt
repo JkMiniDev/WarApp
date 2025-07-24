@@ -230,7 +230,7 @@ class MainActivity : AppCompatActivity() {
                 binding.tvNoWarMessage.text = "You will see ongoing wars here after war starts"
             }
             NoWarState.PRIVATE_WAR_LOG -> {
-                binding.ivNoWarIcon.setImageResource(android.R.drawable.ic_lock_lock)
+                binding.ivNoWarIcon.setImageResource(R.drawable.ic_lock)
                 binding.tvNoWarTitle.text = "Private War Log"
                 binding.tvNoWarMessage.text = "This clan's war log is private and cannot be viewed publicly"
             }
@@ -487,6 +487,12 @@ class MainActivity : AppCompatActivity() {
     }
     
     private fun refreshDataFromPullToRefresh() {
+        // Don't refresh if in search mode
+        if (isSearchMode) {
+            binding.swipeRefreshLayout.isRefreshing = false
+            return
+        }
+        
         loadBookmarkedClans()
         selectedClan?.let { clan ->
             loadWarDataForClan(clan, false) // false = don't show center loading
@@ -529,6 +535,13 @@ class MainActivity : AppCompatActivity() {
         if (showCenterLoading) {
             binding.loadingLayout.visibility = View.VISIBLE
         }
+        
+        // Hide war content immediately during refresh to prevent showing stale data
+        if (!showCenterLoading) { // This is a refresh operation
+            binding.viewPager.visibility = View.GONE
+            binding.noWarLayout.visibility = View.GONE
+        }
+        
         lifecycleScope.launch {
             try {
                 val response = apiService.getWarData(clan.tag)
