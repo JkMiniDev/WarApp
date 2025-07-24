@@ -536,12 +536,6 @@ class MainActivity : AppCompatActivity() {
             binding.loadingLayout.visibility = View.VISIBLE
         }
         
-        // Hide war content immediately during refresh to prevent showing stale data
-        if (!showCenterLoading) { // This is a refresh operation
-            binding.viewPager.visibility = View.GONE
-            binding.noWarLayout.visibility = View.GONE
-        }
-        
         lifecycleScope.launch {
             try {
                 val response = apiService.getWarData(clan.tag)
