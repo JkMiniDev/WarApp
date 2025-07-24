@@ -255,22 +255,27 @@
             android:visibility="visible">
 
             <ImageView
+                android:id="@+id/ivNoWarIcon"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:src="@drawable/ic_crossed_swords"
                 android:layout_marginBottom="16dp"
-                android:alpha="0.6" />
+                android:alpha="0.6"
+                android:contentDescription="No War Icon" />
 
             <TextView
+                android:id="@+id/tvNoWarTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Select a clan to view war details"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_color"
-                android:layout_marginBottom="8dp" />
+                android:layout_marginBottom="8dp"
+                android:textAlignment="center" />
 
             <TextView
+                android:id="@+id/tvNoWarMessage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Choose from your bookmarked clans above to see ongoing wars"

@@ -53,6 +53,13 @@ class MainActivity : AppCompatActivity() {
     private var isSearchMode = false
     private lateinit var searchAdapter: ClanSearchAdapter
     
+    // No war states
+    enum class NoWarState {
+        NO_CLAN_SELECTED,
+        NO_ONGOING_WAR,
+        PRIVATE_WAR_LOG
+    }
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -205,17 +212,33 @@ class MainActivity : AppCompatActivity() {
     
     private fun updateNoWarLayoutForNoBookmarks() {
         // Update the no war layout to show no bookmarks message
-        val noWarLayout = binding.noWarLayout
+        binding.ivNoWarIcon.setImageResource(R.drawable.ic_bookmark)
+        binding.tvNoWarTitle.text = "No Bookmarked Clans"
+        binding.tvNoWarMessage.text = "Search and bookmark clans to view their war details here"
+    }
+    
+    private fun updateNoWarLayout(state: NoWarState) {
+        when (state) {
+            NoWarState.NO_CLAN_SELECTED -> {
+                binding.ivNoWarIcon.setImageResource(R.drawable.ic_crossed_swords)
+                binding.tvNoWarTitle.text = "Select a clan to view war details"
+                binding.tvNoWarMessage.text = "Choose from your bookmarked clans above to see ongoing wars"
+            }
+            NoWarState.NO_ONGOING_WAR -> {
+                binding.ivNoWarIcon.setImageResource(android.R.drawable.ic_menu_recent_history)
+                binding.tvNoWarTitle.text = "No Ongoing Wars"
+                binding.tvNoWarMessage.text = "You will see ongoing wars here after war starts"
+            }
+            NoWarState.PRIVATE_WAR_LOG -> {
+                binding.ivNoWarIcon.setImageResource(android.R.drawable.ic_lock_lock)
+                binding.tvNoWarTitle.text = "Private War Log"
+                binding.tvNoWarMessage.text = "This clan's war log is private and cannot be viewed publicly"
+            }
+        }
         
-        // Access child views directly by index since they don't have IDs
-        val imageView = noWarLayout.getChildAt(0) as? android.widget.ImageView
-        val titleTextView = noWarLayout.getChildAt(1) as? android.widget.TextView
-        val messageTextView = noWarLayout.getChildAt(2) as? android.widget.TextView
-        
-        // Update the views
-        imageView?.setImageResource(R.drawable.ic_bookmark)
-        titleTextView?.text = "No Bookmarked Clans"
-        messageTextView?.text = "Search and bookmark clans to view their war details here"
+        // Show the no war layout
+        binding.viewPager.visibility = View.GONE
+        binding.noWarLayout.visibility = View.VISIBLE
     }
     
     private fun showClanSelectorDialog() {
@@ -516,6 +539,9 @@ class MainActivity : AppCompatActivity() {
                         if (showCenterLoading) {
                             binding.loadingLayout.visibility = View.GONE
                         }
+                        // Show war content and hide no war layout
+                        binding.noWarLayout.visibility = View.GONE
+                        binding.viewPager.visibility = View.VISIBLE
                         // Stop pull-to-refresh animation
                         binding.swipeRefreshLayout.isRefreshing = false
                     }
@@ -526,7 +552,23 @@ class MainActivity : AppCompatActivity() {
                     // Stop pull-to-refresh animation
                     binding.swipeRefreshLayout.isRefreshing = false
                     currentWarData = null
-                    Toast.makeText(this@MainActivity, "No ongoing war for this clan", Toast.LENGTH_SHORT).show()
+                    
+                    // Check for specific error codes
+                    when (response.code()) {
+                        403 -> {
+                            // Check if it's a private war log error
+                            val errorHandler = ErrorHandler
+                            val errorResponse = errorHandler.parseError(response)
+                            if (errorResponse.error == "private_war_log") {
+                                updateNoWarLayout(NoWarState.PRIVATE_WAR_LOG)
+                            } else {
+                                updateNoWarLayout(NoWarState.NO_ONGOING_WAR)
+                            }
+                        }
+                        else -> {
+                            updateNoWarLayout(NoWarState.NO_ONGOING_WAR)
+                        }
+                    }
                 }
             } catch (e: Exception) {
                 if (showCenterLoading) {
@@ -535,6 +577,8 @@ class MainActivity : AppCompatActivity() {
                 // Stop pull-to-refresh animation
                 binding.swipeRefreshLayout.isRefreshing = false
                 currentWarData = null
+                updateNoWarLayout(NoWarState.NO_ONGOING_WAR)
+                // Still show a brief connection failed message
                 Toast.makeText(this@MainActivity, "Connection Failed", Toast.LENGTH_SHORT).show()
             }
         }
