@@ -103,7 +103,7 @@ class MainActivity : AppCompatActivity() {
     
     private fun setupPullToRefresh() {
         binding.swipeRefreshLayout.setOnRefreshListener {
-            refreshData()
+            refreshDataFromPullToRefresh()
         }
         
         // Set refresh indicator colors to match app theme
@@ -355,7 +355,7 @@ class MainActivity : AppCompatActivity() {
         popup.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.menu_refresh -> {
-                    refreshData()
+                    refreshDataFromMenu()
                     true
                 }
                 R.id.menu_settings -> {
@@ -369,15 +369,21 @@ class MainActivity : AppCompatActivity() {
         popup.show()
     }
     
-    private fun refreshData() {
+    private fun refreshDataFromPullToRefresh() {
         loadBookmarkedClans()
         selectedClan?.let { clan ->
-            loadWarDataForClan(clan)
+            loadWarDataForClan(clan, false) // false = don't show center loading
         } ?: run {
             // No selected clan, just stop the refresh animation
             binding.swipeRefreshLayout.isRefreshing = false
         }
-        Toast.makeText(this, "Refreshed", Toast.LENGTH_SHORT).show()
+    }
+    
+    private fun refreshDataFromMenu() {
+        loadBookmarkedClans()
+        selectedClan?.let { clan ->
+            loadWarDataForClan(clan, true) // true = show center loading
+        }
     }
 
     private fun showLoadingOverlay() {
@@ -402,8 +408,10 @@ class MainActivity : AppCompatActivity() {
         overlay?.let { (binding.root as ViewGroup).removeView(it) }
     }
     
-    private fun loadWarDataForClan(clan: BookmarkedClan) {
-        binding.loadingLayout.visibility = View.VISIBLE
+    private fun loadWarDataForClan(clan: BookmarkedClan, showCenterLoading: Boolean = true) {
+        if (showCenterLoading) {
+            binding.loadingLayout.visibility = View.VISIBLE
+        }
         lifecycleScope.launch {
             try {
                 val response = apiService.getWarData(clan.tag)
@@ -411,23 +419,29 @@ class MainActivity : AppCompatActivity() {
                     response.body()?.let { warData ->
                         currentWarData = warData
                         warPagerAdapter.updateWarData(warData)
-                        binding.loadingLayout.visibility = View.GONE
+                        if (showCenterLoading) {
+                            binding.loadingLayout.visibility = View.GONE
+                        }
                         // Stop pull-to-refresh animation
                         binding.swipeRefreshLayout.isRefreshing = false
                     }
                 } else {
-                    binding.loadingLayout.visibility = View.GONE
+                    if (showCenterLoading) {
+                        binding.loadingLayout.visibility = View.GONE
+                    }
                     // Stop pull-to-refresh animation
                     binding.swipeRefreshLayout.isRefreshing = false
                     currentWarData = null
                     Toast.makeText(this@MainActivity, "No ongoing war for this clan", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
-                binding.loadingLayout.visibility = View.GONE
+                if (showCenterLoading) {
+                    binding.loadingLayout.visibility = View.GONE
+                }
                 // Stop pull-to-refresh animation
                 binding.swipeRefreshLayout.isRefreshing = false
                 currentWarData = null
-                Toast.makeText(this@MainActivity, "Failed to load war data", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, "Connection Failed", Toast.LENGTH_SHORT).show()
             }
         }
     }
