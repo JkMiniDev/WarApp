@@ -102,6 +102,44 @@ class MainActivity : AppCompatActivity() {
     }
     
         private fun setupPullToRefresh() {
+        // Add custom touch handling to block horizontal swipes
+        var startX = 0f
+        var startY = 0f
+        var isHorizontalSwipe = false
+        
+        binding.swipeRefreshLayout.setOnTouchListener { _, event ->
+            when (event.action) {
+                android.view.MotionEvent.ACTION_DOWN -> {
+                    startX = event.x
+                    startY = event.y
+                    isHorizontalSwipe = false
+                    false // Don't consume the event
+                }
+                android.view.MotionEvent.ACTION_MOVE -> {
+                    val deltaX = kotlin.math.abs(event.x - startX)
+                    val deltaY = kotlin.math.abs(event.y - startY)
+                    
+                    // If horizontal movement is detected, mark as horizontal swipe
+                    if (deltaX > 30 && deltaX > deltaY) {
+                        isHorizontalSwipe = true
+                        true // Consume the event to block SwipeRefreshLayout
+                    } else {
+                        false // Allow vertical movement for pull-to-refresh
+                    }
+                }
+                android.view.MotionEvent.ACTION_UP,
+                android.view.MotionEvent.ACTION_CANCEL -> {
+                    if (isHorizontalSwipe) {
+                        isHorizontalSwipe = false
+                        true // Consume to prevent any refresh trigger
+                    } else {
+                        false // Allow normal touch handling
+                    }
+                }
+                else -> false
+            }
+        }
+        
         binding.swipeRefreshLayout.setOnRefreshListener {
             refreshDataFromPullToRefresh()
         }

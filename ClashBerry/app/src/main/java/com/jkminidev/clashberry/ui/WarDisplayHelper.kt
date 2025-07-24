@@ -429,45 +429,9 @@ class WarDisplayHelper(private val context: Context) {
             }
         })
         
-        // Smart container that only blocks horizontal swipes, allows vertical pulls
-        var startX = 0f
-        var startY = 0f
-        var isScrollingHorizontally = false
-        
+        // Simple container for ViewPager2 (horizontal swipes now blocked at SwipeRefreshLayout level)
         val viewPagerContainer = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
-            setOnTouchListener { _, event ->
-                when (event.action) {
-                    android.view.MotionEvent.ACTION_DOWN -> {
-                        startX = event.rawX
-                        startY = event.rawY
-                        isScrollingHorizontally = false
-                        parent?.requestDisallowInterceptTouchEvent(false)
-                    }
-                    android.view.MotionEvent.ACTION_MOVE -> {
-                        val deltaX = kotlin.math.abs(event.rawX - startX)
-                        val deltaY = kotlin.math.abs(event.rawY - startY)
-                        
-                        // Only block if it's clearly a horizontal swipe
-                        if (deltaX > 20 && deltaX > deltaY) {
-                            if (!isScrollingHorizontally) {
-                                isScrollingHorizontally = true
-                                parent?.requestDisallowInterceptTouchEvent(true)
-                            }
-                        }
-                        // If it's vertical movement, allow pull-to-refresh
-                        else if (deltaY > deltaX && deltaY > 20) {
-                            parent?.requestDisallowInterceptTouchEvent(false)
-                        }
-                    }
-                    android.view.MotionEvent.ACTION_UP,
-                    android.view.MotionEvent.ACTION_CANCEL -> {
-                        parent?.requestDisallowInterceptTouchEvent(false)
-                        isScrollingHorizontally = false
-                    }
-                }
-                false // Don't consume, let children handle
-            }
         }
         viewPagerContainer.addView(viewPager, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
@@ -496,15 +460,5 @@ class WarDisplayHelper(private val context: Context) {
         container.addView(recyclerView)
     }
     
-    private fun disallowParentInterceptTouchEvent(view: android.view.View, disallow: Boolean) {
-        var parent = view.parent
-        while (parent != null) {
-            if (parent is androidx.swiperefreshlayout.widget.SwipeRefreshLayout) {
-                parent.requestDisallowInterceptTouchEvent(disallow)
-                break
-            }
-            parent?.requestDisallowInterceptTouchEvent(disallow)
-            parent = parent.parent
-        }
-    }
+
 }
