@@ -173,16 +173,24 @@ class MainActivity : AppCompatActivity() {
                         val searchResults = listOf(clanInfo)
                         adapter.updateResults(searchResults)
                         dialogBinding.searchLoadingLayout.visibility = View.GONE
+                        updateSearchPlaceholderVisibility(adapter, dialogBinding)
                     }
                 } else {
                     dialogBinding.searchLoadingLayout.visibility = View.GONE
+                    updateSearchPlaceholderVisibility(adapter, dialogBinding)
                     Toast.makeText(this@MainActivity, "Clan not found", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
                 dialogBinding.searchLoadingLayout.visibility = View.GONE
+                updateSearchPlaceholderVisibility(adapter, dialogBinding)
                 Toast.makeText(this@MainActivity, "Search failed", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+    
+    private fun updateSearchPlaceholderVisibility(adapter: ClanSearchAdapter, dialogBinding: DialogSearchBinding) {
+        // Hide placeholder when there are search results, show when there are no results
+        dialogBinding.searchPlaceholderLayout.visibility = if (adapter.hasResults()) View.GONE else View.VISIBLE
     }
     
     private fun onSearchResultClicked(clan: ClanBasicInfo) {
@@ -522,6 +530,10 @@ class MainActivity : AppCompatActivity() {
             results.clear()
             results.addAll(newResults)
             notifyDataSetChanged()
+        }
+        
+        fun hasResults(): Boolean {
+            return results.isNotEmpty()
         }
     }
     

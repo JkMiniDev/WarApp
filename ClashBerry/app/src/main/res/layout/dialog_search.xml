@@ -60,37 +60,47 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:orientation="vertical"
-        android:padding="24dp"
-        android:gravity="center">
+        android:orientation="vertical">
 
-        <!-- Search Icon -->
-        <ImageView
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:src="@drawable/ic_search"
-            android:layout_marginBottom="24dp"
-            android:alpha="0.8" />
+        <!-- Placeholder Content (only visible when no search results) -->
+        <LinearLayout
+            android:id="@+id/searchPlaceholderLayout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="24dp"
+            android:gravity="center">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Clan Search"
-            android:textSize="28sp"
-            android:textStyle="bold"
-            android:textColor="@color/text_color"
-            android:layout_marginBottom="8dp" />
+            <!-- Search Icon -->
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@drawable/ic_search"
+                android:layout_marginBottom="24dp"
+                android:alpha="0.8" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Enter the name or clan tag of a clan in the search field above. A clan tag looks like #2Q9YRQY8 and you can find it in the game below a clan's name."
-            android:textSize="16sp"
-            android:textColor="@color/text_color_secondary"
-            android:textAlignment="center"
-            android:gravity="center"
-            android:layout_marginBottom="32dp"
-            android:paddingHorizontal="16dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Clan Search"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_color"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Enter the name or clan tag of a clan in the search field above. A clan tag looks like #2Q9YRQY8 and you can find it in the game below a clan's name."
+                android:textSize="16sp"
+                android:textColor="@color/text_color_secondary"
+                android:textAlignment="center"
+                android:gravity="center"
+                android:layout_marginBottom="32dp"
+                android:paddingHorizontal="16dp" />
+
+        </LinearLayout>
 
         <!-- Search Results -->
         <androidx.recyclerview.widget.RecyclerView
@@ -100,7 +110,7 @@
             android:layout_weight="1"
             android:scrollbars="none"
             android:overScrollMode="never"
-            android:layout_marginTop="16dp" />
+            android:padding="16dp" />
 
         <!-- Loading Indicator -->
         <LinearLayout
