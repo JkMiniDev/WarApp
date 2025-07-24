@@ -186,6 +186,8 @@
 
     </FrameLayout>
 
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
     <!-- Bottom Navigation Bar -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"

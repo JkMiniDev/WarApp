@@ -65,6 +65,7 @@ class MainActivity : AppCompatActivity() {
     private fun setupUI() {
         setupBottomNavigation()
         setupTopBar()
+        setupPullToRefresh()
         updateSelectedClanDisplay()
     }
     
@@ -98,6 +99,19 @@ class MainActivity : AppCompatActivity() {
         binding.ivMenu.setOnClickListener { view ->
             showMenuPopup(view)
         }
+    }
+    
+    private fun setupPullToRefresh() {
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            refreshData()
+        }
+        
+        // Set refresh indicator colors to match app theme
+        binding.swipeRefreshLayout.setColorSchemeResources(
+            R.color.accent_color,
+            R.color.green_primary,
+            R.color.accent_color_dark
+        )
     }
     
     private fun setupWarViewPager() {
@@ -359,6 +373,9 @@ class MainActivity : AppCompatActivity() {
         loadBookmarkedClans()
         selectedClan?.let { clan ->
             loadWarDataForClan(clan)
+        } ?: run {
+            // No selected clan, just stop the refresh animation
+            binding.swipeRefreshLayout.isRefreshing = false
         }
         Toast.makeText(this, "Refreshed", Toast.LENGTH_SHORT).show()
     }
@@ -395,14 +412,20 @@ class MainActivity : AppCompatActivity() {
                         currentWarData = warData
                         warPagerAdapter.updateWarData(warData)
                         binding.loadingLayout.visibility = View.GONE
+                        // Stop pull-to-refresh animation
+                        binding.swipeRefreshLayout.isRefreshing = false
                     }
                 } else {
                     binding.loadingLayout.visibility = View.GONE
+                    // Stop pull-to-refresh animation
+                    binding.swipeRefreshLayout.isRefreshing = false
                     currentWarData = null
                     Toast.makeText(this@MainActivity, "No ongoing war for this clan", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
                 binding.loadingLayout.visibility = View.GONE
+                // Stop pull-to-refresh animation
+                binding.swipeRefreshLayout.isRefreshing = false
                 currentWarData = null
                 Toast.makeText(this@MainActivity, "Failed to load war data", Toast.LENGTH_SHORT).show()
             }
