@@ -319,12 +319,26 @@ class WarDisplayHelper(private val context: Context) {
         val subTabAdapter = SubTabPagerAdapter(options, warData, selectedClan)
         viewPager.adapter = subTabAdapter
         
-        // Request parent to not intercept touch events during horizontal scrolling
+        // Request parent to not intercept touch events only during horizontal scrolling
+        var initialX = 0f
+        var initialY = 0f
         viewPager.setOnTouchListener { _, event ->
             when (event.action) {
-                android.view.MotionEvent.ACTION_DOWN,
+                android.view.MotionEvent.ACTION_DOWN -> {
+                    initialX = event.x
+                    initialY = event.y
+                    viewPager.parent?.requestDisallowInterceptTouchEvent(false)
+                }
                 android.view.MotionEvent.ACTION_MOVE -> {
-                    viewPager.parent?.requestDisallowInterceptTouchEvent(true)
+                    val deltaX = kotlin.math.abs(event.x - initialX)
+                    val deltaY = kotlin.math.abs(event.y - initialY)
+                    
+                    // Only prevent parent interception if horizontal movement is greater than vertical
+                    if (deltaX > deltaY && deltaX > 20) { // 20px threshold for horizontal swipe detection
+                        viewPager.parent?.requestDisallowInterceptTouchEvent(true)
+                    } else {
+                        viewPager.parent?.requestDisallowInterceptTouchEvent(false)
+                    }
                 }
                 android.view.MotionEvent.ACTION_UP,
                 android.view.MotionEvent.ACTION_CANCEL -> {
