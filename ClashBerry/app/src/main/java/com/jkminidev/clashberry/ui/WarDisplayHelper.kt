@@ -314,20 +314,8 @@ class WarDisplayHelper(private val context: Context) {
             }
         }
         
-        // Create custom ViewPager2 that blocks parent touch interception
-        val viewPager = object : androidx.viewpager2.widget.ViewPager2(context) {
-            override fun onTouchEvent(ev: android.view.MotionEvent?): Boolean {
-                // Always prevent parent from intercepting touches
-                parent?.requestDisallowInterceptTouchEvent(true)
-                return super.onTouchEvent(ev)
-            }
-            
-            override fun onInterceptTouchEvent(ev: android.view.MotionEvent?): Boolean {
-                // Always prevent parent from intercepting touches
-                parent?.requestDisallowInterceptTouchEvent(true)
-                return super.onInterceptTouchEvent(ev)
-            }
-        }
+        // Create ViewPager2 with smart touch handling
+        val viewPager = androidx.viewpager2.widget.ViewPager2(context)
         val subTabAdapter = SubTabPagerAdapter(options, warData, selectedClan)
         viewPager.adapter = subTabAdapter
         
@@ -441,17 +429,44 @@ class WarDisplayHelper(private val context: Context) {
             }
         })
         
-        // Wrap ViewPager2 in a container that blocks refresh gestures
+        // Smart container that only blocks horizontal swipes, allows vertical pulls
+        var startX = 0f
+        var startY = 0f
+        var isScrollingHorizontally = false
+        
         val viewPagerContainer = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
             setOnTouchListener { _, event ->
-                // Block all touch events from reaching SwipeRefreshLayout
                 when (event.action) {
                     android.view.MotionEvent.ACTION_DOWN -> {
-                        parent?.requestDisallowInterceptTouchEvent(true)
+                        startX = event.rawX
+                        startY = event.rawY
+                        isScrollingHorizontally = false
+                        parent?.requestDisallowInterceptTouchEvent(false)
+                    }
+                    android.view.MotionEvent.ACTION_MOVE -> {
+                        val deltaX = kotlin.math.abs(event.rawX - startX)
+                        val deltaY = kotlin.math.abs(event.rawY - startY)
+                        
+                        // Only block if it's clearly a horizontal swipe
+                        if (deltaX > 20 && deltaX > deltaY) {
+                            if (!isScrollingHorizontally) {
+                                isScrollingHorizontally = true
+                                parent?.requestDisallowInterceptTouchEvent(true)
+                            }
+                        }
+                        // If it's vertical movement, allow pull-to-refresh
+                        else if (deltaY > deltaX && deltaY > 20) {
+                            parent?.requestDisallowInterceptTouchEvent(false)
+                        }
+                    }
+                    android.view.MotionEvent.ACTION_UP,
+                    android.view.MotionEvent.ACTION_CANCEL -> {
+                        parent?.requestDisallowInterceptTouchEvent(false)
+                        isScrollingHorizontally = false
                     }
                 }
-                false // Don't consume, let ViewPager2 handle
+                false // Don't consume, let children handle
             }
         }
         viewPagerContainer.addView(viewPager, LinearLayout.LayoutParams(
