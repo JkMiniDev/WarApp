@@ -49,6 +49,10 @@ class MainActivity : AppCompatActivity() {
     private var currentOverviewFragment: OverviewFragment? = null
     private var currentActivityFragment: ActivityFragment? = null
     
+    // Search related variables
+    private var isSearchMode = false
+    private lateinit var searchAdapter: ClanSearchAdapter
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -62,10 +66,19 @@ class MainActivity : AppCompatActivity() {
         setupWarViewPager()
     }
     
+    override fun onBackPressed() {
+        if (isSearchMode) {
+            hideInlineSearch()
+        } else {
+            super.onBackPressed()
+        }
+    }
+    
     private fun setupUI() {
         setupBottomNavigation()
         setupTopBar()
         setupPullToRefresh()
+        setupInlineSearch()
         updateSelectedClanDisplay()
     }
     
@@ -93,7 +106,7 @@ class MainActivity : AppCompatActivity() {
         }
         
         binding.ivSearch.setOnClickListener {
-            showSearchDialog()
+            showInlineSearch()
         }
         
         binding.ivMenu.setOnClickListener { view ->
@@ -267,61 +280,87 @@ class MainActivity : AppCompatActivity() {
         }
     }
     
-    private fun showSearchDialog() {
-        val dialog = Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
-        val dialogBinding = DialogSearchBinding.inflate(layoutInflater)
-        dialog.setContentView(dialogBinding.root)
-        
-        val searchAdapter = ClanSearchAdapter(mutableListOf()) { clan ->
+    private fun setupInlineSearch() {
+        // Initialize search adapter
+        searchAdapter = ClanSearchAdapter(mutableListOf()) { clan ->
             onSearchResultClicked(clan)
-            dialog.dismiss()
+            hideInlineSearch()
         }
         
-        dialogBinding.searchResultsRecyclerView.apply {
+        // Setup search results RecyclerView
+        binding.searchResultsRecyclerView.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
             adapter = searchAdapter
-            // Enable smooth scrolling
             isNestedScrollingEnabled = true
         }
         
-        // Remove btnSearch and btnCancel listeners
-        // dialogBinding.btnSearch.setOnClickListener {
-        //     val clanTag = dialogBinding.etSearchTag.text.toString().trim()
-        //     if (clanTag.isNotEmpty()) {
-        //         searchClan(clanTag, searchAdapter, dialogBinding)
-        //     }
-        // }
-        
-        // dialogBinding.btnCancel.setOnClickListener {
-        //     dialog.dismiss()
-        // }
-        
-        dialogBinding.ivBack.setOnClickListener {
-            dialog.dismiss()
+        // Setup search back button
+        binding.ivSearchBack.setOnClickListener {
+            hideInlineSearch()
         }
         
-        dialogBinding.etSearchTag.setOnEditorActionListener { _, actionId, _ ->
+        // Setup search EditText
+        binding.etSearchTag.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                val clanTag = dialogBinding.etSearchTag.text.toString().trim()
+                val clanTag = binding.etSearchTag.text.toString().trim()
                 if (clanTag.isNotEmpty()) {
-                    searchClan(clanTag, searchAdapter, dialogBinding)
+                    searchClan(clanTag, searchAdapter)
                 }
                 true
             } else {
                 false
             }
         }
-        
-        dialog.show()
-        // Automatically focus the search EditText and show the keyboard
-        dialogBinding.etSearchTag.requestFocus()
-        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
-        imm.showSoftInput(dialogBinding.etSearchTag, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT)
     }
     
-    private fun searchClan(clanTag: String, adapter: ClanSearchAdapter, dialogBinding: DialogSearchBinding) {
-        dialogBinding.searchLoadingLayout.visibility = View.VISIBLE
+    private fun showInlineSearch() {
+        isSearchMode = true
         
+        // Hide normal top bar and show search bar
+        binding.topAppBar.visibility = View.GONE
+        binding.searchAppBar.visibility = View.VISIBLE
+        
+        // Hide main content and show search results
+        binding.viewPager.visibility = View.GONE
+        binding.noWarLayout.visibility = View.GONE
+        binding.searchResultsRecyclerView.visibility = View.VISIBLE
+        
+        // Clear previous search results
+        searchAdapter.updateResults(emptyList())
+        binding.etSearchTag.text?.clear()
+        
+        // Focus search EditText and show keyboard
+        binding.etSearchTag.requestFocus()
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
+        imm.showSoftInput(binding.etSearchTag, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT)
+    }
+    
+    private fun hideInlineSearch() {
+        isSearchMode = false
+        
+        // Show normal top bar and hide search bar
+        binding.topAppBar.visibility = View.VISIBLE
+        binding.searchAppBar.visibility = View.GONE
+        
+        // Hide search results and show main content
+        binding.searchResultsRecyclerView.visibility = View.GONE
+        binding.viewPager.visibility = View.VISIBLE
+        
+        // Restore proper content visibility
+        if (currentWarData != null) {
+            binding.viewPager.visibility = View.VISIBLE
+            binding.noWarLayout.visibility = View.GONE
+        } else {
+            binding.viewPager.visibility = View.GONE
+            binding.noWarLayout.visibility = View.VISIBLE
+        }
+        
+        // Hide keyboard
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
+        imm.hideSoftInputFromWindow(binding.etSearchTag.windowToken, 0)
+    }
+    
+    private fun searchClan(clanTag: String, adapter: ClanSearchAdapter) {
         lifecycleScope.launch {
             try {
                 val response = apiService.getClanInfo(clanTag)
@@ -329,26 +368,19 @@ class MainActivity : AppCompatActivity() {
                     response.body()?.let { clanInfo ->
                         val searchResults = listOf(clanInfo)
                         adapter.updateResults(searchResults)
-                        dialogBinding.searchLoadingLayout.visibility = View.GONE
-                        updateSearchPlaceholderVisibility(adapter, dialogBinding)
                     }
                 } else {
-                    dialogBinding.searchLoadingLayout.visibility = View.GONE
-                    updateSearchPlaceholderVisibility(adapter, dialogBinding)
+                    adapter.updateResults(emptyList())
                     Toast.makeText(this@MainActivity, "Clan not found", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
-                dialogBinding.searchLoadingLayout.visibility = View.GONE
-                updateSearchPlaceholderVisibility(adapter, dialogBinding)
+                adapter.updateResults(emptyList())
                 Toast.makeText(this@MainActivity, "Search failed", Toast.LENGTH_SHORT).show()
             }
         }
     }
     
-    private fun updateSearchPlaceholderVisibility(adapter: ClanSearchAdapter, dialogBinding: DialogSearchBinding) {
-        // Hide placeholder when there are search results, show when there are no results
-        dialogBinding.searchPlaceholderLayout.visibility = if (adapter.hasResults()) View.GONE else View.VISIBLE
-    }
+
     
     private fun onSearchResultClicked(clan: ClanBasicInfo) {
         // Add to bookmarks
