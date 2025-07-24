@@ -551,6 +551,8 @@ class MainActivity : AppCompatActivity() {
                             // Stop pull-to-refresh animation
                             binding.swipeRefreshLayout.isRefreshing = false
                             currentWarData = null
+                            // Clear any existing war data from fragments
+                            warPagerAdapter.updateWarData(null)
                             updateNoWarLayout(NoWarState.NO_ONGOING_WAR)
                         } else {
                             // Clan is in war, show war data
@@ -583,20 +585,30 @@ class MainActivity : AppCompatActivity() {
                                 val errorHandler = ErrorHandler
                                 val errorResponse = errorHandler.parseError(response)
                                                                      if (errorResponse.reason == "accessDenied") {
+                                    // Clear any existing war data from fragments
+                                    warPagerAdapter.updateWarData(null)
                                     updateNoWarLayout(NoWarState.PRIVATE_WAR_LOG)
                                 } else {
+                                    // Clear any existing war data from fragments
+                                    warPagerAdapter.updateWarData(null)
                                     updateNoWarLayout(NoWarState.PRIVATE_WAR_LOG) // Default for 403
                                 }
                             } catch (e: Exception) {
                                 // If error parsing fails, assume private war log for 403
+                                // Clear any existing war data from fragments
+                                warPagerAdapter.updateWarData(null)
                                 updateNoWarLayout(NoWarState.PRIVATE_WAR_LOG)
                             }
                         }
                         404 -> {
                             // Clan not found or no war data
+                            // Clear any existing war data from fragments
+                            warPagerAdapter.updateWarData(null)
                             updateNoWarLayout(NoWarState.NO_ONGOING_WAR)
                         }
                         else -> {
+                            // Clear any existing war data from fragments
+                            warPagerAdapter.updateWarData(null)
                             updateNoWarLayout(NoWarState.NO_ONGOING_WAR)
                         }
                     }
@@ -609,6 +621,8 @@ class MainActivity : AppCompatActivity() {
                 // Stop pull-to-refresh animation
                 binding.swipeRefreshLayout.isRefreshing = false
                 currentWarData = null
+                // Clear any existing war data from fragments
+                warPagerAdapter.updateWarData(null)
                 updateNoWarLayout(NoWarState.NO_ONGOING_WAR)
                 // Still show a brief connection failed message
                 Toast.makeText(this@MainActivity, "Connection Failed", Toast.LENGTH_SHORT).show()
@@ -764,10 +778,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
         
-        fun updateWarData(data: WarResponse) {
+        fun updateWarData(data: WarResponse?) {
             warData = data
-            currentOverviewFragment?.updateWarData(data)
-            currentActivityFragment?.updateWarData(data)
+            data?.let {
+                currentOverviewFragment?.updateWarData(it)
+                currentActivityFragment?.updateWarData(it)
+            }
         }
     }
 }
