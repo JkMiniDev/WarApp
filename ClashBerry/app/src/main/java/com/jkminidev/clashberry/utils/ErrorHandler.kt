@@ -14,10 +14,10 @@ object ErrorHandler {
             if (errorBody != null) {
                 Gson().fromJson(errorBody, ErrorResponse::class.java)
             } else {
-                ErrorResponse("api_error", "API Error: ${response.code()}", null)
+                ErrorResponse(error = "api_error", message = "API Error: ${response.code()}")
             }
         } catch (e: Exception) {
-            ErrorResponse("parse_error", "Failed to parse error response", null)
+            ErrorResponse(error = "parse_error", message = "Failed to parse error response")
         }
     }
     
