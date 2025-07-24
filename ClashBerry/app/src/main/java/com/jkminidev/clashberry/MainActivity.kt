@@ -25,8 +25,13 @@ import com.jkminidev.clashberry.data.*
 import com.jkminidev.clashberry.databinding.*
 import com.jkminidev.clashberry.network.NetworkModule
 import com.jkminidev.clashberry.utils.ErrorHandler
+import com.jkminidev.clashberry.ui.WarDisplayHelper
 import kotlinx.coroutines.launch
 import retrofit2.Response
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
 
 class MainActivity : AppCompatActivity() {
     
@@ -34,12 +39,15 @@ class MainActivity : AppCompatActivity() {
     private val apiService = NetworkModule.apiService
     private lateinit var preferences: SharedPreferences
     private val gson = Gson()
+    private lateinit var warDisplayHelper: WarDisplayHelper
     
-    private var currentTab = "home"
     private val bookmarkedClans = mutableListOf<BookmarkedClan>()
-    private val warCards = mutableListOf<WarResponse>()
+    private var currentWarData: WarResponse? = null
+    private var selectedClan: BookmarkedClan? = null
     
-    private lateinit var warCardsAdapter: WarCardsAdapter
+    private lateinit var warPagerAdapter: WarPagerAdapter
+    private var currentOverviewFragment: OverviewFragment? = null
+    private var currentActivityFragment: ActivityFragment? = null
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,37 +55,42 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         
         preferences = getSharedPreferences("clashberry_prefs", Context.MODE_PRIVATE)
+        warDisplayHelper = WarDisplayHelper(this)
         
         setupUI()
         loadBookmarkedClans()
-        loadWarData { }
-        displayBookmarkedClans()
+        setupWarViewPager()
     }
     
     private fun setupUI() {
         setupBottomNavigation()
         setupTopBar()
-        setupRecyclerViews()
-        
-        // Enable smooth scrolling
-        binding.homeContent.isSmoothScrollingEnabled = true
-        binding.bookmarksContent.isSmoothScrollingEnabled = true
+        updateSelectedClanDisplay()
     }
     
     private fun setupBottomNavigation() {
         binding.bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.nav_home -> switchTab("home")
-                R.id.nav_bookmarks -> switchTab("bookmarks")
+                R.id.nav_overview -> {
+                    binding.viewPager.currentItem = 0
+                    true
+                }
+                R.id.nav_activity -> {
+                    binding.viewPager.currentItem = 1
+                    true
+                }
+                else -> false
             }
-            true
         }
         // Set initial tab
-        binding.bottomNavigationView.selectedItemId = R.id.nav_home
-        switchTab("home")
+        binding.bottomNavigationView.selectedItemId = R.id.nav_overview
     }
     
     private fun setupTopBar() {
+        binding.clanSelectorLayout.setOnClickListener {
+            showClanSelectorDialog()
+        }
+        
         binding.ivSearch.setOnClickListener {
             showSearchDialog()
         }
@@ -87,27 +100,63 @@ class MainActivity : AppCompatActivity() {
         }
     }
     
-    private fun setupRecyclerViews() {
-        // War cards setup
-        warCardsAdapter = WarCardsAdapter(warCards) { war ->
-            openWarDetail(war)
+    private fun setupWarViewPager() {
+        warPagerAdapter = WarPagerAdapter(this)
+        binding.viewPager.adapter = warPagerAdapter
+        binding.viewPager.offscreenPageLimit = 2
+        binding.viewPager.isUserInputEnabled = false // Disable swipe, use bottom nav only
+    }
+    
+    private fun updateSelectedClanDisplay() {
+        if (selectedClan != null) {
+            binding.tvSelectedClanName.text = selectedClan!!.name
+            Glide.with(this)
+                .load(selectedClan!!.badge)
+                .placeholder(R.mipmap.ic_launcher)
+                .error(R.mipmap.ic_launcher)
+                .circleCrop()
+                .into(binding.ivSelectedClanBadge)
+            binding.noWarLayout.visibility = View.GONE
+            binding.viewPager.visibility = View.VISIBLE
+        } else {
+            binding.tvSelectedClanName.text = "Select Clan"
+            binding.ivSelectedClanBadge.setImageResource(R.mipmap.ic_launcher)
+            binding.noWarLayout.visibility = View.VISIBLE
+            binding.viewPager.visibility = View.GONE
         }
     }
     
-    private fun switchTab(tab: String) {
-        currentTab = tab
-        when (tab) {
-            "home" -> {
-                binding.homeContent.visibility = View.VISIBLE
-                binding.bookmarksContent.visibility = View.GONE
-                binding.tvAppName.text = getString(R.string.current_war)
-            }
-            "bookmarks" -> {
-                binding.homeContent.visibility = View.GONE
-                binding.bookmarksContent.visibility = View.VISIBLE
-                binding.tvAppName.text = getString(R.string.bookmarks)
-            }
+    private fun showClanSelectorDialog() {
+        val dialog = Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
+        val dialogBinding = DialogClanSelectorBinding.inflate(layoutInflater)
+        dialog.setContentView(dialogBinding.root)
+        
+        val clanSelectorAdapter = ClanSelectorAdapter(bookmarkedClans) { clan ->
+            selectedClan = clan
+            updateSelectedClanDisplay()
+            loadWarDataForClan(clan)
+            dialog.dismiss()
         }
+        
+        dialogBinding.clanSelectorRecyclerView.apply {
+            layoutManager = LinearLayoutManager(this@MainActivity)
+            adapter = clanSelectorAdapter
+        }
+        
+        // Show/hide no bookmarks message
+        if (bookmarkedClans.isEmpty()) {
+            dialogBinding.noBookmarksLayout.visibility = View.VISIBLE
+            dialogBinding.clanSelectorRecyclerView.visibility = View.GONE
+        } else {
+            dialogBinding.noBookmarksLayout.visibility = View.GONE
+            dialogBinding.clanSelectorRecyclerView.visibility = View.VISIBLE
+        }
+        
+        dialogBinding.ivBack.setOnClickListener {
+            dialog.dismiss()
+        }
+        
+        dialog.show()
     }
     
     private fun showSearchDialog() {
@@ -207,34 +256,13 @@ class MainActivity : AppCompatActivity() {
         if (!bookmarkedClans.any { it.tag == clan.tag }) {
             bookmarkedClans.add(bookmarkedClan)
             saveBookmarkedClans()
-            displayBookmarkedClans()
             Toast.makeText(this, getString(R.string.clan_bookmarked), Toast.LENGTH_SHORT).show()
-            
-            // Refresh war data
-            loadWarData { }
         } else {
             Toast.makeText(this, "Clan already bookmarked", Toast.LENGTH_SHORT).show()
         }
     }
     
-    private fun onClanClicked(clanTag: String) {
-        // Load and show war data for this clan
-        lifecycleScope.launch {
-            try {
-                val response = apiService.getWarData(clanTag)
-                if (response.isSuccessful) {
-                    response.body()?.let { warData ->
-                        openWarDetail(warData)
-                    }
-                } else {
-                    val errorResponse = ErrorHandler.parseError(response)
-                    Toast.makeText(this@MainActivity, errorResponse.message, Toast.LENGTH_LONG).show()
-                }
-            } catch (e: Exception) {
-                Toast.makeText(this@MainActivity, "Failed to load war data", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
+
     
     private fun openWarDetail(warData: WarResponse) {
         val intent = Intent(this, WarDetailActivity::class.java)
@@ -264,17 +292,11 @@ class MainActivity : AppCompatActivity() {
     }
     
     private fun refreshData() {
-        showLoadingOverlay()
-        // Refresh the data by reloading war data and bookmarked clans
         loadBookmarkedClans()
-        loadWarData { success ->
-            hideLoadingOverlay()
-            if (success) {
-                Toast.makeText(this, "Refreshed Successful", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this, "Refresh Unsuccessful", Toast.LENGTH_SHORT).show()
-            }
+        selectedClan?.let { clan ->
+            loadWarDataForClan(clan)
         }
+        Toast.makeText(this, "Refreshed", Toast.LENGTH_SHORT).show()
     }
 
     private fun showLoadingOverlay() {
@@ -298,169 +320,36 @@ class MainActivity : AppCompatActivity() {
         val overlay = binding.root.findViewById<android.widget.FrameLayout>(R.id.loadingOverlay)
         overlay?.let { (binding.root as ViewGroup).removeView(it) }
     }
-
-    private fun loadWarData(onComplete: ((Boolean) -> Unit)? = null) {
-        if (bookmarkedClans.isEmpty()) {
-            binding.noWarsLayout.visibility = View.VISIBLE
-            binding.warCardsContainer.removeAllViews()
-            onComplete?.invoke(true)
-            return
-        }
-        binding.noWarsLayout.visibility = View.GONE
-        // Don't clear warCardsContainer yet
-        val newWarCards = mutableListOf<View>()
-        var loadedCount = 0
-        var successfulCount = 0
-        val total = bookmarkedClans.size
-        bookmarkedClans.forEach { clan ->
-            lifecycleScope.launch {
-                try {
-                    val response = apiService.getWarData(clan.tag)
-                    if (response.isSuccessful) {
-                        response.body()?.let { warData ->
-                            val warCardBinding = ItemWarCardBinding.inflate(layoutInflater)
-                            // Populate war card data (same as addWarCard)
-                            warCardBinding.tvWarStatus.text = when (warData.state) {
-                                "preparation" -> getString(R.string.preparation)
-                                "inWar" -> getString(R.string.battle_day)
-                                else -> getString(R.string.war_ended)
-                            }
-                            warCardBinding.tvTimeRemaining.text = when {
-                                warData.state == "warEnded" -> "0h 00m"
-                                else -> warData.timeRemaining ?: "Unknown"
-                            }
-                            warCardBinding.tvLeftStars.text = warData.clan.stars.toString()
-                            warCardBinding.tvRightStars.text = warData.opponent.stars.toString()
-                            warCardBinding.tvLeftClanName.text = warData.clan.name
-                            warCardBinding.tvRightClanName.text = warData.opponent.name
-                            Glide.with(this@MainActivity)
-                                .load(warData.clan.badge)
-                                .placeholder(R.mipmap.ic_launcher)
-                                .error(R.mipmap.ic_launcher)
-                                .circleCrop()
-                                .into(warCardBinding.ivLeftClanBadge)
-                            Glide.with(this@MainActivity)
-                                .load(warData.opponent.badge)
-                                .placeholder(R.mipmap.ic_launcher)
-                                .error(R.mipmap.ic_launcher)
-                                .circleCrop()
-                                .into(warCardBinding.ivRightClanBadge)
-                            warCardBinding.root.setOnClickListener {
-                                openWarDetail(warData)
-                            }
-                            newWarCards.add(warCardBinding.root)
-                            successfulCount++
-                        }
+    
+    private fun loadWarDataForClan(clan: BookmarkedClan) {
+        binding.loadingLayout.visibility = View.VISIBLE
+        lifecycleScope.launch {
+            try {
+                val response = apiService.getWarData(clan.tag)
+                if (response.isSuccessful) {
+                    response.body()?.let { warData ->
+                        currentWarData = warData
+                        warPagerAdapter.updateWarData(warData)
+                        binding.loadingLayout.visibility = View.GONE
                     }
-                } catch (e: Exception) {
-                    // Silently handle errors for individual clans
-                } finally {
-                    loadedCount++
-                    if (loadedCount == total) {
-                        // All war data loaded, now update UI
-                        binding.warCardsContainer.removeAllViews()
-                        newWarCards.forEach { binding.warCardsContainer.addView(it) }
-                        // Consider successful if at least one clan loaded successfully
-                        onComplete?.invoke(successfulCount > 0)
-                    }
+                } else {
+                    binding.loadingLayout.visibility = View.GONE
+                    currentWarData = null
+                    Toast.makeText(this@MainActivity, "No ongoing war for this clan", Toast.LENGTH_SHORT).show()
                 }
+            } catch (e: Exception) {
+                binding.loadingLayout.visibility = View.GONE
+                currentWarData = null
+                Toast.makeText(this@MainActivity, "Failed to load war data", Toast.LENGTH_SHORT).show()
             }
         }
     }
+
+
     
-    private fun addWarCard(warData: WarResponse) {
-        val warCardBinding = ItemWarCardBinding.inflate(layoutInflater)
-        
-        // Populate war card data
-        warCardBinding.tvWarStatus.text = when (warData.state) {
-            "preparation" -> getString(R.string.preparation)
-            "inWar" -> getString(R.string.battle_day)
-            else -> getString(R.string.war_ended)
-        }
-        
-        warCardBinding.tvTimeRemaining.text = when {
-            warData.state == "warEnded" -> "0h 00m"
-            else -> warData.timeRemaining ?: "Unknown"
-        }
-        warCardBinding.tvLeftStars.text = warData.clan.stars.toString()
-        warCardBinding.tvRightStars.text = warData.opponent.stars.toString()
-        warCardBinding.tvLeftClanName.text = warData.clan.name
-        warCardBinding.tvRightClanName.text = warData.opponent.name
-        
-        // Load clan badges
-        Glide.with(this)
-            .load(warData.clan.badge)
-            .placeholder(R.mipmap.ic_launcher)
-            .error(R.mipmap.ic_launcher)
-            .circleCrop()
-            .into(warCardBinding.ivLeftClanBadge)
-            
-        Glide.with(this)
-            .load(warData.opponent.badge)
-            .placeholder(R.mipmap.ic_launcher)
-            .error(R.mipmap.ic_launcher)
-            .circleCrop()
-            .into(warCardBinding.ivRightClanBadge)
-        
-        // Set click listener
-        warCardBinding.root.setOnClickListener {
-            openWarDetail(warData)
-        }
-        
-        binding.warCardsContainer.addView(warCardBinding.root)
-    }
+
     
-    private fun displayBookmarkedClans() {
-        binding.bookmarkedClansContainer.removeAllViews()
-        
-        if (bookmarkedClans.isEmpty()) {
-            binding.noBookmarksLayout.visibility = View.VISIBLE
-            return
-        }
-        
-        binding.noBookmarksLayout.visibility = View.GONE
-        
-        bookmarkedClans.forEach { clan ->
-            addBookmarkCard(clan)
-        }
-    }
-    
-    private fun addBookmarkCard(clan: BookmarkedClan) {
-        val bookmarkCardBinding = ItemBookmarkCardBinding.inflate(layoutInflater)
-        
-        // Populate bookmark card data
-        bookmarkCardBinding.tvClanName.text = clan.name
-        bookmarkCardBinding.tvClanTag.text = clan.tag
-        bookmarkCardBinding.tvMembersCount.text = getString(R.string.members_count, clan.members)
-        bookmarkCardBinding.tvClanLevel.text = "Level: ${clan.level}"
-        
-        // Load clan badge
-        Glide.with(this)
-            .load(clan.badge)
-            .placeholder(R.mipmap.ic_launcher)
-            .error(R.mipmap.ic_launcher)
-            .circleCrop()
-            .into(bookmarkCardBinding.ivClanBadge)
-        
-        // Set click listener for the card
-        bookmarkCardBinding.root.setOnClickListener {
-            onClanClicked(clan.tag)
-        }
-        
-        // Set bookmark icon click listener
-        bookmarkCardBinding.ivBookmark.setOnClickListener {
-            // Remove from bookmarks
-            bookmarkedClans.remove(clan)
-            saveBookmarkedClans()
-            displayBookmarkedClans()
-            Toast.makeText(this, getString(R.string.clan_removed), Toast.LENGTH_SHORT).show()
-            
-            // Refresh war data
-            loadWarData { }
-        }
-        
-        binding.bookmarkedClansContainer.addView(bookmarkCardBinding.root)
-    }
+
     
     private fun openSettings() {
         val intent = Intent(this, SettingsActivity::class.java)
@@ -474,7 +363,6 @@ class MainActivity : AppCompatActivity() {
             val clans: List<BookmarkedClan> = gson.fromJson(json, type)
             bookmarkedClans.clear()
             bookmarkedClans.addAll(clans)
-            displayBookmarkedClans()
         }
     }
 
@@ -537,55 +425,66 @@ class MainActivity : AppCompatActivity() {
         }
     }
     
-    inner class WarCardsAdapter(
-        private val wars: List<WarResponse>,
-        private val onWarClick: (WarResponse) -> Unit
-    ) : RecyclerView.Adapter<WarCardsAdapter.ViewHolder>() {
+    inner class ClanSelectorAdapter(
+        private val clans: List<BookmarkedClan>,
+        private val onClanClick: (BookmarkedClan) -> Unit
+    ) : RecyclerView.Adapter<ClanSelectorAdapter.ViewHolder>() {
         
-        inner class ViewHolder(val binding: ItemWarCardBinding) : RecyclerView.ViewHolder(binding.root)
+        inner class ViewHolder(val binding: ItemBookmarkCardBinding) : RecyclerView.ViewHolder(binding.root)
         
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            val binding = ItemWarCardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            val binding = ItemBookmarkCardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
             return ViewHolder(binding)
         }
         
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val war = wars[position]
+            val clan = clans[position]
             
-            holder.binding.tvWarStatus.text = when (war.state) {
-                "preparation" -> getString(R.string.preparation)
-                "inWar" -> getString(R.string.battle_day)
-                else -> getString(R.string.war_ended)
-            }
+            holder.binding.tvClanName.text = clan.name
+            holder.binding.tvClanTag.text = clan.tag
+            holder.binding.tvClanLevel.text = "Level: ${clan.level}"
+            holder.binding.tvMembersCount.text = getString(R.string.members_count, clan.members)
             
-            holder.binding.tvTimeRemaining.text = when {
-                war.state == "warEnded" -> "0h 00m"
-                else -> war.timeRemaining ?: "Unknown"
-            }
-            holder.binding.tvLeftStars.text = war.clan.stars.toString()
-            holder.binding.tvRightStars.text = war.opponent.stars.toString()
-            holder.binding.tvLeftClanName.text = war.clan.name
-            holder.binding.tvRightClanName.text = war.opponent.name
-            
-            Glide.with(holder.binding.ivLeftClanBadge)
-                .load(war.clan.badge)
+            Glide.with(holder.binding.ivClanBadge)
+                .load(clan.badge)
                 .placeholder(R.mipmap.ic_launcher)
                 .error(R.mipmap.ic_launcher)
                 .circleCrop()
-                .into(holder.binding.ivLeftClanBadge)
-                
-            Glide.with(holder.binding.ivRightClanBadge)
-                .load(war.opponent.badge)
-                .placeholder(R.mipmap.ic_launcher)
-                .error(R.mipmap.ic_launcher)
-                .circleCrop()
-                .into(holder.binding.ivRightClanBadge)
+                .into(holder.binding.ivClanBadge)
             
             holder.binding.root.setOnClickListener {
-                onWarClick(war)
+                onClanClick(clan)
             }
         }
         
-        override fun getItemCount() = wars.size
+        override fun getItemCount() = clans.size
+    }
+    
+    inner class WarPagerAdapter(activity: FragmentActivity) : FragmentStateAdapter(activity) {
+        private var warData: WarResponse? = null
+        
+        override fun getItemCount(): Int = 2
+        
+        override fun createFragment(position: Int): Fragment {
+            return when (position) {
+                0 -> {
+                    currentOverviewFragment = OverviewFragment()
+                    warData?.let { currentOverviewFragment?.updateWarData(it) }
+                    currentOverviewFragment!!
+                }
+                1 -> {
+                    currentActivityFragment = ActivityFragment()
+                    warData?.let { currentActivityFragment?.updateWarData(it) }
+                    currentActivityFragment!!
+                }
+                else -> throw IllegalArgumentException("Invalid position")
+            }
+        }
+        
+        fun updateWarData(data: WarResponse) {
+            warData = data
+            currentOverviewFragment?.updateWarData(data)
+            currentActivityFragment?.updateWarData(data)
+        }
     }
 }

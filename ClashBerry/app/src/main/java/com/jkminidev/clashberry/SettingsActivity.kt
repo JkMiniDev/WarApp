@@ -39,6 +39,11 @@ class SettingsActivity : AppCompatActivity() {
     }
     
     private fun setupClickListeners() {
+        // Bookmarks setting
+        binding.bookmarksOption.setOnClickListener {
+            openBookmarksActivity()
+        }
+        
         // Update setting
         binding.updateOption.setOnClickListener {
             checkForUpdates()
@@ -86,6 +91,12 @@ class SettingsActivity : AppCompatActivity() {
     private fun openUrl(url: String) {
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
         startActivity(intent)
+    }
+    
+    private fun openBookmarksActivity() {
+        // Create an intent to open a bookmarks management activity
+        // For now, we'll show a placeholder message since the bookmarks are managed in the main screen
+        Toast.makeText(this, "Bookmarks are managed from the clan selector in the main screen", Toast.LENGTH_LONG).show()
     }
     
     private fun loadAppVersion() {

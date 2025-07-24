@@ -21,17 +21,48 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:background="@color/transparent">
 
-        <!-- App Name -->
-        <TextView
-            android:id="@+id/tvAppName"
+        <!-- Clan Selector -->
+        <LinearLayout
+            android:id="@+id/clanSelectorLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/app_name"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:textColor="@color/text_color"
-            android:gravity="start|center_vertical" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="?attr/selectableItemBackground"
+            android:padding="8dp">
+
+            <!-- Clan Badge -->
+            <ImageView
+                android:id="@+id/ivSelectedClanBadge"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@mipmap/ic_launcher"
+                android:layout_marginEnd="12dp"
+                android:contentDescription="Selected Clan Badge" />
+
+            <!-- Clan Name -->
+            <TextView
+                android:id="@+id/tvSelectedClanName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Select Clan"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_color"
+                android:gravity="start|center_vertical"
+                android:singleLine="true"
+                android:ellipsize="end" />
+
+            <!-- Dropdown Arrow -->
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_arrow_drop_down"
+                android:contentDescription="Dropdown" />
+
+        </LinearLayout>
 
         <!-- Search Icon -->
         <ImageView
@@ -94,132 +125,49 @@
 
         </LinearLayout>
 
-        <!-- Home Content -->
-        <ScrollView
-            android:id="@+id/homeContent"
+        <!-- War Details ViewPager -->
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/viewPager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fillViewport="true"
-            android:scrollbars="none"
-            android:overScrollMode="never">
+            android:background="@color/background_primary" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <!-- War Cards Container -->
-                <LinearLayout
-                    android:id="@+id/warCardsContainer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical" />
-
-                <!-- No Wars Message -->
-                <LinearLayout
-                    android:id="@+id/noWarsLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:padding="64dp"
-                    android:visibility="visible">
-
-                    <ImageView
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        android:src="@drawable/ic_crossed_swords"
-                        android:layout_marginBottom="16dp"
-                        android:alpha="0.6" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/no_clans_in_war"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/text_color"
-                        android:layout_marginBottom="8dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/no_bookmarked_clans"
-                        android:textSize="14sp"
-                        android:textColor="@color/text_color_secondary"
-                        android:textAlignment="center"
-                        android:gravity="center" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-        </ScrollView>
-
-        <!-- Bookmarks Content -->
-        <ScrollView
-            android:id="@+id/bookmarksContent"
+        <!-- No Wars/No Clan Selected Message -->
+        <LinearLayout
+            android:id="@+id/noWarLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fillViewport="true"
-            android:visibility="gone"
-            android:scrollbars="none"
-            android:overScrollMode="never">
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="64dp"
+            android:visibility="visible">
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@drawable/ic_crossed_swords"
+                android:layout_marginBottom="16dp"
+                android:alpha="0.6" />
+
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:text="Select a clan to view war details"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_color"
+                android:layout_marginBottom="8dp" />
 
-                <!-- Bookmarked Clans Cards Container -->
-                <LinearLayout
-                    android:id="@+id/bookmarkedClansContainer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Choose from your bookmarked clans above to see ongoing wars"
+                android:textSize="14sp"
+                android:textColor="@color/text_color_secondary"
+                android:textAlignment="center"
+                android:gravity="center" />
 
-                <!-- No Bookmarks Message -->
-                <LinearLayout
-                    android:id="@+id/noBookmarksLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:padding="64dp"
-                    android:visibility="gone">
-
-                    <ImageView
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        android:src="@drawable/ic_bookmark"
-                        android:layout_marginBottom="16dp"
-                        android:alpha="0.6" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/no_bookmarks"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/text_color"
-                        android:layout_marginBottom="8dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/bookmark_clans_message"
-                        android:textSize="14sp"
-                        android:textColor="@color/text_color_secondary"
-                        android:textAlignment="center"
-                        android:gravity="center" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-        </ScrollView>
+        </LinearLayout>
 
     </FrameLayout>
 
@@ -229,7 +177,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/background_secondary"
-        app:menu="@menu/main_bottom_nav" 
+        app:menu="@menu/war_detail_bottom_nav" 
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
