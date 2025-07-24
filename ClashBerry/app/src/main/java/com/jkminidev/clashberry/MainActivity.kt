@@ -225,7 +225,7 @@ class MainActivity : AppCompatActivity() {
                 binding.tvNoWarMessage.text = "Choose from your bookmarked clans above to see ongoing wars"
             }
             NoWarState.NO_ONGOING_WAR -> {
-                binding.ivNoWarIcon.setImageResource(android.R.drawable.ic_menu_recent_history)
+                binding.ivNoWarIcon.setImageResource(R.drawable.ic_activity)
                 binding.tvNoWarTitle.text = "No Ongoing Wars"
                 binding.tvNoWarMessage.text = "You will see ongoing wars here after war starts"
             }
