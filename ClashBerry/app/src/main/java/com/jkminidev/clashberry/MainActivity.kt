@@ -534,16 +534,28 @@ class MainActivity : AppCompatActivity() {
                 val response = apiService.getWarData(clan.tag)
                 if (response.isSuccessful) {
                     response.body()?.let { warData ->
-                        currentWarData = warData
-                        warPagerAdapter.updateWarData(warData)
-                        if (showCenterLoading) {
-                            binding.loadingLayout.visibility = View.GONE
+                        // Check if clan is not in war
+                        if (warData.state == "notInWar") {
+                            if (showCenterLoading) {
+                                binding.loadingLayout.visibility = View.GONE
+                            }
+                            // Stop pull-to-refresh animation
+                            binding.swipeRefreshLayout.isRefreshing = false
+                            currentWarData = null
+                            updateNoWarLayout(NoWarState.NO_ONGOING_WAR)
+                        } else {
+                            // Clan is in war, show war data
+                            currentWarData = warData
+                            warPagerAdapter.updateWarData(warData)
+                            if (showCenterLoading) {
+                                binding.loadingLayout.visibility = View.GONE
+                            }
+                            // Show war content and hide no war layout
+                            binding.noWarLayout.visibility = View.GONE
+                            binding.viewPager.visibility = View.VISIBLE
+                            // Stop pull-to-refresh animation
+                            binding.swipeRefreshLayout.isRefreshing = false
                         }
-                        // Show war content and hide no war layout
-                        binding.noWarLayout.visibility = View.GONE
-                        binding.viewPager.visibility = View.VISIBLE
-                        // Stop pull-to-refresh animation
-                        binding.swipeRefreshLayout.isRefreshing = false
                     }
                 } else {
                     if (showCenterLoading) {
