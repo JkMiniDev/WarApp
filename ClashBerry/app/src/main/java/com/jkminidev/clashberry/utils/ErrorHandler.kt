@@ -22,7 +22,7 @@ object ErrorHandler {
     }
     
     fun getErrorDisplayText(context: Context, errorResponse: ErrorResponse): Pair<String, String> {
-        return when (errorResponse.error ?: errorResponse.reason) {
+        return when (errorResponse.error ?: errorResponse.reason ?: "unknown_error") {
             "accessDenied", "private_war_log" -> {
                 Pair(
                     context.getString(R.string.private_war_log),
