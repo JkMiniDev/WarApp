@@ -575,7 +575,7 @@ class MainActivity : AppCompatActivity() {
                             try {
                                 val errorHandler = ErrorHandler
                                 val errorResponse = errorHandler.parseError(response)
-                                if (errorResponse.reason == "accessDenied" || errorResponse.error == "accessDenied") {
+                                                                     if (errorResponse.reason == "accessDenied") {
                                     updateNoWarLayout(NoWarState.PRIVATE_WAR_LOG)
                                 } else {
                                     updateNoWarLayout(NoWarState.PRIVATE_WAR_LOG) // Default for 403
