@@ -141,26 +141,16 @@ class MainActivity : AppCompatActivity() {
     private fun updateNoWarLayoutForNoBookmarks() {
         // Update the no war layout to show no bookmarks message
         val noWarLayout = binding.noWarLayout
-        val iconView = noWarLayout.findViewById<android.widget.ImageView>(R.id.ivNoWarIcon)
-        val titleView = noWarLayout.findViewById<android.widget.TextView>(R.id.tvNoWarTitle) 
-        val messageView = noWarLayout.findViewById<android.widget.TextView>(R.id.tvNoWarMessage)
         
-        // If views don't exist with IDs, update by finding them by type
-        if (iconView == null || titleView == null || messageView == null) {
-            val imageView = noWarLayout.getChildAt(0) as? android.widget.ImageView
-            val linearLayout = noWarLayout.getChildAt(1) as? android.widget.LinearLayout
-            if (imageView != null && linearLayout != null) {
-                imageView.setImageResource(R.drawable.ic_bookmark)
-                val title = linearLayout.getChildAt(0) as? android.widget.TextView
-                val message = linearLayout.getChildAt(1) as? android.widget.TextView
-                title?.text = "No Bookmarked Clans"
-                message?.text = "Search and bookmark clans to view their war details here"
-            }
-        } else {
-            iconView.setImageResource(R.drawable.ic_bookmark)
-            titleView.text = "No Bookmarked Clans"
-            messageView.text = "Search and bookmark clans to view their war details here"
-        }
+        // Access child views directly by index since they don't have IDs
+        val imageView = noWarLayout.getChildAt(0) as? android.widget.ImageView
+        val titleTextView = noWarLayout.getChildAt(1) as? android.widget.TextView
+        val messageTextView = noWarLayout.getChildAt(2) as? android.widget.TextView
+        
+        // Update the views
+        imageView?.setImageResource(R.drawable.ic_bookmark)
+        titleTextView?.text = "No Bookmarked Clans"
+        messageTextView?.text = "Search and bookmark clans to view their war details here"
     }
     
     private fun showClanSelectorDialog() {
