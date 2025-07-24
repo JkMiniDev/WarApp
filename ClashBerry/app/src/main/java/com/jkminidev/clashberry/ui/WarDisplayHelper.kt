@@ -314,8 +314,9 @@ class WarDisplayHelper(private val context: Context) {
             }
         }
         
-        // Create ViewPager2 with smart touch handling
+        // Create ViewPager2 with swipe disabled (tap-only navigation)
         val viewPager = androidx.viewpager2.widget.ViewPager2(context)
+        viewPager.isUserInputEnabled = false // Disable swipe navigation
         val subTabAdapter = SubTabPagerAdapter(options, warData, selectedClan)
         viewPager.adapter = subTabAdapter
         
