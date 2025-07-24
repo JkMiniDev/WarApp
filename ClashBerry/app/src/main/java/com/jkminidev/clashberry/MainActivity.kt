@@ -556,14 +556,23 @@ class MainActivity : AppCompatActivity() {
                     // Check for specific error codes
                     when (response.code()) {
                         403 -> {
-                            // Check if it's a private war log error
-                            val errorHandler = ErrorHandler
-                            val errorResponse = errorHandler.parseError(response)
-                            if (errorResponse.error == "private_war_log") {
+                            // Check if it's a private war log error (accessDenied)
+                            try {
+                                val errorHandler = ErrorHandler
+                                val errorResponse = errorHandler.parseError(response)
+                                if (errorResponse.error == "accessDenied") {
+                                    updateNoWarLayout(NoWarState.PRIVATE_WAR_LOG)
+                                } else {
+                                    updateNoWarLayout(NoWarState.NO_ONGOING_WAR)
+                                }
+                            } catch (e: Exception) {
+                                // If error parsing fails, assume private war log for 403
                                 updateNoWarLayout(NoWarState.PRIVATE_WAR_LOG)
-                            } else {
-                                updateNoWarLayout(NoWarState.NO_ONGOING_WAR)
                             }
+                        }
+                        404 -> {
+                            // Clan not found or no war data
+                            updateNoWarLayout(NoWarState.NO_ONGOING_WAR)
                         }
                         else -> {
                             updateNoWarLayout(NoWarState.NO_ONGOING_WAR)
