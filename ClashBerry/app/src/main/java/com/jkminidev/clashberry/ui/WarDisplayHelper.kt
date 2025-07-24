@@ -314,48 +314,22 @@ class WarDisplayHelper(private val context: Context) {
             }
         }
         
-        // Create ViewPager2 for swipe functionality between sub-tabs
-        val viewPager = androidx.viewpager2.widget.ViewPager2(context)
+        // Create custom ViewPager2 that blocks parent touch interception
+        val viewPager = object : androidx.viewpager2.widget.ViewPager2(context) {
+            override fun onTouchEvent(ev: android.view.MotionEvent?): Boolean {
+                // Always prevent parent from intercepting touches
+                parent?.requestDisallowInterceptTouchEvent(true)
+                return super.onTouchEvent(ev)
+            }
+            
+            override fun onInterceptTouchEvent(ev: android.view.MotionEvent?): Boolean {
+                // Always prevent parent from intercepting touches
+                parent?.requestDisallowInterceptTouchEvent(true)
+                return super.onInterceptTouchEvent(ev)
+            }
+        }
         val subTabAdapter = SubTabPagerAdapter(options, warData, selectedClan)
         viewPager.adapter = subTabAdapter
-        
-        // Prevent SwipeRefreshLayout from intercepting horizontal swipes
-        var initialX = 0f
-        var initialY = 0f
-        var isHorizontalSwipe = false
-        
-        viewPager.setOnTouchListener { _, event ->
-            when (event.action) {
-                android.view.MotionEvent.ACTION_DOWN -> {
-                    initialX = event.x
-                    initialY = event.y
-                    isHorizontalSwipe = false
-                    // Don't prevent interception initially
-                    disallowParentInterceptTouchEvent(viewPager, false)
-                }
-                android.view.MotionEvent.ACTION_MOVE -> {
-                    val deltaX = kotlin.math.abs(event.x - initialX)
-                    val deltaY = kotlin.math.abs(event.y - initialY)
-                    
-                    // Detect horizontal swipe with stricter criteria
-                    if (deltaX > 30 && deltaX > deltaY * 1.5) { // More strict horizontal detection
-                        if (!isHorizontalSwipe) {
-                            isHorizontalSwipe = true
-                            disallowParentInterceptTouchEvent(viewPager, true)
-                        }
-                    } else if (!isHorizontalSwipe && deltaY > 30) {
-                        // Clearly vertical movement, allow pull-to-refresh
-                        disallowParentInterceptTouchEvent(viewPager, false)
-                    }
-                }
-                android.view.MotionEvent.ACTION_UP,
-                android.view.MotionEvent.ACTION_CANCEL -> {
-                    disallowParentInterceptTouchEvent(viewPager, false)
-                    isHorizontalSwipe = false
-                }
-            }
-            false
-        }
         
         clanOptions.forEachIndexed { idx, clan ->
             val clanLayout = LinearLayout(context).apply {
@@ -467,10 +441,28 @@ class WarDisplayHelper(private val context: Context) {
             }
         })
         
-        // Add clan toggle bar, sub-tab toggle bar and ViewPager2
+        // Wrap ViewPager2 in a container that blocks refresh gestures
+        val viewPagerContainer = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            setOnTouchListener { _, event ->
+                // Block all touch events from reaching SwipeRefreshLayout
+                when (event.action) {
+                    android.view.MotionEvent.ACTION_DOWN -> {
+                        parent?.requestDisallowInterceptTouchEvent(true)
+                    }
+                }
+                false // Don't consume, let ViewPager2 handle
+            }
+        }
+        viewPagerContainer.addView(viewPager, LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.MATCH_PARENT
+        ))
+        
+        // Add clan toggle bar, sub-tab toggle bar and ViewPager2 container
         layout.addView(clanToggleBar)
         layout.addView(toggleBar)
-        layout.addView(viewPager, LinearLayout.LayoutParams(
+        layout.addView(viewPagerContainer, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.MATCH_PARENT
         ))
