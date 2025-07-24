@@ -319,6 +319,21 @@ class WarDisplayHelper(private val context: Context) {
         val subTabAdapter = SubTabPagerAdapter(options, warData, selectedClan)
         viewPager.adapter = subTabAdapter
         
+        // Request parent to not intercept touch events during horizontal scrolling
+        viewPager.setOnTouchListener { _, event ->
+            when (event.action) {
+                android.view.MotionEvent.ACTION_DOWN,
+                android.view.MotionEvent.ACTION_MOVE -> {
+                    viewPager.parent?.requestDisallowInterceptTouchEvent(true)
+                }
+                android.view.MotionEvent.ACTION_UP,
+                android.view.MotionEvent.ACTION_CANCEL -> {
+                    viewPager.parent?.requestDisallowInterceptTouchEvent(false)
+                }
+            }
+            false
+        }
+        
         clanOptions.forEachIndexed { idx, clan ->
             val clanLayout = LinearLayout(context).apply {
                 orientation = LinearLayout.HORIZONTAL
