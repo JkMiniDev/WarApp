@@ -112,6 +112,46 @@ class MainActivity : AppCompatActivity() {
             R.color.green_primary,
             R.color.accent_color_dark
         )
+        
+        // Custom touch handling to prevent conflicts with horizontal swipes
+        var startY = 0f
+        var startX = 0f
+        var isVerticalSwipe = false
+        
+        binding.swipeRefreshLayout.setOnTouchListener { _, event ->
+            when (event.action) {
+                android.view.MotionEvent.ACTION_DOWN -> {
+                    startX = event.x
+                    startY = event.y
+                    isVerticalSwipe = false
+                    false
+                }
+                                 android.view.MotionEvent.ACTION_MOVE -> {
+                     val deltaX = Math.abs(event.x - startX)
+                     val deltaY = Math.abs(event.y - startY)
+                    
+                    if (deltaX > deltaY && deltaX > 50) {
+                        // Horizontal swipe detected, disable pull-to-refresh
+                        binding.swipeRefreshLayout.isEnabled = false
+                        false
+                    } else if (deltaY > deltaX && deltaY > 50) {
+                        // Vertical swipe detected, enable pull-to-refresh
+                        binding.swipeRefreshLayout.isEnabled = true
+                        isVerticalSwipe = true
+                        false
+                    } else {
+                        false
+                    }
+                }
+                android.view.MotionEvent.ACTION_UP,
+                android.view.MotionEvent.ACTION_CANCEL -> {
+                    // Re-enable pull-to-refresh after gesture ends
+                    binding.swipeRefreshLayout.isEnabled = true
+                    false
+                }
+                else -> false
+            }
+        }
     }
     
     private fun setupWarViewPager() {
