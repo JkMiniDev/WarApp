@@ -193,8 +193,8 @@ class WarDisplayHelper(private val context: Context) {
         
         Glide.with(context)
             .load(warData.clan.badge)
-            .placeholder(R.mipmap.ic_launcher)
-            .error(R.mipmap.ic_launcher)
+            .placeholder(R.drawable.ic_placeholder)
+            .error(R.drawable.ic_placeholder)
             .circleCrop()
             .into(ivClan1Badge)
         
@@ -208,8 +208,8 @@ class WarDisplayHelper(private val context: Context) {
         
         Glide.with(context)
             .load(warData.opponent.badge)
-            .placeholder(R.mipmap.ic_launcher)
-            .error(R.mipmap.ic_launcher)
+            .placeholder(R.drawable.ic_placeholder)
+            .error(R.drawable.ic_placeholder)
             .circleCrop()
             .into(ivClan2Badge)
         
@@ -344,8 +344,8 @@ class WarDisplayHelper(private val context: Context) {
             // Load clan badge using Glide
             Glide.with(context)
                 .load(clan.badge)
-                .placeholder(R.mipmap.ic_launcher)
-                .error(R.mipmap.ic_launcher)
+                .placeholder(R.drawable.ic_placeholder)
+                .error(R.drawable.ic_placeholder)
                 .circleCrop()
                 .into(clanBadge)
             

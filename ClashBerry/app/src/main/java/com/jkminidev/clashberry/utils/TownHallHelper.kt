@@ -21,12 +21,12 @@ object TownHallHelper {
             if (resourceId != 0) {
                 resourceId
             } else {
-                // Fallback to app icon if th image not found
-                R.mipmap.ic_launcher
+                // Fallback to placeholder if th image not found
+                R.drawable.ic_placeholder
             }
         } else {
-            // Fallback to app icon if no context provided
-            R.mipmap.ic_launcher
+            // Fallback to placeholder if no context provided
+            R.drawable.ic_placeholder
         }
     }
     

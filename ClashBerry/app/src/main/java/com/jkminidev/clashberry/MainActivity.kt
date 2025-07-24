@@ -111,7 +111,7 @@ class MainActivity : AppCompatActivity() {
         if (bookmarkedClans.isEmpty()) {
             // No bookmarks - show "No Bookmarks" without arrow, and show no bookmarks message in main screen
             binding.tvSelectedClanName.text = "No Bookmarks"
-            binding.ivSelectedClanBadge.setImageResource(R.mipmap.ic_launcher)
+            binding.ivSelectedClanBadge.setImageResource(R.drawable.ic_placeholder)
             binding.clanSelectorLayout.findViewById<android.widget.ImageView>(R.id.ivDropdownArrow)?.visibility = View.GONE
             binding.noWarLayout.visibility = View.VISIBLE
             binding.viewPager.visibility = View.GONE
@@ -123,8 +123,8 @@ class MainActivity : AppCompatActivity() {
             binding.tvSelectedClanName.text = selectedClan!!.name
             Glide.with(this)
                 .load(selectedClan!!.badge)
-                .placeholder(R.mipmap.ic_launcher)
-                .error(R.mipmap.ic_launcher)
+                .placeholder(R.drawable.ic_placeholder)
+                .error(R.drawable.ic_placeholder)
                 .circleCrop()
                 .into(binding.ivSelectedClanBadge)
             binding.clanSelectorLayout.findViewById<android.widget.ImageView>(R.id.ivDropdownArrow)?.visibility = View.VISIBLE
@@ -468,8 +468,8 @@ class MainActivity : AppCompatActivity() {
             
             Glide.with(holder.binding.ivClanBadge)
                 .load(clan.badge)
-                .placeholder(R.mipmap.ic_launcher)
-                .error(R.mipmap.ic_launcher)
+                .placeholder(R.drawable.ic_placeholder)
+                .error(R.drawable.ic_placeholder)
                 .circleCrop()
                 .into(holder.binding.ivClanBadge)
             
@@ -518,8 +518,8 @@ class MainActivity : AppCompatActivity() {
             
             Glide.with(holder.binding.ivClanBadge)
                 .load(clan.badge)
-                .placeholder(R.mipmap.ic_launcher)
-                .error(R.mipmap.ic_launcher)
+                .placeholder(R.drawable.ic_placeholder)
+                .error(R.drawable.ic_placeholder)
                 .circleCrop()
                 .into(holder.binding.ivClanBadge)
             
