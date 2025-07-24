@@ -41,26 +41,35 @@
                 android:layout_marginEnd="12dp"
                 android:contentDescription="Selected Clan Badge" />
 
-            <!-- Clan Name -->
-            <TextView
-                android:id="@+id/tvSelectedClanName"
-                android:layout_width="0dp"
+            <!-- Clan Name and Arrow Container -->
+            <LinearLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Select Clan"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@color/text_color"
-                android:gravity="start|center_vertical"
-                android:singleLine="true"
-                android:ellipsize="end" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
 
-            <!-- Dropdown Arrow -->
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_arrow_drop_down"
-                android:contentDescription="Dropdown" />
+                <!-- Clan Name -->
+                <TextView
+                    android:id="@+id/tvSelectedClanName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Select Clan"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_color"
+                    android:gravity="start|center_vertical"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:maxWidth="200dp" />
+
+                <!-- Dropdown Arrow -->
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_arrow_drop_down"
+                    android:contentDescription="Dropdown" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
