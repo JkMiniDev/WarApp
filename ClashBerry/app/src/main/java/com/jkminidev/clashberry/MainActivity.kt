@@ -505,7 +505,7 @@ class MainActivity : AppCompatActivity() {
     private fun refreshDataFromMenu() {
         loadBookmarkedClans()
         selectedClan?.let { clan ->
-            loadWarDataForClan(clan, true) // true = show center loading
+            loadWarDataForClan(clan, false) // false = don't show center loading (same as pull-to-refresh)
         }
     }
 
