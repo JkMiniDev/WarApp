@@ -536,6 +536,13 @@ class MainActivity : AppCompatActivity() {
             binding.loadingLayout.visibility = View.VISIBLE
         }
         
+        // During refresh, temporarily hide content to prevent showing wrong clan's data
+        // This will be restored based on the API response
+        if (!showCenterLoading) {
+            binding.viewPager.visibility = View.GONE
+            binding.noWarLayout.visibility = View.GONE
+        }
+        
         lifecycleScope.launch {
             try {
                 val response = apiService.getWarData(clan.tag)
@@ -551,10 +558,6 @@ class MainActivity : AppCompatActivity() {
                             // Stop pull-to-refresh animation
                             binding.swipeRefreshLayout.isRefreshing = false
                             currentWarData = null
-                            // Hide ViewPager during refresh to prevent showing other clan's data
-                            if (!showCenterLoading) {
-                                binding.viewPager.visibility = View.GONE
-                            }
                             updateNoWarLayout(NoWarState.NO_ONGOING_WAR)
                         } else {
                             // Clan is in war, show war data
@@ -587,40 +590,20 @@ class MainActivity : AppCompatActivity() {
                                 val errorHandler = ErrorHandler
                                 val errorResponse = errorHandler.parseError(response)
                                                                      if (errorResponse.reason == "accessDenied") {
-                                    // Hide ViewPager during refresh to prevent showing other clan's data
-                                    if (!showCenterLoading) {
-                                        binding.viewPager.visibility = View.GONE
-                                    }
                                     updateNoWarLayout(NoWarState.PRIVATE_WAR_LOG)
                                 } else {
-                                    // Hide ViewPager during refresh to prevent showing other clan's data
-                                    if (!showCenterLoading) {
-                                        binding.viewPager.visibility = View.GONE
-                                    }
                                     updateNoWarLayout(NoWarState.PRIVATE_WAR_LOG) // Default for 403
                                 }
                             } catch (e: Exception) {
                                 // If error parsing fails, assume private war log for 403
-                                // Hide ViewPager during refresh to prevent showing other clan's data
-                                if (!showCenterLoading) {
-                                    binding.viewPager.visibility = View.GONE
-                                }
                                 updateNoWarLayout(NoWarState.PRIVATE_WAR_LOG)
                             }
                         }
                         404 -> {
                             // Clan not found or no war data
-                            // Hide ViewPager during refresh to prevent showing other clan's data
-                            if (!showCenterLoading) {
-                                binding.viewPager.visibility = View.GONE
-                            }
                             updateNoWarLayout(NoWarState.NO_ONGOING_WAR)
                         }
                         else -> {
-                            // Hide ViewPager during refresh to prevent showing other clan's data
-                            if (!showCenterLoading) {
-                                binding.viewPager.visibility = View.GONE
-                            }
                             updateNoWarLayout(NoWarState.NO_ONGOING_WAR)
                         }
                     }
@@ -633,10 +616,6 @@ class MainActivity : AppCompatActivity() {
                 // Stop pull-to-refresh animation
                 binding.swipeRefreshLayout.isRefreshing = false
                 currentWarData = null
-                // Hide ViewPager during refresh to prevent showing other clan's data
-                if (!showCenterLoading) {
-                    binding.viewPager.visibility = View.GONE
-                }
                 updateNoWarLayout(NoWarState.NO_ONGOING_WAR)
                 // Still show a brief connection failed message
                 Toast.makeText(this@MainActivity, "Connection Failed", Toast.LENGTH_SHORT).show()
