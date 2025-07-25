@@ -49,6 +49,17 @@ class MainActivity : AppCompatActivity() {
     private var currentOverviewFragment: OverviewFragment? = null
     private var currentActivityFragment: ActivityFragment? = null
     
+    // Search related variables
+    private var isSearchMode = false
+    private lateinit var searchAdapter: ClanSearchAdapter
+    
+    // No war states
+    enum class NoWarState {
+        NO_CLAN_SELECTED,
+        NO_ONGOING_WAR,
+        PRIVATE_WAR_LOG
+    }
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -62,10 +73,19 @@ class MainActivity : AppCompatActivity() {
         setupWarViewPager()
     }
     
+    override fun onBackPressed() {
+        if (isSearchMode) {
+            hideInlineSearch()
+        } else {
+            super.onBackPressed()
+        }
+    }
+    
     private fun setupUI() {
         setupBottomNavigation()
         setupTopBar()
         setupPullToRefresh()
+        setupInlineSearch()
         updateSelectedClanDisplay()
     }
     
@@ -93,7 +113,7 @@ class MainActivity : AppCompatActivity() {
         }
         
         binding.ivSearch.setOnClickListener {
-            showSearchDialog()
+            showInlineSearch()
         }
         
         binding.ivMenu.setOnClickListener { view ->
@@ -102,6 +122,44 @@ class MainActivity : AppCompatActivity() {
     }
     
         private fun setupPullToRefresh() {
+        // Add custom touch handling to block horizontal swipes
+        var startX = 0f
+        var startY = 0f
+        var isHorizontalSwipe = false
+        
+        binding.swipeRefreshLayout.setOnTouchListener { _, event ->
+            when (event.action) {
+                android.view.MotionEvent.ACTION_DOWN -> {
+                    startX = event.x
+                    startY = event.y
+                    isHorizontalSwipe = false
+                    false // Don't consume the event
+                }
+                android.view.MotionEvent.ACTION_MOVE -> {
+                    val deltaX = kotlin.math.abs(event.x - startX)
+                    val deltaY = kotlin.math.abs(event.y - startY)
+                    
+                    // If horizontal movement is detected, mark as horizontal swipe
+                    if (deltaX > 30 && deltaX > deltaY) {
+                        isHorizontalSwipe = true
+                        true // Consume the event to block SwipeRefreshLayout
+                    } else {
+                        false // Allow vertical movement for pull-to-refresh
+                    }
+                }
+                android.view.MotionEvent.ACTION_UP,
+                android.view.MotionEvent.ACTION_CANCEL -> {
+                    if (isHorizontalSwipe) {
+                        isHorizontalSwipe = false
+                        true // Consume to prevent any refresh trigger
+                    } else {
+                        false // Allow normal touch handling
+                    }
+                }
+                else -> false
+            }
+        }
+        
         binding.swipeRefreshLayout.setOnRefreshListener {
             refreshDataFromPullToRefresh()
         }
@@ -154,17 +212,33 @@ class MainActivity : AppCompatActivity() {
     
     private fun updateNoWarLayoutForNoBookmarks() {
         // Update the no war layout to show no bookmarks message
-        val noWarLayout = binding.noWarLayout
+        binding.ivNoWarIcon.setImageResource(R.drawable.ic_bookmark)
+        binding.tvNoWarTitle.text = "No Bookmarked Clans"
+        binding.tvNoWarMessage.text = "Search and bookmark clans to view their war details here"
+    }
+    
+    private fun updateNoWarLayout(state: NoWarState) {
+        when (state) {
+            NoWarState.NO_CLAN_SELECTED -> {
+                binding.ivNoWarIcon.setImageResource(R.drawable.ic_crossed_swords)
+                binding.tvNoWarTitle.text = "Select a clan to view war details"
+                binding.tvNoWarMessage.text = "Choose from your bookmarked clans above to see ongoing wars"
+            }
+            NoWarState.NO_ONGOING_WAR -> {
+                binding.ivNoWarIcon.setImageResource(R.drawable.ic_activity)
+                binding.tvNoWarTitle.text = "No Ongoing Wars"
+                binding.tvNoWarMessage.text = "You will see ongoing wars here after war starts"
+            }
+            NoWarState.PRIVATE_WAR_LOG -> {
+                binding.ivNoWarIcon.setImageResource(R.drawable.ic_lock)
+                binding.tvNoWarTitle.text = "Private War Log"
+                binding.tvNoWarMessage.text = "This clan's war log is private and cannot be viewed publicly"
+            }
+        }
         
-        // Access child views directly by index since they don't have IDs
-        val imageView = noWarLayout.getChildAt(0) as? android.widget.ImageView
-        val titleTextView = noWarLayout.getChildAt(1) as? android.widget.TextView
-        val messageTextView = noWarLayout.getChildAt(2) as? android.widget.TextView
-        
-        // Update the views
-        imageView?.setImageResource(R.drawable.ic_bookmark)
-        titleTextView?.text = "No Bookmarked Clans"
-        messageTextView?.text = "Search and bookmark clans to view their war details here"
+        // Show the no war layout
+        binding.viewPager.visibility = View.GONE
+        binding.noWarLayout.visibility = View.VISIBLE
     }
     
     private fun showClanSelectorDialog() {
@@ -229,44 +303,36 @@ class MainActivity : AppCompatActivity() {
         }
     }
     
-    private fun showSearchDialog() {
-        val dialog = Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
-        val dialogBinding = DialogSearchBinding.inflate(layoutInflater)
-        dialog.setContentView(dialogBinding.root)
-        
-        val searchAdapter = ClanSearchAdapter(mutableListOf()) { clan ->
+    private fun setupInlineSearch() {
+        // Initialize search adapter
+        searchAdapter = ClanSearchAdapter(mutableListOf()) { clan ->
             onSearchResultClicked(clan)
-            dialog.dismiss()
+            hideInlineSearch()
         }
         
-        dialogBinding.searchResultsRecyclerView.apply {
+        // Setup search results RecyclerView
+        binding.searchResultsRecyclerView.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
             adapter = searchAdapter
-            // Enable smooth scrolling
             isNestedScrollingEnabled = true
         }
         
-        // Remove btnSearch and btnCancel listeners
-        // dialogBinding.btnSearch.setOnClickListener {
-        //     val clanTag = dialogBinding.etSearchTag.text.toString().trim()
-        //     if (clanTag.isNotEmpty()) {
-        //         searchClan(clanTag, searchAdapter, dialogBinding)
-        //     }
-        // }
-        
-        // dialogBinding.btnCancel.setOnClickListener {
-        //     dialog.dismiss()
-        // }
-        
-        dialogBinding.ivBack.setOnClickListener {
-            dialog.dismiss()
+        // Setup search back button
+        binding.ivSearchBack.setOnClickListener {
+            hideInlineSearch()
         }
         
-        dialogBinding.etSearchTag.setOnEditorActionListener { _, actionId, _ ->
+        // Setup search EditText
+        binding.etSearchTag.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                val clanTag = dialogBinding.etSearchTag.text.toString().trim()
+                val clanTag = binding.etSearchTag.text.toString().trim()
                 if (clanTag.isNotEmpty()) {
-                    searchClan(clanTag, searchAdapter, dialogBinding)
+                    searchClan(clanTag, searchAdapter)
+                } else {
+                    // Show placeholder when search is empty
+                    binding.searchResultsRecyclerView.visibility = View.GONE
+                    binding.searchPlaceholderLayout.visibility = View.VISIBLE
+                    searchAdapter.updateResults(emptyList())
                 }
                 true
             } else {
@@ -274,15 +340,73 @@ class MainActivity : AppCompatActivity() {
             }
         }
         
-        dialog.show()
-        // Automatically focus the search EditText and show the keyboard
-        dialogBinding.etSearchTag.requestFocus()
-        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
-        imm.showSoftInput(dialogBinding.etSearchTag, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT)
+        // Also handle text changes to show placeholder when field is cleared
+        binding.etSearchTag.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: android.text.Editable?) {
+                if (s.isNullOrEmpty()) {
+                    binding.searchResultsRecyclerView.visibility = View.GONE
+                    binding.searchPlaceholderLayout.visibility = View.VISIBLE
+                    searchAdapter.updateResults(emptyList())
+                }
+            }
+        })
     }
     
-    private fun searchClan(clanTag: String, adapter: ClanSearchAdapter, dialogBinding: DialogSearchBinding) {
-        dialogBinding.searchLoadingLayout.visibility = View.VISIBLE
+    private fun showInlineSearch() {
+        isSearchMode = true
+        
+        // Hide normal top bar and show search bar
+        binding.topAppBar.visibility = View.GONE
+        binding.searchAppBar.visibility = View.VISIBLE
+        
+        // Hide main content and show search interface
+        binding.viewPager.visibility = View.GONE
+        binding.noWarLayout.visibility = View.GONE
+        binding.loadingLayout.visibility = View.GONE
+        binding.searchResultsRecyclerView.visibility = View.GONE
+        binding.searchPlaceholderLayout.visibility = View.VISIBLE
+        
+        // Clear previous search results
+        searchAdapter.updateResults(emptyList())
+        binding.etSearchTag.text?.clear()
+        
+        // Focus search EditText and show keyboard
+        binding.etSearchTag.requestFocus()
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
+        imm.showSoftInput(binding.etSearchTag, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT)
+    }
+    
+    private fun hideInlineSearch() {
+        isSearchMode = false
+        
+        // Show normal top bar and hide search bar
+        binding.topAppBar.visibility = View.VISIBLE
+        binding.searchAppBar.visibility = View.GONE
+        
+        // Hide search interface
+        binding.searchResultsRecyclerView.visibility = View.GONE
+        binding.searchPlaceholderLayout.visibility = View.GONE
+        
+        // Restore proper content visibility
+        if (currentWarData != null) {
+            binding.viewPager.visibility = View.VISIBLE
+            binding.noWarLayout.visibility = View.GONE
+        } else {
+            binding.viewPager.visibility = View.GONE
+            binding.noWarLayout.visibility = View.VISIBLE
+        }
+        
+        // Hide keyboard
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
+        imm.hideSoftInputFromWindow(binding.etSearchTag.windowToken, 0)
+    }
+    
+    private fun searchClan(clanTag: String, adapter: ClanSearchAdapter) {
+        // Hide placeholder and show results area
+        binding.searchPlaceholderLayout.visibility = View.GONE
+        binding.searchResultsRecyclerView.visibility = View.VISIBLE
         
         lifecycleScope.launch {
             try {
@@ -291,26 +415,19 @@ class MainActivity : AppCompatActivity() {
                     response.body()?.let { clanInfo ->
                         val searchResults = listOf(clanInfo)
                         adapter.updateResults(searchResults)
-                        dialogBinding.searchLoadingLayout.visibility = View.GONE
-                        updateSearchPlaceholderVisibility(adapter, dialogBinding)
                     }
                 } else {
-                    dialogBinding.searchLoadingLayout.visibility = View.GONE
-                    updateSearchPlaceholderVisibility(adapter, dialogBinding)
+                    adapter.updateResults(emptyList())
                     Toast.makeText(this@MainActivity, "Clan not found", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
-                dialogBinding.searchLoadingLayout.visibility = View.GONE
-                updateSearchPlaceholderVisibility(adapter, dialogBinding)
+                adapter.updateResults(emptyList())
                 Toast.makeText(this@MainActivity, "Search failed", Toast.LENGTH_SHORT).show()
             }
         }
     }
     
-    private fun updateSearchPlaceholderVisibility(adapter: ClanSearchAdapter, dialogBinding: DialogSearchBinding) {
-        // Hide placeholder when there are search results, show when there are no results
-        dialogBinding.searchPlaceholderLayout.visibility = if (adapter.hasResults()) View.GONE else View.VISIBLE
-    }
+
     
     private fun onSearchResultClicked(clan: ClanBasicInfo) {
         // Add to bookmarks
@@ -370,9 +487,15 @@ class MainActivity : AppCompatActivity() {
     }
     
     private fun refreshDataFromPullToRefresh() {
+        // Don't refresh if in search mode
+        if (isSearchMode) {
+            binding.swipeRefreshLayout.isRefreshing = false
+            return
+        }
+        
         loadBookmarkedClans()
         selectedClan?.let { clan ->
-            loadWarDataForClan(clan, false) // false = don't show center loading
+            loadWarDataForClan(clan, showCenterLoading = false, isRefresh = true)
         } ?: run {
             // No selected clan, just stop the refresh animation
             binding.swipeRefreshLayout.isRefreshing = false
@@ -382,7 +505,7 @@ class MainActivity : AppCompatActivity() {
     private fun refreshDataFromMenu() {
         loadBookmarkedClans()
         selectedClan?.let { clan ->
-            loadWarDataForClan(clan, true) // true = show center loading
+            loadWarDataForClan(clan, showCenterLoading = true, isRefresh = true)
         }
     }
 
@@ -408,39 +531,93 @@ class MainActivity : AppCompatActivity() {
         overlay?.let { (binding.root as ViewGroup).removeView(it) }
     }
     
-    private fun loadWarDataForClan(clan: BookmarkedClan, showCenterLoading: Boolean = true) {
+    private fun loadWarDataForClan(clan: BookmarkedClan, showCenterLoading: Boolean = true, isRefresh: Boolean = false) {
         if (showCenterLoading) {
             binding.loadingLayout.visibility = View.VISIBLE
         }
+        
+        // During refresh, temporarily hide content to prevent showing wrong clan's data
+        // This will be restored based on the API response
+        if (isRefresh) {
+            binding.viewPager.visibility = View.GONE
+            binding.noWarLayout.visibility = View.GONE
+        }
+        
         lifecycleScope.launch {
             try {
                 val response = apiService.getWarData(clan.tag)
                 if (response.isSuccessful) {
                     response.body()?.let { warData ->
-                        currentWarData = warData
-                        warPagerAdapter.updateWarData(warData)
-                        if (showCenterLoading) {
-                            binding.loadingLayout.visibility = View.GONE
+                        android.util.Log.d("MainActivity", "War data received, state: ${warData.state}")
+                        // Check if clan is not in war
+                        if (warData.state == "notInWar") {
+                            android.util.Log.d("MainActivity", "Clan not in war, showing no war layout")
+                            if (showCenterLoading) {
+                                binding.loadingLayout.visibility = View.GONE
+                            }
+                            // Stop pull-to-refresh animation
+                            binding.swipeRefreshLayout.isRefreshing = false
+                            currentWarData = null
+                            updateNoWarLayout(NoWarState.NO_ONGOING_WAR)
+                        } else {
+                            // Clan is in war, show war data
+                            currentWarData = warData
+                            warPagerAdapter.updateWarData(warData)
+                            if (showCenterLoading) {
+                                binding.loadingLayout.visibility = View.GONE
+                            }
+                            // Show war content and hide no war layout
+                            binding.noWarLayout.visibility = View.GONE
+                            binding.viewPager.visibility = View.VISIBLE
+                            // Stop pull-to-refresh animation
+                            binding.swipeRefreshLayout.isRefreshing = false
                         }
-                        // Stop pull-to-refresh animation
-                        binding.swipeRefreshLayout.isRefreshing = false
                     }
                 } else {
+                    android.util.Log.d("MainActivity", "War data request failed, code: ${response.code()}")
                     if (showCenterLoading) {
                         binding.loadingLayout.visibility = View.GONE
                     }
                     // Stop pull-to-refresh animation
                     binding.swipeRefreshLayout.isRefreshing = false
                     currentWarData = null
-                    Toast.makeText(this@MainActivity, "No ongoing war for this clan", Toast.LENGTH_SHORT).show()
+                    
+                    // Check for specific error codes
+                    when (response.code()) {
+                        403 -> {
+                            // Check if it's a private war log error (reason: accessDenied)
+                            try {
+                                val errorHandler = ErrorHandler
+                                val errorResponse = errorHandler.parseError(response)
+                                                                     if (errorResponse.reason == "accessDenied") {
+                                    updateNoWarLayout(NoWarState.PRIVATE_WAR_LOG)
+                                } else {
+                                    updateNoWarLayout(NoWarState.PRIVATE_WAR_LOG) // Default for 403
+                                }
+                            } catch (e: Exception) {
+                                // If error parsing fails, assume private war log for 403
+                                updateNoWarLayout(NoWarState.PRIVATE_WAR_LOG)
+                            }
+                        }
+                        404 -> {
+                            // Clan not found or no war data
+                            updateNoWarLayout(NoWarState.NO_ONGOING_WAR)
+                        }
+                        else -> {
+                            updateNoWarLayout(NoWarState.NO_ONGOING_WAR)
+                        }
+                    }
                 }
             } catch (e: Exception) {
+                android.util.Log.e("MainActivity", "War data loading failed", e)
                 if (showCenterLoading) {
                     binding.loadingLayout.visibility = View.GONE
                 }
                 // Stop pull-to-refresh animation
                 binding.swipeRefreshLayout.isRefreshing = false
                 currentWarData = null
+                updateNoWarLayout(NoWarState.NO_ONGOING_WAR)
+                // Still show a brief connection failed message
                 Toast.makeText(this@MainActivity, "Connection Failed", Toast.LENGTH_SHORT).show()
             }
         }

@@ -314,25 +314,11 @@ class WarDisplayHelper(private val context: Context) {
             }
         }
         
-        // Create ViewPager2 for swipe functionality between sub-tabs
+        // Create ViewPager2 with swipe disabled (tap-only navigation)
         val viewPager = androidx.viewpager2.widget.ViewPager2(context)
+        viewPager.isUserInputEnabled = false // Disable swipe navigation
         val subTabAdapter = SubTabPagerAdapter(options, warData, selectedClan)
         viewPager.adapter = subTabAdapter
-        
-        // Request parent to not intercept touch events during horizontal scrolling
-        viewPager.setOnTouchListener { _, event ->
-            when (event.action) {
-                android.view.MotionEvent.ACTION_DOWN,
-                android.view.MotionEvent.ACTION_MOVE -> {
-                    viewPager.parent?.requestDisallowInterceptTouchEvent(true)
-                }
-                android.view.MotionEvent.ACTION_UP,
-                android.view.MotionEvent.ACTION_CANCEL -> {
-                    viewPager.parent?.requestDisallowInterceptTouchEvent(false)
-                }
-            }
-            false
-        }
         
         clanOptions.forEachIndexed { idx, clan ->
             val clanLayout = LinearLayout(context).apply {
@@ -444,10 +430,19 @@ class WarDisplayHelper(private val context: Context) {
             }
         })
         
-        // Add clan toggle bar, sub-tab toggle bar and ViewPager2
+        // Simple container for ViewPager2 (horizontal swipes now blocked at SwipeRefreshLayout level)
+        val viewPagerContainer = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+        }
+        viewPagerContainer.addView(viewPager, LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.MATCH_PARENT
+        ))
+        
+        // Add clan toggle bar, sub-tab toggle bar and ViewPager2 container
         layout.addView(clanToggleBar)
         layout.addView(toggleBar)
-        layout.addView(viewPager, LinearLayout.LayoutParams(
+        layout.addView(viewPagerContainer, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.MATCH_PARENT
         ))
@@ -465,4 +460,6 @@ class WarDisplayHelper(private val context: Context) {
         }
         container.addView(recyclerView)
     }
+    
+
 }

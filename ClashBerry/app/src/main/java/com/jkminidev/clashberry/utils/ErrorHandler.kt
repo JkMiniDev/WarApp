@@ -14,16 +14,16 @@ object ErrorHandler {
             if (errorBody != null) {
                 Gson().fromJson(errorBody, ErrorResponse::class.java)
             } else {
-                ErrorResponse("api_error", "API Error: ${response.code()}", null)
+                ErrorResponse(reason = "api_error", message = "API Error: ${response.code()}")
             }
         } catch (e: Exception) {
-            ErrorResponse("parse_error", "Failed to parse error response", null)
+            ErrorResponse(reason = "parse_error", message = "Failed to parse error response")
         }
     }
     
     fun getErrorDisplayText(context: Context, errorResponse: ErrorResponse): Pair<String, String> {
-        return when (errorResponse.error) {
-            "private_war_log" -> {
+        return when (errorResponse.reason ?: "unknown_error") {
+            "accessDenied", "private_war_log" -> {
                 Pair(
                     context.getString(R.string.private_war_log),
                     context.getString(R.string.private_war_log_message)
