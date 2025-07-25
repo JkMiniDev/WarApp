@@ -536,6 +536,12 @@ class MainActivity : AppCompatActivity() {
             binding.loadingLayout.visibility = View.VISIBLE
         }
         
+        // If this is a refresh (not initial load), immediately hide ViewPager to prevent showing other clan's data
+        if (!showCenterLoading) {
+            binding.viewPager.visibility = View.GONE
+            binding.noWarLayout.visibility = View.GONE
+        }
+        
         lifecycleScope.launch {
             try {
                 val response = apiService.getWarData(clan.tag)
@@ -551,8 +557,6 @@ class MainActivity : AppCompatActivity() {
                             // Stop pull-to-refresh animation
                             binding.swipeRefreshLayout.isRefreshing = false
                             currentWarData = null
-                            // Hide ViewPager and show error layout immediately
-                            binding.viewPager.visibility = View.GONE
                             updateNoWarLayout(NoWarState.NO_ONGOING_WAR)
                         } else {
                             // Clan is in war, show war data
@@ -585,30 +589,20 @@ class MainActivity : AppCompatActivity() {
                                 val errorHandler = ErrorHandler
                                 val errorResponse = errorHandler.parseError(response)
                                                                      if (errorResponse.reason == "accessDenied") {
-                                    // Hide ViewPager and show error layout immediately
-                                    binding.viewPager.visibility = View.GONE
                                     updateNoWarLayout(NoWarState.PRIVATE_WAR_LOG)
                                 } else {
-                                    // Hide ViewPager and show error layout immediately
-                                    binding.viewPager.visibility = View.GONE
                                     updateNoWarLayout(NoWarState.PRIVATE_WAR_LOG) // Default for 403
                                 }
                             } catch (e: Exception) {
                                 // If error parsing fails, assume private war log for 403
-                                // Hide ViewPager and show error layout immediately
-                                binding.viewPager.visibility = View.GONE
                                 updateNoWarLayout(NoWarState.PRIVATE_WAR_LOG)
                             }
                         }
                         404 -> {
                             // Clan not found or no war data
-                            // Clear any existing war data from fragments
-                            warPagerAdapter.updateWarData(null)
                             updateNoWarLayout(NoWarState.NO_ONGOING_WAR)
                         }
                         else -> {
-                            // Clear any existing war data from fragments
-                            warPagerAdapter.updateWarData(null)
                             updateNoWarLayout(NoWarState.NO_ONGOING_WAR)
                         }
                     }
@@ -621,8 +615,6 @@ class MainActivity : AppCompatActivity() {
                 // Stop pull-to-refresh animation
                 binding.swipeRefreshLayout.isRefreshing = false
                 currentWarData = null
-                // Clear any existing war data from fragments
-                warPagerAdapter.updateWarData(null)
                 updateNoWarLayout(NoWarState.NO_ONGOING_WAR)
                 // Still show a brief connection failed message
                 Toast.makeText(this@MainActivity, "Connection Failed", Toast.LENGTH_SHORT).show()
@@ -778,12 +770,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
         
-        fun updateWarData(data: WarResponse?) {
+        fun updateWarData(data: WarResponse) {
             warData = data
-            data?.let {
-                currentOverviewFragment?.updateWarData(it)
-                currentActivityFragment?.updateWarData(it)
-            }
+            currentOverviewFragment?.updateWarData(data)
+            currentActivityFragment?.updateWarData(data)
         }
     }
 }
