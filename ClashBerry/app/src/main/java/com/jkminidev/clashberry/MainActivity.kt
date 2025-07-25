@@ -551,8 +551,8 @@ class MainActivity : AppCompatActivity() {
                             // Stop pull-to-refresh animation
                             binding.swipeRefreshLayout.isRefreshing = false
                             currentWarData = null
-                            // Clear any existing war data from fragments
-                            warPagerAdapter.updateWarData(null)
+                            // Hide ViewPager and show error layout immediately
+                            binding.viewPager.visibility = View.GONE
                             updateNoWarLayout(NoWarState.NO_ONGOING_WAR)
                         } else {
                             // Clan is in war, show war data
@@ -585,18 +585,18 @@ class MainActivity : AppCompatActivity() {
                                 val errorHandler = ErrorHandler
                                 val errorResponse = errorHandler.parseError(response)
                                                                      if (errorResponse.reason == "accessDenied") {
-                                    // Clear any existing war data from fragments
-                                    warPagerAdapter.updateWarData(null)
+                                    // Hide ViewPager and show error layout immediately
+                                    binding.viewPager.visibility = View.GONE
                                     updateNoWarLayout(NoWarState.PRIVATE_WAR_LOG)
                                 } else {
-                                    // Clear any existing war data from fragments
-                                    warPagerAdapter.updateWarData(null)
+                                    // Hide ViewPager and show error layout immediately
+                                    binding.viewPager.visibility = View.GONE
                                     updateNoWarLayout(NoWarState.PRIVATE_WAR_LOG) // Default for 403
                                 }
                             } catch (e: Exception) {
                                 // If error parsing fails, assume private war log for 403
-                                // Clear any existing war data from fragments
-                                warPagerAdapter.updateWarData(null)
+                                // Hide ViewPager and show error layout immediately
+                                binding.viewPager.visibility = View.GONE
                                 updateNoWarLayout(NoWarState.PRIVATE_WAR_LOG)
                             }
                         }
