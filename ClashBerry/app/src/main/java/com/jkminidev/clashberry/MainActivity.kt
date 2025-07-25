@@ -495,7 +495,7 @@ class MainActivity : AppCompatActivity() {
         
         loadBookmarkedClans()
         selectedClan?.let { clan ->
-            loadWarDataForClan(clan, false) // false = don't show center loading
+            loadWarDataForClan(clan, showCenterLoading = false, isRefresh = true)
         } ?: run {
             // No selected clan, just stop the refresh animation
             binding.swipeRefreshLayout.isRefreshing = false
@@ -505,7 +505,7 @@ class MainActivity : AppCompatActivity() {
     private fun refreshDataFromMenu() {
         loadBookmarkedClans()
         selectedClan?.let { clan ->
-            loadWarDataForClan(clan, false) // false = don't show center loading (same as pull-to-refresh)
+            loadWarDataForClan(clan, showCenterLoading = true, isRefresh = true)
         }
     }
 
@@ -531,14 +531,14 @@ class MainActivity : AppCompatActivity() {
         overlay?.let { (binding.root as ViewGroup).removeView(it) }
     }
     
-    private fun loadWarDataForClan(clan: BookmarkedClan, showCenterLoading: Boolean = true) {
+    private fun loadWarDataForClan(clan: BookmarkedClan, showCenterLoading: Boolean = true, isRefresh: Boolean = false) {
         if (showCenterLoading) {
             binding.loadingLayout.visibility = View.VISIBLE
         }
         
         // During refresh, temporarily hide content to prevent showing wrong clan's data
         // This will be restored based on the API response
-        if (!showCenterLoading) {
+        if (isRefresh) {
             binding.viewPager.visibility = View.GONE
             binding.noWarLayout.visibility = View.GONE
         }
